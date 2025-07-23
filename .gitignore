@@ -1,0 +1,49 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+ 
+# node modules 
+node_modules/
+tasksheet/node_modules/
+Server/node_modules/
+
+ 
+ 
+# dependencies
+/.pnp
+.pnp.js
+ 
+# Logs
+*.log
+logs/
+debug.log
+
+# Environment & logs
+.env
+*.log
+ 
+
+# OS
+.DS_Store
+Thumbs.db
+
+ 
+
+# React
+tasksheet/build/
+tasksheet/dist/
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# testing
+/coverage
+
+# VS Code
+.vscode/
