@@ -56,8 +56,8 @@ const DashboardPage = () => {
       </Grid>
 
       <Box mt={4}>
-        <Button variant="contained" color="primary" href="/timesheet-entry">
-          Enter Today’s Timesheet
+        <Button variant="contained" color="primary" href="/tasksheet-entry">
+          Enter Today’s Tasksheet
         </Button>
       </Box>
     </Box>

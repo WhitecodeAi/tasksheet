@@ -1,13 +1,17 @@
 const express = require("express");
 const cors = require("cors");
-const authRoutes = require('./routes/auth');
-const taskCategoriesRoutes = require('./routes/taskCategories');
-const db = require('./db'); // using pool directly
+const app = express();
 require('dotenv').config();
 
-const app = express();
+
 app.use(cors());
 app.use(express.json());
+
+const authRoutes = require('./routes/auth');
+const taskCategoriesRoutes = require('./routes/taskCategories');
+const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
+ 
+const db = require('./db'); // using pool directly
 
 
 // Middleware to attach DB to every request
@@ -19,6 +23,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/task-categories', taskCategoriesRoutes);
 app.use('/api', authRoutes);
+app.use('/api/tasksheetEntries', tasksheetEntriesRoutes);
 
 // API to get all projects
 app.get("/api/projects", (req, res) => {

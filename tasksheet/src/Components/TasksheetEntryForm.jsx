@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 
-const TimesheetEntryForm = ({ user, projects, taskCategories }) => {
+const TasksheetEntryForm = ({ user, projects, taskCategories }) => {
   const [form, setForm] = useState({
     date: dayjs().format('YYYY-MM-DD'),
     projectName: '',
@@ -37,11 +37,55 @@ const TimesheetEntryForm = ({ user, projects, taskCategories }) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Submitting Timesheet:', form);
-    // TODO: Submit to backend
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    entry_date: form.date,
+    user_id: user?.id, // assuming you pass `user.id` from parent
+    project_id: form.projectName,
+    task_category_id: form.category,
+    task: form.task,
+    hours: parseInt(form.hours || 0),
+    minutes: parseInt(form.minutes || 0),
+    comments: form.comments
   };
+
+  try {
+    const response = await fetch('http://localhost:3001/api/tasksheetEntries', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert('✅ Tasksheet submitted successfully!');
+      console.log('Submitted:', data);
+      // Reset form if needed:
+      setForm({
+        date: dayjs().format('YYYY-MM-DD'),
+        projectName: '',
+        category: '',
+        task: '',
+        hours: '',
+        minutes: '',
+        totalEffort: '',
+        developerName: user?.email || '',
+        comments: '',
+      });
+    } else {
+      alert(`❌ Submission failed: ${data.error}`);
+      console.error(data);
+    }
+  } catch (err) {
+    alert('🚨 Error submitting form');
+    console.error('Error:', err);
+  }
+};
+
 
   return (<>
 <Container style={{width:'90%'}}>
@@ -138,15 +182,7 @@ const TimesheetEntryForm = ({ user, projects, taskCategories }) => {
               />
             </Grid>
 
-            {/* <Grid item xs={12}>
-              <TextField
-                label="Developer Name"
-                fullWidth
-                name="developerName"
-                value={form.developerName}
-                InputProps={{ readOnly: true }}
-              />
-            </Grid> */}
+         
 
             <Grid size={12}>
               <TextField
@@ -162,7 +198,7 @@ const TimesheetEntryForm = ({ user, projects, taskCategories }) => {
 
             <Grid item xs={12}>
               <Button type="submit" variant="contained" fullWidth>
-                Submit Timesheet
+                Submit Tasksheet 
               </Button>
             </Grid>
           </Grid>
@@ -174,4 +210,4 @@ const TimesheetEntryForm = ({ user, projects, taskCategories }) => {
   );
 };
 
-export default TimesheetEntryForm;
+export default TasksheetEntryForm;

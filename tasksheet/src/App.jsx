@@ -4,7 +4,7 @@ import { CssBaseline, Box } from '@mui/material';
 import LoginPage from './Pages/LoginPage';
 import ProjectsPage from './Pages/ProjectsPage';
 import DashboardPage from './Pages/DashboardPage';
-import TimesheetPage from './Pages/TimesheetPage';
+import TasksheetPage from './Pages/TasksheetPage';
 import Header from './Components/Header';
 import Breadcrumbs from './Components/Breadcrumbs';
 
@@ -26,7 +26,7 @@ const AppContent = ({ handleLogin, handleLogout }) => {
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/timesheet-entry" element={<TimesheetPage />} />
+        <Route path="/tasksheet-entry" element={<TasksheetPage />} />
       </Routes>
     </>
   );

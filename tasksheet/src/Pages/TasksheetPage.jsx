@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TimesheetEntryForm from '../Components/TimesheetEntryForm';
+import TasksheetEntryForm from '../Components/TasksheetEntryForm';
  
 
-const TimesheetPage = () => {
+const TasksheetPage = () => {
     const [projects, setProjects] = useState([]);
 const [taskCategories, setTaskCategories] = useState([]);
 
@@ -32,9 +32,9 @@ const [taskCategories, setTaskCategories] = useState([]);
 
   return (
     <div>
-      <TimesheetEntryForm projects={projects} user={loggedInUser} taskCategories={taskCategories} />
+      <TasksheetEntryForm projects={projects} user={loggedInUser} taskCategories={taskCategories} />
     </div>
   );
 };
 
-export default TimesheetPage;
+export default TasksheetPage;
