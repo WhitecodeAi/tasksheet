@@ -42,7 +42,7 @@ const handleSubmit = async (e) => {
 
   const payload = {
     entry_date: form.date,
-    user_id: user?.id, // assuming you pass `user.id` from parent
+    user_id: user.id, // Make sure 'user' object has 'id'
     project_id: form.projectName,
     task_category_id: form.category,
     task: form.task,
@@ -60,29 +60,27 @@ const handleSubmit = async (e) => {
       body: JSON.stringify(payload)
     });
 
-    const data = await response.json();
-    if (response.ok) {
-      alert('✅ Tasksheet submitted successfully!');
-      console.log('Submitted:', data);
-      // Reset form if needed:
-      setForm({
-        date: dayjs().format('YYYY-MM-DD'),
-        projectName: '',
-        category: '',
-        task: '',
-        hours: '',
-        minutes: '',
-        totalEffort: '',
-        developerName: user?.email || '',
-        comments: '',
-      });
-    } else {
-      alert(`❌ Submission failed: ${data.error}`);
-      console.error(data);
+    if (!response.ok) {
+      throw new Error('Failed to submit tasksheet');
     }
-  } catch (err) {
-    alert('🚨 Error submitting form');
-    console.error('Error:', err);
+
+    const data = await response.json();
+    console.log('✅ Submitted successfully:', data);
+
+    alert('Tasksheet submitted successfully!');
+    // Optionally reset the form
+    setForm((prev) => ({
+      ...prev,
+      task: '',
+      hours: '',
+      minutes: '',
+      comments: '',
+      totalEffort: '0.00'
+    }));
+
+  } catch (error) {
+    console.error('❌ Submission error:', error);
+    alert('There was an error submitting the tasksheet.');
   }
 };
 
