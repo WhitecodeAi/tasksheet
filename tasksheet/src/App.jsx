@@ -5,6 +5,7 @@ import LoginPage from './Pages/LoginPage';
 import ProjectsPage from './Pages/ProjectsPage';
 import DashboardPage from './Pages/DashboardPage';
 import TasksheetPage from './Pages/TasksheetPage';
+import UsersPage from './Pages/UsersPage';
 import Header from './Components/Header';
 import Breadcrumbs from './Components/Breadcrumbs';
 
@@ -27,6 +28,7 @@ const AppContent = ({ handleLogin, handleLogout }) => {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/tasksheet-entry" element={<TasksheetPage />} />
+        <Route path="/users" element={<UsersPage />} />
       </Routes>
     </>
   );

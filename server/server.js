@@ -4,13 +4,16 @@ const app = express();
 require('dotenv').config();
 
 
+
+
+
 app.use(cors());
 app.use(express.json());
 
 const authRoutes = require('./routes/auth');
 const taskCategoriesRoutes = require('./routes/taskCategories');
 const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
- 
+const userRoutes = require('./routes/users'); 
 const db = require('./db'); // using pool directly
 
 
@@ -24,6 +27,8 @@ app.use((req, res, next) => {
 app.use('/api/task-categories', taskCategoriesRoutes);
 app.use('/api', authRoutes);
 app.use('/api/tasksheetEntries', tasksheetEntriesRoutes);
+app.use('/api/users', userRoutes);
+
 
 // API to get all projects
 app.get("/api/projects", (req, res) => {
