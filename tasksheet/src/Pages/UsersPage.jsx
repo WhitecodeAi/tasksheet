@@ -63,7 +63,7 @@ const UsersPage = () => {
     }
   };
 
-  const handleDelete = async (userId) => {
+  const handleDelete = async (userId) => { 
   if (window.confirm('Are you sure you want to delete this user?')) {
     
     try {
