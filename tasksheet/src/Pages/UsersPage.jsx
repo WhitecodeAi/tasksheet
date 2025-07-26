@@ -24,14 +24,13 @@ const UsersPage = () => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const [order, setOrder] = useState(null);
   const [orderBy, setOrderBy] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchUsers();
   }, []);
-
   const fetchUsers = async () => {
     try {
       const res = await axios.get('http://localhost:3001/api/users');
@@ -80,7 +79,6 @@ const UsersPage = () => {
       }
     }
   };
-
   const handleSaveUser = async () => {
     try {
       if (isEditing) {
@@ -111,6 +109,7 @@ const UsersPage = () => {
   };
 
   const handleChangePage = (_, newPage) => setPage(newPage);
+
   const handleChangeRowsPerPage = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
@@ -123,20 +122,37 @@ const UsersPage = () => {
   };
 
   const getComparator = (order, orderBy) => {
-  if (!order || !orderBy) return null;
-  return order === 'desc'
-    ? (a, b) => (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
-    : (a, b) => (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1);
-};
+    if (!order || !orderBy) return null;
+    return order === 'desc'
+      ? (a, b) => (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
+      : (a, b) => (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1);
+  };
 
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
+  const sortedUsers = order && orderBy
+    ? filteredUsers.slice().sort(getComparator(order, orderBy))
+    : filteredUsers.slice().reverse();
   return (
     <Container>
       <Box display="flex" justifyContent="space-between" mt={4} mb={2}>
         <Typography variant="h5">👥 Manage Users</Typography>
-        <Button variant="contained" color="primary" onClick={handleAddUserClick}>
-          ➕ Add User
-        </Button>
+        <Box display="flex" gap={2}>
+          <TextField
+            label="🔍 Search Users"
+            variant="outlined"
+            size="small"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Button variant="contained" color="primary" onClick={handleAddUserClick}>
+            ➕ Add User
+          </Button>
+        </Box>
       </Box>
 
       <Paper>
@@ -174,31 +190,24 @@ const UsersPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-         {(() => {
-  const userList = order && orderBy
-    ? users.slice().sort(getComparator(order, orderBy))
-    : users.slice().reverse();
-
-  return userList
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map(user => (
-      <TableRow key={user.user_id}>
-        <TableCell>{user.name}</TableCell>
-        <TableCell>{user.email}</TableCell>
-        <TableCell>{user.role}</TableCell>
-        <TableCell align="right">
-          <Button size="small" onClick={() => handleEdit(user.user_id)}>Edit</Button>
-          <Button size="small" color="error" onClick={() => handleDelete(user.user_id)}>Delete</Button>
-        </TableCell>
-      </TableRow>
-    ));
-})()}
-
+            {sortedUsers
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map(user => (
+                <TableRow key={user.user_id}>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell align="right">
+                    <Button size="small" onClick={() => handleEdit(user.user_id)}>Edit</Button>
+                    <Button size="small" color="error" onClick={() => handleDelete(user.user_id)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <TablePagination
           component="div"
-          count={users.length}
+          count={filteredUsers.length}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
