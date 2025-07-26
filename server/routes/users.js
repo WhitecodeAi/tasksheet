@@ -45,24 +45,43 @@ router.post('/', async (req, res) => {
 });
 
 // Update a user
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const { name, email, role } = req.body;
-  db.query(
-    'UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?',
-    [name, email, role, req.params.id],
-    (err) => {
-      if (err) return res.status(500).json({ error: 'Update failed' });
-      res.json({ message: 'User updated' });
+  const userId = req.params.id;
+
+  try {
+    const [result] = await db.query(
+      'UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?',
+      [name, email, role, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  );
+
+    res.status(200).json({ message: 'User updated successfully' });
+  } catch (err) {
+    console.error('Update failed:', err);
+    res.status(500).json({ error: 'Update failed' });
+  }
 });
 
 // Delete a user
-router.delete('/:id', (req, res) => {
-  db.query('DELETE FROM users WHERE id = ?', [req.params.id], (err) => {
-    if (err) return res.status(500).json({ error: 'Delete failed' });
+// Delete a user
+router.delete('/:id', async (req, res) => {
+  try {
+    const [result] = await db.query('DELETE FROM users WHERE id = ?', [req.params.id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     res.json({ message: 'User deleted' });
-  });
+  } catch (err) {
+    console.error('Delete failed:', err);
+    res.status(500).json({ error: 'Delete failed' });
+  }
 });
+
 
 module.exports = router;

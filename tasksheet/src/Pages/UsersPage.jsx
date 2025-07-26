@@ -11,14 +11,16 @@ const initialForm = {
   name: '',
   email: '',
   password: '',
-  role: 'User'
+  role: 'admin'
 };
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
-  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingUserId, setEditingUserId] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -37,27 +39,28 @@ const UsersPage = () => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleAddUser = async () => {
-    try {
-      await axios.post('http://localhost:3001/api/users', {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        role: form.role,
-      });
-
-      setOpenAddDialog(false);   // ✅ Close the modal
-      fetchUsers();              // ✅ Refresh list after adding
-      setForm(initialForm);      // ✅ Reset the form
-      setError('');              // ✅ Clear any error
-    } catch (err) {
-      console.error('Add user error:', err);
-      setError('Something went wrong while adding the user.'); // ✅ Show error if needed
-    }
+  const handleAddUserClick = () => {
+    setForm(initialForm);
+    setError('');
+    setIsEditing(false);
+    setEditingUserId(null);
+    setOpenDialog(true);
   };
 
   const handleEdit = (userId) => {
-    alert(`Edit user ${userId}`);
+    const user = users.find(u => u.user_id === userId);
+    if (user) {
+      setForm({
+        name: user.name,
+        email: user.email,
+        password: '', // Do not prefill password on edit
+        role: user.role
+      });
+      setIsEditing(true);
+      setEditingUserId(userId);
+      setError('');
+      setOpenDialog(true);
+    }
   };
 
   const handleDelete = async (userId) => {
@@ -69,11 +72,40 @@ const UsersPage = () => {
     }
   };
 
+  const handleSaveUser = async () => {
+    try {
+      if (isEditing) {
+        await axios.put(`http://localhost:3001/api/users/${editingUserId}`, {
+          name: form.name,
+          email: form.email,
+          role: form.role,
+        });
+      } else {
+        await axios.post('http://localhost:3001/api/users', {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role: form.role,
+        });
+      }
+
+      setOpenDialog(false);
+      fetchUsers();
+      setForm(initialForm);
+      setError('');
+      setIsEditing(false);
+      setEditingUserId(null);
+    } catch (err) {
+      console.error('Save user error:', err);
+      setError('Something went wrong while saving the user.');
+    }
+  };
+
   return (
     <Container>
       <Box display="flex" justifyContent="space-between" mt={4} mb={2}>
         <Typography variant="h5">👥 Manage Users</Typography>
-        <Button variant="contained" color="primary" onClick={() => setOpenAddDialog(true)}>
+        <Button variant="contained" color="primary" onClick={handleAddUserClick}>
           ➕ Add User
         </Button>
       </Box>
@@ -104,9 +136,9 @@ const UsersPage = () => {
         </Table>
       </Paper>
 
-      {/* Add User Dialog */}
-      <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)}>
-        <DialogTitle>Add New User</DialogTitle>
+      {/* Shared Add/Edit User Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>{isEditing ? 'Edit User' : 'Add New User'}</DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"
@@ -125,15 +157,17 @@ const UsersPage = () => {
             value={form.email}
             onChange={handleChange}
           />
-          <TextField
-            margin="dense"
-            name="password"
-            label="Password"
-            type="password"
-            fullWidth
-            value={form.password}
-            onChange={handleChange}
-          />
+          {!isEditing && (
+            <TextField
+              margin="dense"
+              name="password"
+              label="Password"
+              type="password"
+              fullWidth
+              value={form.password}
+              onChange={handleChange}
+            />
+          )}
           <TextField
             margin="dense"
             name="role"
@@ -143,8 +177,8 @@ const UsersPage = () => {
             value={form.role}
             onChange={handleChange}
           >
-            <MenuItem value="Admin">Admin</MenuItem>
-            <MenuItem value="User">User</MenuItem>
+            <MenuItem value="admin">Admin</MenuItem>
+            <MenuItem value="employee">Employee</MenuItem>
           </TextField>
           {error && (
             <Typography color="error" variant="body2" mt={1}>
@@ -153,8 +187,10 @@ const UsersPage = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
-          <Button onClick={handleAddUser} variant="contained">Add</Button>
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button onClick={handleSaveUser} variant="contained">
+            {isEditing ? 'Save Changes' : 'Add'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>
