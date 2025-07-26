@@ -66,7 +66,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete a user
+
 // Delete a user
 router.delete('/:id', async (req, res) => {
   try {

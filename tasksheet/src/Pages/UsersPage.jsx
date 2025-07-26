@@ -64,13 +64,18 @@ const UsersPage = () => {
   };
 
   const handleDelete = async (userId) => {
+  if (window.confirm('Are you sure you want to delete this user?')) {
+    
     try {
       await axios.delete(`http://localhost:3001/api/users/${userId}`);
-      fetchUsers();
+      fetchUsers(); // Refresh the table
     } catch (err) {
       console.error('Error deleting user:', err);
+      alert('Something went wrong while deleting the user.');
     }
-  };
+  }
+};
+
 
   const handleSaveUser = async () => {
     try {
