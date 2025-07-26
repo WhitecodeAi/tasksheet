@@ -1,30 +1,47 @@
 // routes/users.js
 const express = require('express');
-const bcrypt = require('bcrypt');
-const db = require('../db');
 const router = express.Router();
+const db = require('../db');  // ✅ pool already uses promises
+const bcrypt = require('bcrypt');
+
 
 // Get all users
-router.get('/', (req, res) => {
-  db.query('SELECT id, name, email, role FROM users', (err, results) => {
-    if (err) return res.status(500).json({ error: 'Failed to fetch users' });
-    res.json(results);
-  });
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT id AS user_id, name, email, role FROM users');
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
+
 
 // Add a new user
 router.post('/', async (req, res) => {
   const { name, email, password, role } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
 
-  db.query(
-    'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-    [name, email, hashedPassword, role],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: 'User creation failed' });
-      res.json({ message: 'User created', userId: result.insertId });
+  try {
+    // Check if email already exists
+    const [existing] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.status(400).json({ error: 'User already exists' });
     }
-  );
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert new user
+    await db.query(
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      [name, email, hashedPassword, role]
+    );
+
+    res.status(201).json({ message: 'User added successfully' });
+  } catch (err) {
+    console.error('Error adding user:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Update a user

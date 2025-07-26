@@ -18,6 +18,7 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [form, setForm] = useState(initialForm);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchUsers();
@@ -38,12 +39,20 @@ const UsersPage = () => {
 
   const handleAddUser = async () => {
     try {
-      await axios.post('http://localhost:3001/api/users', form);
-      setOpenAddDialog(false);
-      setForm(initialForm);
-      fetchUsers();
+      await axios.post('http://localhost:3001/api/users', {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+      });
+
+      setOpenAddDialog(false);   // ✅ Close the modal
+      fetchUsers();              // ✅ Refresh list after adding
+      setForm(initialForm);      // ✅ Reset the form
+      setError('');              // ✅ Clear any error
     } catch (err) {
-      console.error('Error adding user:', err);
+      console.error('Add user error:', err);
+      setError('Something went wrong while adding the user.'); // ✅ Show error if needed
     }
   };
 
@@ -137,6 +146,11 @@ const UsersPage = () => {
             <MenuItem value="Admin">Admin</MenuItem>
             <MenuItem value="User">User</MenuItem>
           </TextField>
+          {error && (
+            <Typography color="error" variant="body2" mt={1}>
+              {error}
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
