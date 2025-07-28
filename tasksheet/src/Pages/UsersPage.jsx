@@ -258,6 +258,7 @@ const UsersPage = () => {
           >
             <MenuItem value="admin">Admin</MenuItem>
             <MenuItem value="employee">Employee</MenuItem>
+              <MenuItem value="manager">Manager</MenuItem>
           </TextField>
           {error && (
             <Typography color="error" variant="body2" mt={1}>
