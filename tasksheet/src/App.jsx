@@ -14,13 +14,19 @@ const AppContent = ({ handleLogin, handleLogout }) => {
   const isLoggedIn = !!localStorage.getItem('token'); // ✅ define this
   const hideHeaderOnPaths = ['/login'];
   const shouldShowHeader = !hideHeaderOnPaths.includes(location.pathname) && isLoggedIn;
+const isTasksheetRoute = location.pathname === '/tasksheet-entry';
+
 
   return (
     <>
       <CssBaseline />
      
       {shouldShowHeader && <Header onLogout={handleLogout} />}
-      {shouldShowHeader && <Breadcrumbs />}
+      
+      {shouldShowHeader && (
+  <Breadcrumbs isTasksheetRoute={isTasksheetRoute} />
+)}
+      
       
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
