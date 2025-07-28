@@ -38,52 +38,66 @@ const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
     if (!form.projectName) newErrors.projectName = 'Project name is required';
     if (!form.category) newErrors.category = 'Task category is required';
     if (!form.task?.trim()) newErrors.task = 'Task name is required';
-    if (!form.hours || parseFloat(form.hours) <= 0) newErrors.hours = 'Hours must be greater than 0';
+   // if (!form.hours || parseFloat(form.hours) <= 0) newErrors.hours = 'Hours must be greater than 0';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const payload = {
-      entry_date: form.date,
-      user_id: user.id,
-      project_id: form.projectName,
-      task_category_id: form.category,
-      task_name: form.task,
-      hours: parseInt(form.hours || 0),
-      minutes: parseInt(form.minutes || 0),
-      comments: form.comments
-    };
+  // Check for zero effort before anything else
+  const totalEffort = (parseInt(form.hours) || 0) * 60 + (parseInt(form.minutes) || 0);
 
-    try {
-      const response = await fetch('http://localhost:3001/api/tasksheetEntries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+if (totalEffort === 0) {
+  alert('Please enter time (hours or minutes)');
+  return;
+}
 
-      if (!response.ok) throw new Error('Failed to submit tasksheet');
-      const data = await response.json();
-      console.log('✅ Submitted successfully:', data);
-      alert('Tasksheet submitted successfully!');
-      if (onSuccess) onSuccess();
 
-      setForm((prev) => ({
-        ...prev,
-        task: '',
-        hours: '',
-        minutes: '',
-        comments: '',
-        totalEffort: '0.00'
-      }));
-    } catch (error) {
-      console.error('❌ Submission error:', error);
-      alert('There was an error submitting the tasksheet.');
-    }
+  if (!validateForm()) return;
+
+  const payload = {
+    entry_date: form.date,
+    user_id: user.id,
+    project_id: form.projectName,
+    task_category_id: form.category,
+    task_name: form.task,
+    hours: parseInt(form.hours || 0),
+    minutes: parseInt(form.minutes || 0),
+    comments: form.comments
   };
+
+  try {
+    const response = await fetch('http://localhost:3001/api/tasksheetEntries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error('Failed to submit tasksheet');
+    const data = await response.json();
+    console.log('✅ Submitted successfully:', data);
+    alert('Tasksheet submitted successfully!');
+    if (onSuccess) onSuccess();
+
+     // 🔄 Reset the entire form cleanly
+    setForm({
+      date: '',
+      projectName: '',
+      category: '',
+      task: '',
+      hours: '',
+      minutes: '',
+      comments: '',
+      totalEffort: '0.00'
+    });
+     
+  } catch (error) {
+    console.error('❌ Submission error:', error);
+    alert('There was an error submitting the tasksheet.');
+  }
+};
 
   return (
     <Container style={{ width: '90%' }}>
@@ -170,9 +184,7 @@ const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
                   fullWidth
                   value={form.hours}
                   onChange={handleChange}
-                  required
-                  error={!!errors.hours}
-                  helperText={errors.hours}
+                    
                 />
               </Grid>
 

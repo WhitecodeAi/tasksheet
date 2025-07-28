@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Grid, Button, Container } from '@mui/material';
-import { useNavigate, Navigate } from 'react-router-dom';
-
+import { Box, Typography, Paper, Grid, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import AdminDashboard from './Dashboard/AdminDashboard';
-import ManagerDashboard from './Dashboard/ManagerDashboard';
-import EmployeeDashboard from './Dashboard/EmployeeDashboard';
 
 export const LogoutButton = () => {
   const navigate = useNavigate();
@@ -86,34 +83,13 @@ const DashboardPage = () => {
       });
   }, [userId]);
 
-
-  
-  let roleBasedDashboard = null;
-
-switch (user.role) {
-  case 'admin':
-    roleBasedDashboard = <AdminDashboard />;
-    break;
-  case 'manager':
-    roleBasedDashboard = <ManagerDashboard />;
-    break;
-  case 'employee':
-    roleBasedDashboard = <EmployeeDashboard />;
-    break;
-  default:
-    roleBasedDashboard = <div>No dashboard available for this role.</div>;
-}
-
-
-  return (<Container>  
-    
-    <Box  >
+  return (
+    <Box p={4}>
       <Typography variant="h4" gutterBottom>
-        Welcome, {user.name || 'User'}! <span style={{fontSize:'23px'}}>({user.role})</span>
+        Welcome, {user.name || 'User'}!{user.role}
       </Typography>
-      <br/>
-{roleBasedDashboard}
-    <br/>
+
+    
       <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
         Time Summary (Last 5 Days)
       </Typography>
@@ -143,11 +119,7 @@ switch (user.role) {
         </Button>
       </Box>
 
-   
-  
-
     </Box>
-    </Container>
   );
 };
 

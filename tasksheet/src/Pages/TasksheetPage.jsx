@@ -30,9 +30,9 @@ const TasksheetPage = () => {
 
   return (
     <>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} sx={{p:0}}>
  
-           <Grid size={{ md: 4,}}>
+           <Grid size={{ md: 4,}} sx={{p:0, m:0}}>
           <TasksheetEntryForm
             projects={projects}
             user={loggedInUser}

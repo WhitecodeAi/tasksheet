@@ -22,6 +22,12 @@ const handleLogin = async () => {
     );
 
     localStorage.setItem('token', response.data.token);
+    
+
+
+
+
+    
     onLogin(response.data.user);
     navigate('/dashboard');
   } catch (err) {

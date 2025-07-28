@@ -1,5 +1,5 @@
 import React from 'react';
-import { Breadcrumbs as MUIBreadcrumbs, Link, Typography } from '@mui/material';
+import { Breadcrumbs as MUIBreadcrumbs, Link, Typography, Container } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Breadcrumbs = () => {
@@ -8,8 +8,8 @@ const Breadcrumbs = () => {
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
-  return (
-    <MUIBreadcrumbs aria-label="breadcrumb" sx={{ padding: 2 }}>
+  return (<Container>
+    <MUIBreadcrumbs aria-label="breadcrumb" sx={{ py: 3 }}>
       <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard')} sx={{ cursor: 'pointer' }}>
         Home
       </Link>
@@ -29,6 +29,7 @@ const Breadcrumbs = () => {
         );
       })}
     </MUIBreadcrumbs>
+    </Container>
   );
 };
 

@@ -190,7 +190,13 @@ const getFilteredEntries = () => {
                <TableCell>{getProjectName(entry.project_id)}</TableCell>
                 <TableCell>{getCategoryName(entry.task_category_id)}</TableCell>
               <TableCell>{entry.task_name}</TableCell>
-              <TableCell>{entry.hours}</TableCell>
+          <TableCell>
+  <Typography variant="body1">
+    {Math.floor(entry.hours)}:{entry.minutes.toString().padStart(2, '0')}
+  </Typography>
+</TableCell>
+
+
               <TableCell>{entry.minutes || 0}</TableCell>
             </TableRow>
           ))}

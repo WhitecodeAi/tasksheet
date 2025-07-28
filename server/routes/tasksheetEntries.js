@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
+
 // ✅ Check DB connection (async-safe for mysql2 promise pool)
 (async () => {
   try {
@@ -21,17 +22,22 @@ router.post('/', async (req, res) => {
       task_category_id,
       entry_date,
       hours,
+      minutes,
+      
       description,
       task_name
     } = req.body;
 
+     const h = Number(hours) || 0;
+const m = Number(minutes) || 0;
+const totalHours = h + m / 60;
     console.log('📥 Incoming payload:', req.body);
 
     const [result] = await pool.query(
       `INSERT INTO tasksheet_entries (
-        user_id, project_id, task_category_id, entry_date, hours, description, task_name
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [user_id, project_id, task_category_id, entry_date, hours, description, task_name]
+        user_id, project_id, task_category_id, entry_date, hours, minutes, total_hours,description, task_name
+      ) VALUES (?, ?, ?, ?, ?, ?, ? , ? , ? )`,
+      [user_id, project_id, task_category_id, entry_date, hours, minutes, totalHours, description, task_name]
     );
 
     console.log('🧾 Insert result:', result);
