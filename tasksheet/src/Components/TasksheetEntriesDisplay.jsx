@@ -179,8 +179,9 @@ const getFilteredEntries = () => {
             <TableCell>Project Name</TableCell>
             <TableCell>Task Category</TableCell>
             <TableCell>Task Name</TableCell>
-            <TableCell>Hours</TableCell>
-            <TableCell>Minutes</TableCell>
+            <TableCell>Total Efforts</TableCell>
+            <TableCell>Comments</TableCell>
+             
           </TableRow>
         </TableHead>
         <TableBody>
@@ -195,9 +196,9 @@ const getFilteredEntries = () => {
     {Math.floor(entry.hours)}:{entry.minutes.toString().padStart(2, '0')}
   </Typography>
 </TableCell>
+   <TableCell>{entry.description}</TableCell>
 
-
-              <TableCell>{entry.minutes || 0}</TableCell>
+          
             </TableRow>
           ))}
         </TableBody>
