@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');  // ✅ pool already uses promises
 const bcrypt = require('bcrypt');
-
+const sendEmailToUser = require('../utils/sendEmail'); // ✅ corrected path
 
 // Get all users
 router.get('/', async (req, res) => {
@@ -37,7 +37,19 @@ router.post('/', async (req, res) => {
       [name, email, hashedPassword, role]
     );
 
-    res.status(201).json({ message: 'User added successfully' });
+    // ✅ Send email to the new user
+    try {
+     await sendEmailToUser({
+  name,
+  email,
+  password
+});
+      console.log(`✅ Email sent to ${email}`);
+    } catch (emailErr) {
+      console.error('❌ Failed to send email:', emailErr);
+    }
+
+    res.status(201).json({ message: 'User added and email sent successfully' });
   } catch (err) {
     console.error('Error adding user:', err);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -66,7 +78,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-
 // Delete a user
 router.delete('/:id', async (req, res) => {
   try {
@@ -82,6 +93,5 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Delete failed' });
   }
 });
-
 
 module.exports = router;
