@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Paper,
-  Grid,
-  TextField,
-  MenuItem,
-  Button,
-  Typography, Container
+  Box, Paper, Grid, TextField, Button,
+  Typography, Container, Autocomplete
 } from '@mui/material';
 import dayjs from 'dayjs';
 
-const TasksheetEntryForm = ({ user, projects, taskCategories }) => {
+const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
   const [form, setForm] = useState({
     date: dayjs().format('YYYY-MM-DD'),
     projectName: '',
@@ -23,9 +18,8 @@ const TasksheetEntryForm = ({ user, projects, taskCategories }) => {
     comments: '',
   });
 
- 
+  const [errors, setErrors] = useState({});
 
-  // 🧮 Calculate total effort automatically
   useEffect(() => {
     const h = parseFloat(form.hours || 0);
     const m = parseFloat(form.minutes || 0);
@@ -35,176 +29,196 @@ const TasksheetEntryForm = ({ user, projects, taskCategories }) => {
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  const payload = {
-    entry_date: form.date,
-    user_id: user.id, // Make sure 'user' object has 'id'
-    project_id: form.projectName,
-    task_category_id: form.category,
-    task: form.task,
-    hours: parseInt(form.hours || 0),
-    minutes: parseInt(form.minutes || 0),
-    comments: form.comments
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.date) newErrors.date = 'Date is required';
+    if (!form.projectName) newErrors.projectName = 'Project name is required';
+    if (!form.category) newErrors.category = 'Task category is required';
+    if (!form.task?.trim()) newErrors.task = 'Task name is required';
+    if (!form.hours || parseFloat(form.hours) <= 0) newErrors.hours = 'Hours must be greater than 0';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  try {
-    const response = await fetch('http://localhost:3001/api/tasksheetEntries', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    if (!response.ok) {
-      throw new Error('Failed to submit tasksheet');
+    const payload = {
+      entry_date: form.date,
+      user_id: user.id,
+      project_id: form.projectName,
+      task_category_id: form.category,
+      task_name: form.task,
+      hours: parseInt(form.hours || 0),
+      minutes: parseInt(form.minutes || 0),
+      comments: form.comments
+    };
+
+    try {
+      const response = await fetch('http://localhost:3001/api/tasksheetEntries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error('Failed to submit tasksheet');
+      const data = await response.json();
+      console.log('✅ Submitted successfully:', data);
+      alert('Tasksheet submitted successfully!');
+      if (onSuccess) onSuccess();
+
+      setForm((prev) => ({
+        ...prev,
+        task: '',
+        hours: '',
+        minutes: '',
+        comments: '',
+        totalEffort: '0.00'
+      }));
+    } catch (error) {
+      console.error('❌ Submission error:', error);
+      alert('There was an error submitting the tasksheet.');
     }
+  };
 
-    const data = await response.json();
-    console.log('✅ Submitted successfully:', data);
+  return (
+    <Container style={{ width: '90%' }}>
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Paper elevation={3} sx={{ p: 4, width: 700 }}>
+          <Typography variant="h6" gutterBottom>Enter Today's Timesheet</Typography>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2}>
+              <Grid size={6}>
+                <TextField
+                  label="Date"
+                  type="date"
+                  name="date"
+                  fullWidth
+                  value={form.date}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  error={!!errors.date}
+                  helperText={errors.date}
+                />
+              </Grid>
 
-    alert('Tasksheet submitted successfully!');
-    // Optionally reset the form
-    setForm((prev) => ({
-      ...prev,
-      task: '',
-      hours: '',
-      minutes: '',
-      comments: '',
-      totalEffort: '0.00'
-    }));
+            
 
-  } catch (error) {
-    console.error('❌ Submission error:', error);
-    alert('There was an error submitting the tasksheet.');
-  }
-};
+              <Grid item size={12}>
+                <Autocomplete
+                  options={projects}
+                  getOptionLabel={(option) => option.name}
+                  value={projects.find(p => p.id === form.projectName) || null}
+                  onChange={(e, value) => {
+                    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Project Name"
+                      required
+                      error={!!errors.projectName}
+                      helperText={errors.projectName}
+                    />
+                  )}
+                />
+              </Grid>
 
+                <Grid item size={12}>
+                <Autocomplete
+                  options={taskCategories}
+                  getOptionLabel={(option) => option.name}
+                  value={taskCategories.find(tc => tc.id === form.category) || null}
+                  onChange={(e, value) => {
+                    setForm(prev => ({ ...prev, category: value?.id || '' }));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Task Category"
+                      required
+                      error={!!errors.category}
+                      helperText={errors.category}
+                    />
+                  )}
+                />
+              </Grid>
+   <Grid item size={12}>
+                <TextField
+                  label="Task"
+                  name="task"
+                  fullWidth
+                  value={form.task}
+                  onChange={handleChange}
+                  required
+                  error={!!errors.task}
+                  helperText={errors.task}
+                  multiline // turns it into a textarea
+                  rows={4}  // adjust height (optional)
+                />
+              </Grid>
+                <Grid item size={4}>
+                <TextField
+                  label="Hrs"
+                  name="hours"
+                  type="number"
+                  fullWidth
+                  value={form.hours}
+                  onChange={handleChange}
+                  required
+                  error={!!errors.hours}
+                  helperText={errors.hours}
+                />
+              </Grid>
 
-  return (<>
-<Container style={{width:'90%'}}>
-    <Box display="flex" justifyContent="center" mt={4}>
-      <Paper elevation={3} sx={{ p: 4, width: 700 }}>
-        <Typography variant="h6" gutterBottom>
-          Enter Today's Timesheet
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid size={3} >
-              <TextField
-                label="Date"
-                type="date"
-                fullWidth
-                name="date"
-                value={form.date}
-                onChange={handleChange}
-                InputLabelProps={{ shrink: true }}
-              />
+                <Grid item size={4}>
+                <TextField
+                  label="Min"
+                  name="minutes"
+                  type="number"
+                  fullWidth
+                  value={form.minutes}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+                <Grid item size={4}>
+                <TextField
+                  label="Total Efforts"
+                  name="totalEffort"
+                  fullWidth
+                  value={form.totalEffort}
+                  InputProps={{ readOnly: true }}
+                />
+              </Grid>
+
+               <Grid item size={12}>
+                <TextField
+                  label="Comments"
+                  name="comments"
+                  fullWidth
+                  multiline
+                  rows={1}
+                  value={form.comments}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button type="submit" variant="contained" fullWidth>
+                  Submit Tasksheet
+                </Button>
+              </Grid>
             </Grid>
-          
-            <Grid size={4} >
-              <TextField
-                select
-                label="Project Name"
-                fullWidth
-                name="projectName"
-                value={form.projectName}
-                onChange={handleChange}
-              >
-   {projects?.map((project) => (
-  <MenuItem key={project.id} value={project.id}>
-    {project.name}
-  </MenuItem>
-))}
-              </TextField>
-            </Grid>
-
-            <Grid size={4} >
-              <TextField
-                select
-                label="Task Category"
-                fullWidth
-                name="category"
-                value={form.category}
-                onChange={handleChange}
-              >
-               {taskCategories?.map((taskCategories) => (
-  <MenuItem key={taskCategories.id} value={taskCategories.id}>
-    {taskCategories.name}
-  </MenuItem>
-))}
-              </TextField>
-            </Grid>
-
-            <Grid size={12}>
-              <TextField
-                label="Task"
-                fullWidth
-                name="task"
-                value={form.task}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid size={2}>
-              <TextField
-                label="Hrs"
-                fullWidth
-                name="hours"
-                type="number"
-                value={form.hours}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid size={2}>
-              <TextField
-                label="Min"
-                fullWidth
-                name="minutes"
-                type="number"
-                value={form.minutes}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid size={2}>
-              <TextField
-                label="Total Efforts"
-                fullWidth
-                name="totalEffort"
-                value={form.totalEffort}
-                InputProps={{ readOnly: true }}
-              />
-            </Grid>
-
-         
-
-            <Grid size={12}>
-              <TextField
-                label="Comments"
-                fullWidth
-                multiline
-                rows={3}
-                name="comments"
-                value={form.comments}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Button type="submit" variant="contained" fullWidth>
-                Submit Tasksheet 
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
-    </Box>
-  </Container>  
-    </>
+          </form>
+        </Paper>
+      </Box>
+    </Container>
   );
 };
 

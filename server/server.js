@@ -3,10 +3,6 @@ const cors = require("cors");
 const app = express();
 require('dotenv').config();
 
-
-
-
-
 app.use(cors());
 app.use(express.json());
 
@@ -24,10 +20,11 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/task-categories', taskCategoriesRoutes);
+app.use('/api/taskCategories', taskCategoriesRoutes);
 app.use('/api', authRoutes);
 app.use('/api/tasksheetEntries', tasksheetEntriesRoutes);
 app.use('/api/users', userRoutes);
+ 
 
 
 // API to get all projects
