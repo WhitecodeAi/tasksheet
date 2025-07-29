@@ -3,7 +3,7 @@ import {
   Container, Typography, Button, Table, TableHead,
   TableRow, TableCell, TableBody, Paper, Box,
   Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, MenuItem, TablePagination, TableSortLabel
+  TextField, MenuItem, TablePagination, TableSortLabel, CircularProgress
 } from '@mui/material';
 import axios from 'axios';
 
@@ -27,6 +27,8 @@ const UsersPage = () => {
   const [order, setOrder] = useState(null);
   const [orderBy, setOrderBy] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -80,6 +82,7 @@ const UsersPage = () => {
     }
   };
   const handleSaveUser = async () => {
+    setIsLoading(true);
     try {
       if (isEditing) {
         await axios.put(`http://localhost:3001/api/users/${editingUserId}`, {
@@ -106,6 +109,9 @@ const UsersPage = () => {
       console.error('Save user error:', err);
       setError('Something went wrong while saving the user.');
     }
+    finally {
+    setIsLoading(false);
+  }
   };
 
   const handleChangePage = (_, newPage) => setPage(newPage);
@@ -268,9 +274,21 @@ const UsersPage = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button onClick={handleSaveUser} variant="contained">
-            {isEditing ? 'Save Changes' : 'Add'}
-          </Button>
+       
+           <Button onClick={handleSaveUser} variant="contained" disabled={isLoading}>
+    {isLoading
+      ? isEditing
+        ? 'Saving Changes...'
+        : 'Adding User...'
+      : isEditing
+        ? 'Save Changes'
+        : 'Add'}
+  </Button> 
+  {isLoading && (
+  <Box sx={{ textAlign: 'center', mt: 2 }}>
+    <CircularProgress size={24} />
+  </Box>
+)}
         </DialogActions>
       </Dialog>
     </Container>
