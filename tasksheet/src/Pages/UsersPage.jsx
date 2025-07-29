@@ -5,6 +5,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, MenuItem, TablePagination, TableSortLabel, CircularProgress
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
 
 const initialForm = {
@@ -156,7 +157,7 @@ const UsersPage = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <Button variant="contained" color="primary" onClick={handleAddUserClick}>
-            ➕ Add User
+            <AddIcon/> Add User
           </Button>
         </Box>
       </Box>
