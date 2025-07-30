@@ -4,6 +4,7 @@ import {
   Typography, Container, Autocomplete
 } from '@mui/material';
 import dayjs from 'dayjs';
+import { api } from '../utils/api';
 
 const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
   const [form, setForm] = useState({
@@ -46,14 +47,11 @@ const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
-  // Check for zero effort before anything else
   const totalEffort = (parseInt(form.hours) || 0) * 60 + (parseInt(form.minutes) || 0);
-
-if (totalEffort === 0) {
-  alert('Please enter time (hours or minutes)');
-  return;
-}
-
+  if (totalEffort === 0) {
+    alert('Please enter time (hours or minutes)');
+    return;
+  }
 
   if (!validateForm()) return;
 
@@ -69,19 +67,12 @@ if (totalEffort === 0) {
   };
 
   try {
-    const response = await fetch('http://localhost:3001/api/tasksheetEntries', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    const response = await api.post('/api/tasksheetEntries', payload);
 
-    if (!response.ok) throw new Error('Failed to submit tasksheet');
-    const data = await response.json();
-    console.log('✅ Submitted successfully:', data);
+ 
     alert('Tasksheet submitted successfully!');
     if (onSuccess) onSuccess();
 
-     // 🔄 Reset the entire form cleanly
     setForm({
       date: '',
       projectName: '',
@@ -92,10 +83,13 @@ if (totalEffort === 0) {
       comments: '',
       totalEffort: '0.00'
     });
-     
+
   } catch (error) {
     console.error('❌ Submission error:', error);
-    alert('There was an error submitting the tasksheet.');
+
+    // Optional: show server error message if available
+    const message = error.response?.data?.message || 'There was an error submitting the tasksheet.';
+    alert(message);
   }
 };
 
@@ -124,23 +118,31 @@ if (totalEffort === 0) {
             
 
               <Grid item size={12}>
-                <Autocomplete
-                  options={projects}
-                  getOptionLabel={(option) => option.name}
-                  value={projects.find(p => p.id === form.projectName) || null}
-                  onChange={(e, value) => {
-                    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Project Name"
-                      required
-                      error={!!errors.projectName}
-                      helperText={errors.projectName}
-                    />
-                  )}
-                />
+              <Autocomplete
+  options={projects}
+  getOptionLabel={(option) => option.name}
+  isOptionEqualToValue={(option, value) => option.id === value.id} // ensures matching works
+  getOptionDisabled={(option) => !option.id} // optional
+  renderOption={(props, option) => (
+    <li {...props} key={option.id}>
+      {option.name}
+    </li>
+  )}
+  value={projects.find(p => p.id === form.projectName) || null}
+  onChange={(e, value) => {
+    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
+  }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Project Name"
+      required
+      error={!!errors.projectName}
+      helperText={errors.projectName}
+    />
+  )}
+/>
+
               </Grid>
 
                 <Grid item size={12}>

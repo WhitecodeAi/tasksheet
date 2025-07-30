@@ -3,7 +3,7 @@ import axios from 'axios';
 import TasksheetEntryForm from '../Components/TasksheetEntryForm';
 import TasksheetEntriesDisplay from '../Components/TasksheetEntriesDisplay';
 import { Grid, Container } from '@mui/material';
-
+import { api } from '../utils/api';
 const TasksheetPage = () => {
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
@@ -11,13 +11,13 @@ const TasksheetPage = () => {
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/projects')
+    api.get('/api/projects')
       .then((res) => setProjects(res.data))
       .catch((err) => console.error('Error fetching projects:', err));
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/taskCategories')
+    api.get('/api/taskCategories')
       .then((res) => setTaskCategories(res.data))
       .catch((err) => console.error('Failed to fetch task categories', err));
   }, []);

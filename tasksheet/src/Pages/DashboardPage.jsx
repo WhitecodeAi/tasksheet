@@ -4,6 +4,8 @@ import { useNavigate, Navigate } from 'react-router-dom';
 
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { api } from '../utils/api';
+
 import AdminDashboard from './Dashboard/AdminDashboard';
 import ManagerDashboard from './Dashboard/ManagerDashboard';
 import EmployeeDashboard from './Dashboard/EmployeeDashboard';
@@ -63,8 +65,8 @@ const DashboardPage = () => {
       datesArray.push(endDate.subtract(i, 'day').format('YYYY-MM-DD'));
     }
 
-    axios
-      .get(`http://localhost:3001/api/tasksheetEntries/user/${userId}`)
+    api
+      .get(`/api/tasksheetEntries/user/${userId}`)
       .then((res) => {
         const entries = res.data;
         const summaryData = datesArray.map((date) => {

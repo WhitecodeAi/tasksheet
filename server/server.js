@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const PORT = process.env.PORT || 3001;
+
 require('dotenv').config();
 
 app.use(cors());
@@ -73,6 +75,6 @@ app.put("/api/projects/:id", (req, res) => {
 });
 
 // Start the server
-app.listen(3001, () => {
-  console.log("✅ Backend running on http://localhost:3001");
+app.listen(PORT, () => {
+  console.log(`✅ Backend running on http://localhost:${PORT}`);
 });

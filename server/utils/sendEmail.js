@@ -27,7 +27,7 @@ console.log('Password:', process.env.EMAIL_PASS.length); // Just length, not the
           <li><strong>Email:</strong> ${email}</li>
           <li><strong>Password:</strong> ${password}</li>
         </ul>
-        <p><a href="http://localhost:3000/login" style="color: blue;">Click here to log in</a></p>
+        <p><a href="${process.env.FRONTEND_URL}/login" style="color: blue;">Click here to log in</a></p>
         <br/>
         <p style="font-size: 0.9em;">If you have any issues, reach out to the support team.</p>
       `

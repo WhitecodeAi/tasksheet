@@ -3,8 +3,7 @@ import { Box, Typography, Paper, Grid, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import AdminDashboard from './Dashboard/AdminDashboard';
-
+import { api } from '../utils/api';
 export const LogoutButton = () => {
   const navigate = useNavigate();
 
@@ -60,8 +59,8 @@ const DashboardPage = () => {
       datesArray.push(endDate.subtract(i, 'day').format('YYYY-MM-DD'));
     }
 
-    axios
-      .get(`http://localhost:3001/api/tasksheetEntries/user/${userId}`)
+    api
+      .get(`api/user/${userId}`)
       .then((res) => {
         const entries = res.data;
         const summaryData = datesArray.map((date) => {

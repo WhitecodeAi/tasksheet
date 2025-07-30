@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+
 import {
  Divider, CircularProgress,Container, Box, TextField, Button,
   Card, CardContent, Typography, Grid, IconButton
@@ -10,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TablePagination, TableSortLabel} from '@mui/material';
   import { Snackbar, Alert } from '@mui/material';
-
+import { api } from '../utils/api';
 
 
 const ProjectForm = ({ onSubmit, initialData, buttonText = "Add Project", onCancel }) => {
@@ -103,9 +104,9 @@ const sorted = filtered.sort((a, b) => {
 
 
 const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
+ 
   const fetchProjects = () => {
-    axios.get("http://localhost:3001/api/projects")
+    api.get('/api/projects')
       .then((res) => setProjects(res.data))
       .catch((err) => console.error("Error fetching projects:", err));
   };
@@ -115,13 +116,13 @@ const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerP
   }, []);
 
   const handleAddProject = (project) => {
-    axios.post("http://localhost:3001/api/projects", project)
+    api.post('/api/projects', project)
       .then(() => fetchProjects())
       .catch((err) => console.error("Error adding project:", err));
   };
 
   const handleUpdateProject = (project) => {
-    axios.put(`http://localhost:3001/api/projects/${project.id}`, project)
+    api.put(`/api/projects/${project.id}`, project)
       .then(() => {
         setEditingProject(null);
         fetchProjects();
@@ -133,8 +134,8 @@ const handleDeleteProject = (id) => {
   if (!window.confirm('Are you sure you want to delete this project?')) return;
 
   setDeletingId(id); // start loading state
-  axios
-    .delete(`http://localhost:3001/api/projects/${id}`)
+  api
+    .delete(`/api/projects/${id}`)
     .then(() => {
       fetchProjects();
       setSnackbarMessage('Project deleted successfully!');
@@ -157,7 +158,7 @@ const handleDeleteProject = (id) => {
       <ProjectForm  
         onSubmit={editingProject ? handleUpdateProject : handleAddProject}
         initialData={editingProject}
-        buttonText={editingProject ? "Update Project" : "Add Project"}
+        buttonText={editingProject ? "Update" : "Add Project"}
         onCancel={() => setEditingProject(null)}
       />
 <Divider style={{margin:'15px 0'}} />

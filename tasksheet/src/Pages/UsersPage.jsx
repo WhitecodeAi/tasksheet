@@ -7,6 +7,9 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
+import { api } from '../utils/api';
+
+
 
 const initialForm = {
   name: '',
@@ -37,7 +40,7 @@ const [fieldErrors, setFieldErrors] = useState({});
   }, []);
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/api/users');
+      const res = await api.get('/api/users');
       setUsers(res.data);
     } catch (err) {
       console.error('Failed to fetch users:', err);
@@ -96,7 +99,7 @@ const handleChange = (e) => {
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await axios.delete(`http://localhost:3001/api/users/${userId}`);
+        await api.delete(`/api/users/${userId}`);
         fetchUsers();
       } catch (err) {
         console.error('Error deleting user:', err);
@@ -129,13 +132,13 @@ const fieldError = {};
 
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:3001/api/users/${editingUserId}`, {
+        await api.put(`/api/users/${editingUserId}`, {
           name: form.name,
           email: form.email,
           role: form.role,
         });
       } else {
-        await axios.post('http://localhost:3001/api/users', {
+        await api.post('/api/users', {
           name: form.name,
           email: form.email,
           password: form.password,

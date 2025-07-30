@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
      const h = Number(hours) || 0;
 const m = Number(minutes) || 0;
 const totalHours = h + m / 60;
-    console.log('📥 Incoming payload:', req.body);
+    
 
     const [result] = await pool.query(
       `INSERT INTO tasksheet_entries (
@@ -40,7 +40,7 @@ const totalHours = h + m / 60;
       [user_id, project_id, task_category_id, entry_date, hours, minutes, totalHours, description, task_name]
     );
 
-    console.log('🧾 Insert result:', result);
+ 
 
     if (result.affectedRows > 0) {
       res.status(201).json({
@@ -51,7 +51,7 @@ const totalHours = h + m / 60;
       res.status(500).json({ error: '❌ Insert failed: No rows affected' });
     }
   } catch (error) {
-    console.error('🚨 Error inserting tasksheet entry:', error);
+ 
     res.status(500).json({
       error: 'Failed to add tasksheet entry',
       details: error.message
@@ -97,7 +97,7 @@ router.get('/user/:userId', async (req, res) => {
 
     res.json(mappedRows);
   } catch (error) {
-    console.error('🚨 Error fetching entries:', error);
+ 
     res.status(500).json({
       error: 'Failed to retrieve entries',
       details: error.message
