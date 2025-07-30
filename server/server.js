@@ -1,9 +1,13 @@
+ 
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+require('dotenv').config({ path: envFile });
+
 const express = require("express");
 const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-require('dotenv').config();
+ 
 
 app.use(cors());
 app.use(express.json());
@@ -78,3 +82,8 @@ app.put("/api/projects/:id", (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Backend running on http://localhost:${PORT}`);
 });
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Backend is live 🔥" });
+});
+console.log(`✅ Backend live at ${process.env.PORT} in ${process.env.NODE_ENV} mode`);
