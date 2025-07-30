@@ -88,3 +88,7 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "Backend is live 🔥" });
 });
 console.log(`✅ Backend live at ${process.env.PORT} in ${process.env.NODE_ENV} mode`);
+
+app.get('/api/ping', (req, res) => {
+  res.json({ message: 'pong' });
+});
