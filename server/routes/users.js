@@ -12,10 +12,9 @@ router.get('/', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Error fetching users:', err);
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ message: 'Database error while fetching users.' });
   }
 });
-
 
 // Add a new user
 router.post('/', async (req, res) => {
@@ -25,7 +24,7 @@ router.post('/', async (req, res) => {
     // Check if email already exists
     const [existing] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
     if (existing.length > 0) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ message: 'Email already in use. Please use a different one.' });
     }
 
     // Hash password
@@ -37,22 +36,18 @@ router.post('/', async (req, res) => {
       [name, email, hashedPassword, role]
     );
 
-    // ✅ Send email to the new user
+    // Send email to new user
     try {
-     await sendEmailToUser({
-  name,
-  email,
-  password
-});
+      await sendEmailToUser({ name, email, password });
       console.log(`✅ Email sent to ${email}`);
     } catch (emailErr) {
       console.error('❌ Failed to send email:', emailErr);
     }
 
-    res.status(201).json({ message: 'User added and email sent successfully' });
+    res.status(201).json({ message: 'User added and email sent successfully.' });
   } catch (err) {
     console.error('Error adding user:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal server error while adding user.' });
   }
 });
 
@@ -68,13 +63,13 @@ router.put('/:id', async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ message: 'User not found.' });
     }
 
-    res.status(200).json({ message: 'User updated successfully' });
+    res.status(200).json({ message: 'User updated successfully.' });
   } catch (err) {
     console.error('Update failed:', err);
-    res.status(500).json({ error: 'Update failed' });
+    res.status(500).json({ message: 'Error while updating user.' });
   }
 });
 
@@ -84,13 +79,13 @@ router.delete('/:id', async (req, res) => {
     const [result] = await db.query('DELETE FROM users WHERE id = ?', [req.params.id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ message: 'User not found. Cannot delete.' });
     }
 
-    res.json({ message: 'User deleted' });
+    res.json({ message: 'User deleted successfully.' });
   } catch (err) {
     console.error('Delete failed:', err);
-    res.status(500).json({ error: 'Delete failed' });
+    res.status(500).json({ message: 'Error while deleting user.' });
   }
 });
 

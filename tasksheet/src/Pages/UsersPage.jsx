@@ -28,6 +28,7 @@ const UsersPage = () => {
   const [order, setOrder] = useState(null);
   const [orderBy, setOrderBy] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+const [fieldErrors, setFieldErrors] = useState({});
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,9 +44,26 @@ const UsersPage = () => {
     }
   };
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  // Update form state
+  setForm((prev) => ({ ...prev, [name]: value }));
+
+  // Clear field-level error if the input is now valid
+  setFieldErrors((prevErrors) => {
+    const updatedErrors = { ...prevErrors };
+    if (value.trim()) {
+      delete updatedErrors[name];
+    }
+    return updatedErrors;
+  });
+
+  // Optionally clear top-level error if no field errors remain
+  setError((prevErr) => {
+    return Object.keys(fieldErrors).length <= 1 ? '' : prevErr;
+  });
+};
 
   const handleAddUserClick = () => {
     setForm(initialForm);
@@ -53,6 +71,10 @@ const UsersPage = () => {
     setIsEditing(false);
     setEditingUserId(null);
     setOpenDialog(true);
+    setFieldErrors({});
+    setIsLoading(false); // ✅ reset loading indicator
+ 
+
   };
 
   const handleEdit = (userId) => {
@@ -83,7 +105,28 @@ const UsersPage = () => {
     }
   };
   const handleSaveUser = async () => {
-    setIsLoading(true);
+   
+
+    
+const fieldError = {};
+
+  if (!form.name?.trim()) fieldError.name = 'Name is required.';
+  if (!form.email?.trim()) fieldError.email = 'Email is required.';
+  if (!form.role?.trim()) fieldError.role = 'Role is required.';
+  if (!isEditing && !form.password?.trim()) fieldError.password = 'Password is required.';
+
+  if (Object.keys(fieldError).length > 0) {
+    setFieldErrors(fieldError);
+    setError('Please fill out all mandatory fields.');
+    return;
+  }
+  setIsLoading(true);
+  setFieldErrors({}); // Clear previous errors
+
+
+
+
+
     try {
       if (isEditing) {
         await axios.put(`http://localhost:3001/api/users/${editingUserId}`, {
@@ -108,7 +151,11 @@ const UsersPage = () => {
       setEditingUserId(null);
     } catch (err) {
       console.error('Save user error:', err);
-      setError('Something went wrong while saving the user.');
+      // Use backend message if available
+  const message =
+    err.response?.data?.message || 'Something went wrong while saving the user.';
+
+      setError(message); // Show this in your dialog or snackbar
     }
     finally {
     setIsLoading(false);
@@ -231,8 +278,11 @@ const UsersPage = () => {
             name="name"
             label="Name"
             fullWidth
+            required
             value={form.name}
             onChange={handleChange}
+            error={Boolean(fieldErrors.name)}
+            helperText={fieldErrors.name}
           />
           <TextField
             margin="dense"
@@ -240,8 +290,11 @@ const UsersPage = () => {
             label="Email"
             type="email"
             fullWidth
+            required
             value={form.email}
             onChange={handleChange}
+            error={Boolean(fieldErrors.email)}
+            helperText={fieldErrors.email}
           />
           {!isEditing && (
             <TextField
@@ -250,8 +303,11 @@ const UsersPage = () => {
               label="Password"
               type="password"
               fullWidth
+              required
               value={form.password}
               onChange={handleChange}
+              error={Boolean(fieldErrors.password)}
+    helperText={fieldErrors.password}
             />
           )}
           <TextField
@@ -260,8 +316,11 @@ const UsersPage = () => {
             label="Role"
             select
             fullWidth
+            required
             value={form.role}
             onChange={handleChange}
+             error={Boolean(fieldErrors.role)}
+  helperText={fieldErrors.role}
           >
             <MenuItem value="admin">Admin</MenuItem>
             <MenuItem value="employee">Employee</MenuItem>
