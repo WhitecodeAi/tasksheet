@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import {  Grid, Paper } from '@mui/material';
 
  
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import { Box, Grid, Paper } from '@mui/material';
 
 const EmployeeDashboard = () => (
   <Box >

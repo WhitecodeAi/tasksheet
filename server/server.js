@@ -33,6 +33,7 @@ app.use('/api/users', userRoutes);
  
 
 
+
 // API to get all projects
 app.get("/api/projects", (req, res) => {
   db.query("SELECT * FROM projects")
