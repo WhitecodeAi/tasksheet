@@ -19,6 +19,17 @@ const userRoutes = require('./routes/users');
 const db = require('./db'); // using pool directly
 
 
+app.get("/health", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT 1");
+    res.status(200).json({ db: "Connected ✅", timestamp: new Date() });
+  } catch (err) {
+    console.error("DB connection error ❌", err);
+    res.status(500).json({ error: "DB connection failed", details: err.message });
+  }
+});
+
+
 // Middleware to attach DB to every request
 app.use((req, res, next) => {
   req.db = db;
