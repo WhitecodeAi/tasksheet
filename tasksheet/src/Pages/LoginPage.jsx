@@ -4,7 +4,7 @@ import LoginForm from '../Components/LoginForm';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 
-
+  console.log('Login Page');
 const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
