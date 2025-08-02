@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 require('dotenv').config();
 const db = require('../db');
-alert('ss');
 router.post('/login', async (req, res) => {
   console.log("Request body:", req.body); // For debugging
   
