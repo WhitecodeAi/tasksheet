@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "cross-env NODE_ENV=production node server/server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -13,7 +13,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.2",
-    "nodemailer": "^7.0.5"
+    "nodemailer": "^7.0.5",
+    "cross-env": "^10.0.0"
   },
   "devDependencies": {
     
