@@ -10,6 +10,7 @@ import Header from './Components/Header';
 import Breadcrumbs from './Components/Breadcrumbs';
 
 const AppContent = ({ handleLogin, handleLogout }) => {
+
   const location = useLocation(); // ✅ use inside Router context
   const isLoggedIn = !!localStorage.getItem('token'); // ✅ define this
   const hideHeaderOnPaths = ['/login'];
@@ -18,7 +19,7 @@ const isTasksheetRoute = location.pathname === '/tasksheet-entry';
 
 
   return (
-    <>
+    <><span></span>
       <CssBaseline />
      
       {shouldShowHeader && <Header onLogout={handleLogout} />}
