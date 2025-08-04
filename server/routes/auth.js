@@ -27,6 +27,12 @@ router.post('/login', async (req, res) => {
     const user = rows[0];
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
+
+    console.log("Email:", email);
+console.log("Password (incoming):", password);
+console.log("DB query result:", rows);
+
+
     if (!isPasswordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -40,6 +46,7 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Internal server error' });
+    console.error("Server-side error in /login:", err);
   }
 });
 
