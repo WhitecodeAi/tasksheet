@@ -17,7 +17,7 @@ const taskCategoriesRoutes = require('./routes/taskCategories');
 const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
 const userRoutes = require('./routes/users'); 
 const db = require('./db'); // using pool directly
-
+console.log("Loaded JWT_SECRET:", process.env.JWT_SECRET);
 
 app.get("/health", async (req, res) => {
   try {
@@ -28,6 +28,8 @@ app.get("/health", async (req, res) => {
     res.status(500).json({ error: "DB connection failed", details: err.message });
   }
 });
+
+console.log("Loaded JWT_SECRET:", process.env.JWT_SECRET);
 
 
 // Middleware to attach DB to every request
