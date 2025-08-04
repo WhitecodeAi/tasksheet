@@ -7,18 +7,9 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
- const corsOptions = {
-  origin: 'https://tasksheet-psi.vercel.app', // your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
-
  
 
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // handle preflight
+app.use(cors());
 app.use(express.json());
 
 const authRoutes = require('./routes/auth');
@@ -26,7 +17,7 @@ const taskCategoriesRoutes = require('./routes/taskCategories');
 const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
 const userRoutes = require('./routes/users'); 
 const db = require('./db'); // using pool directly
-console.log("Loaded JWT_SECRET:", process.env.JWT_SECRET);
+
 
 app.get("/health", async (req, res) => {
   try {
@@ -37,8 +28,6 @@ app.get("/health", async (req, res) => {
     res.status(500).json({ error: "DB connection failed", details: err.message });
   }
 });
-
-console.log("Loaded JWT_SECRET:", process.env.JWT_SECRET);
 
 
 // Middleware to attach DB to every request
