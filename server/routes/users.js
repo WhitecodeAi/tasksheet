@@ -1,27 +1,38 @@
-// routes/users.js
 const express = require('express');
 const router = express.Router();
 const db = require('../db');  // ✅ pool already uses promises
 const bcrypt = require('bcrypt');
 const sendEmailToUser = require('../utils/sendEmail'); // ✅ corrected path
 
+// ✨ Optional: Debug endpoint to check env vars
+router.get('/env-check', (req, res) => {
+  console.log("🔍 /env-check triggered");
+  res.json({
+    EMAIL_PASS: process.env.EMAIL_PASS || '❌ Not set',
+    EMAIL_USER: process.env.EMAIL_USER || '❌ Not set',
+  });
+});
+
 // Get all users
 router.get('/', async (req, res) => {
+  console.log("📥 GET /api/users triggered");
   try {
     const [rows] = await db.query('SELECT id AS user_id, name, email, role FROM users');
     res.json(rows);
   } catch (err) {
-    console.error('Error fetching users:', err);
+    console.error('❌ Error fetching users:', err);
     res.status(500).json({ message: 'Database error while fetching users.' });
   }
 });
 
 // Add a new user
 router.post('/', async (req, res) => {
+  console.log("📬 POST /api/users triggered");
   const { name, email, password, role } = req.body;
 
   try {
-    console.log("EMAIL_PASS env1:", process.env.EMAIL_PASS);
+    console.log("🔑 EMAIL_PASS env (pre-query):", process.env.EMAIL_PASS || '❌ Not set');
+
     // Check if email already exists
     const [existing] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
     if (existing.length > 0) {
@@ -39,7 +50,7 @@ router.post('/', async (req, res) => {
 
     // Send email to new user
     try {
-         console.log("EMAIL_PASS env2:", process.env.EMAIL_PASS);
+      console.log("📧 EMAIL_PASS env (pre-send):", process.env.EMAIL_PASS || '❌ Not set');
       await sendEmailToUser({ name, email, password });
       console.log(`✅ Email sent to ${email}`);
     } catch (emailErr) {
@@ -48,13 +59,14 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({ message: 'User added and email sent successfully.' });
   } catch (err) {
-    console.error('Error adding user:', err);
+    console.error('❌ Error adding user:', err);
     res.status(500).json({ message: 'Internal server error while adding user.' });
   }
 });
 
 // Update a user
 router.put('/:id', async (req, res) => {
+  console.log("✏️ PUT /api/users/:id triggered");
   const { name, email, role } = req.body;
   const userId = req.params.id;
 
@@ -70,13 +82,14 @@ router.put('/:id', async (req, res) => {
 
     res.status(200).json({ message: 'User updated successfully.' });
   } catch (err) {
-    console.error('Update failed:', err);
+    console.error('❌ Update failed:', err);
     res.status(500).json({ message: 'Error while updating user.' });
   }
 });
 
 // Delete a user
 router.delete('/:id', async (req, res) => {
+  console.log("🗑️ DELETE /api/users/:id triggered");
   try {
     const [result] = await db.query('DELETE FROM users WHERE id = ?', [req.params.id]);
 
@@ -86,7 +99,7 @@ router.delete('/:id', async (req, res) => {
 
     res.json({ message: 'User deleted successfully.' });
   } catch (err) {
-    console.error('Delete failed:', err);
+    console.error('❌ Delete failed:', err);
     res.status(500).json({ message: 'Error while deleting user.' });
   }
 });
