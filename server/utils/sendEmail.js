@@ -12,9 +12,7 @@ const sendEmailToUser = async ({ name, email, password }) => {
        logger: true,
         debug: true
     });
-console.log('Email:', process.env.EMAIL_USER);
-console.log('Password:', process.env.EMAIL_PASS.length); // Just length, not the actual password
-
+ 
     const mailOptions = {
       from: `"WhiteCode Admin" <${process.env.EMAIL_USER}>`,
       to: email,
