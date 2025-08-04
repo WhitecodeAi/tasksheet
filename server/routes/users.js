@@ -21,6 +21,7 @@ router.post('/', async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
+    console.log("EMAIL_PASS env1:", process.env.EMAIL_PASS);
     // Check if email already exists
     const [existing] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
     if (existing.length > 0) {
@@ -38,6 +39,7 @@ router.post('/', async (req, res) => {
 
     // Send email to new user
     try {
+         console.log("EMAIL_PASS env2:", process.env.EMAIL_PASS);
       await sendEmailToUser({ name, email, password });
       console.log(`✅ Email sent to ${email}`);
     } catch (emailErr) {
