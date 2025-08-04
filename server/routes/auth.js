@@ -9,6 +9,15 @@ router.post('/login', async (req, res) => {
   
   const { email, password } = req.body;
 
+  router.get('/debug-password', async (req, res) => {
+  const input = req.query.password;
+  const hash = 'copiedHashFromDB';
+  const match = await bcrypt.compare(input, hash);
+  res.json({ match });
+});
+
+
+
   try {
     const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
     if (rows.length === 0) {
