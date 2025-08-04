@@ -7,9 +7,18 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+ const corsOptions = {
+  origin: 'https://tasksheet-psi.vercel.app', // your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
  
 
-app.use(cors());
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // handle preflight
 app.use(express.json());
 
 const authRoutes = require('./routes/auth');
