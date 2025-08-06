@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm --prefix ./tasksheet start\" \"npm --prefix ./server start\""
+    "start": "concurrently \"npm --prefix ./tasksheet start\" \"npm --prefix ./server start\"",
+    "postinstall": "npm install --prefix ./tasksheet && npm install --prefix ./server"
+    
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
