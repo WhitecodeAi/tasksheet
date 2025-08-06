@@ -107,14 +107,16 @@ const handleChange = (e) => {
       }
     }
   };
-  const handleSaveUser = async () => {
-   
 
-    
-const fieldError = {};
+  const handleSaveUser = async () => {
+  const fieldError = {};
 
   if (!form.name?.trim()) fieldError.name = 'Name is required.';
-  if (!form.email?.trim()) fieldError.email = 'Email is required.';
+  if (!form.email?.trim()) {
+    fieldError.email = 'Email is required.';
+  } else if (!form.email.includes('@')) {
+    fieldError.email = 'Email must contain "@" symbol.';
+  }
   if (!form.role?.trim()) fieldError.role = 'Role is required.';
   if (!isEditing && !form.password?.trim()) fieldError.password = 'Password is required.';
 
@@ -126,45 +128,37 @@ const fieldError = {};
   setIsLoading(true);
   setFieldErrors({}); // Clear previous errors
 
-
-
-
-
-    try {
-      if (isEditing) {
-        await api.put(`/api/users/${editingUserId}`, {
-          name: form.name,
-          email: form.email,
-          role: form.role,
-        });
-      } else {
-        await api.post('/api/users', {
-          name: form.name,
-          email: form.email,
-          password: form.password,
-          role: form.role,
-        });
-      }
-
-      setOpenDialog(false);
-      fetchUsers();
-      setForm(initialForm);
-      setError('');
-      setIsEditing(false);
-      setEditingUserId(null);
-    } catch (err) {
-      console.error('Save user error:', err);
-      // Use backend message if available
-  const message =
-    err.response?.data?.message || 'Something went wrong while saving the user.';
-
-      setError(message); // Show this in your dialog or snackbar
+  try {
+    if (isEditing) {
+      await api.put(`/api/users/${editingUserId}`, {
+        name: form.name,
+        email: form.email,
+        role: form.role,
+      });
+    } else {
+      await api.post('/api/users', {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+      });
     }
-    finally {
+
+    setOpenDialog(false);
+    fetchUsers();
+    setForm(initialForm);
+    setError('');
+    setIsEditing(false);
+    setEditingUserId(null);
+  } catch (err) {
+    console.error('Save user error:', err);
+    const message =
+      err.response?.data?.message || 'Something went wrong while saving the user.';
+    setError(message);
+  } finally {
     setIsLoading(false);
   }
-  };
-
+};
   const handleChangePage = (_, newPage) => setPage(newPage);
 
   const handleChangeRowsPerPage = (e) => {
@@ -298,6 +292,7 @@ const fieldError = {};
             onChange={handleChange}
             error={Boolean(fieldErrors.email)}
             helperText={fieldErrors.email}
+             disabled={isEditing} 
           />
           {!isEditing && (
             <TextField
