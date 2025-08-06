@@ -1,0 +1,11 @@
+{
+  "name": "tasksheet-orchestrator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm --prefix ./tasksheet start\" \"npm --prefix ./server start\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
