@@ -24,7 +24,7 @@ TaskSheet/
 │   ├── server.js         # Entry point for backend
 │   └── .env.example      # Environment variable template
 │
-├── tasksheet/            # Frontend React app (client)
+├── client/            # Frontend React app (client)
 │   ├── src/Components
 │   ├── src/Pages
 │   ├── public/
@@ -39,7 +39,7 @@ TaskSheet/
 ### 1. Clone the repository
 
 git clone https://github.com/shrutijog-1507/tasksheet.git
-cd tasksheet
+cd client
 
 ### 2. Server setup
 cd server
@@ -49,7 +49,7 @@ npm install
 npm start
 
 ### 3. Frontend setup
-cd ../tasksheet
+cd ../client
 npm install
 npm start
 The React app will start on http://localhost:3000

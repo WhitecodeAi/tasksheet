@@ -2,7 +2,7 @@
  
 # node modules 
 node_modules/
-tasksheet/node_modules/
+client/node_modules/
 Server/node_modules/
 
  
@@ -28,8 +28,8 @@ Thumbs.db
  
 
 # React
-tasksheet/build/
-tasksheet/dist/
+client/build/
+client/dist/
 
 # misc
 .DS_Store
