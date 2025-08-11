@@ -16,12 +16,12 @@ export const components = {
       },
     },
   },
-//   MuiAppBar: {
-//     styleOverrides: {
-//       root: {
-//         backgroundColor: '#ffffff', // Deep blue
-//         color: '#183874',           // Text color
-//       },
-//     },
-//   },
+  MuiAppBar: {
+    styleOverrides: {
+      root: {
+        backgroundColor: '#ffffff', // Deep blue
+        color: '#183874',           // Text color
+      },
+    },
+  },
 };
