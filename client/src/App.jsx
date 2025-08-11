@@ -1,41 +1,84 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
 import { useState } from 'react';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline } from '@mui/material';
+
 import LoginPage from './Pages/LoginPage';
 import ProjectsPage from './Pages/ProjectsPage';
 import DashboardPage from './Pages/DashboardPage';
 import TasksheetPage from './Pages/TasksheetPage';
 import UsersPage from './Pages/UsersPage';
-import Header from './Components/Header';
-import Breadcrumbs from './Components/Breadcrumbs';
+
+import Layout from './Layouts/Layout';
 
 const AppContent = ({ handleLogin, handleLogout }) => {
-
-  const location = useLocation(); // ✅ use inside Router context
-  const isLoggedIn = !!localStorage.getItem('token'); // ✅ define this
-  const hideHeaderOnPaths = ['/login'];
-  const shouldShowHeader = !hideHeaderOnPaths.includes(location.pathname) && isLoggedIn;
-const isTasksheetRoute = location.pathname === '/tasksheet-entry';
-
+  const location = useLocation();
+  const isLoggedIn = !!localStorage.getItem('token');
 
   return (
-    <><span></span>
+    <>
       <CssBaseline />
-     
-      {shouldShowHeader && <Header onLogout={handleLogout} />}
-      
-      {shouldShowHeader && (
-  <Breadcrumbs isTasksheetRoute={isTasksheetRoute} />
-)}
-      
-      
       <Routes>
+        {/* Redirect root to login */}
         <Route path="/" element={<Navigate to="/login" />} />
+
+        {/* Login page without layout */}
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/tasksheet-entry" element={<TasksheetPage />} />
-        <Route path="/users" element={<UsersPage />} />
+
+        {/* Protected routes with layout */}
+        <Route
+          path="/dashboard"
+          element={
+            isLoggedIn ? (
+              <Layout onLogout={handleLogout}>
+                <DashboardPage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            isLoggedIn ? (
+              <Layout onLogout={handleLogout}>
+                <ProjectsPage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/tasksheet-entry"
+          element={
+            isLoggedIn ? (
+              <Layout onLogout={handleLogout}>
+                <TasksheetPage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            isLoggedIn ? (
+              <Layout onLogout={handleLogout}>
+                <UsersPage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
       </Routes>
     </>
   );
@@ -46,7 +89,7 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    localStorage.setItem('token', userData.token); // Optional: store token
+    localStorage.setItem('token', userData.token);
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
