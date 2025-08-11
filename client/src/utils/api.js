@@ -4,8 +4,7 @@ import axios from 'axios';
 
 const apiUrl =
   import.meta?.env?.VITE_API_URL || // Vite
-  process.env?.REACT_APP_API_URL || // CRA
-  'http://localhost:3001';          // Fallback for local dev
+   'http://localhost:3001';          // Fallback for local dev
 
   
 export const api = axios.create({
