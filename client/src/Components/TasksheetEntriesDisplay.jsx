@@ -135,7 +135,7 @@ const TasksheetEntriesDisplay = forwardRef(({ userId }, ref) => {
 
   return (
     <>
-      <Box sx={{ p: 3 }}>
+      
         <Typography variant="h6" gutterBottom>
           Tasksheet Entries
         </Typography>
@@ -205,7 +205,7 @@ const TasksheetEntriesDisplay = forwardRef(({ userId }, ref) => {
             </Table>
           </TableContainer>
         )}
-      </Box>
+      
     </>
   );
 });
