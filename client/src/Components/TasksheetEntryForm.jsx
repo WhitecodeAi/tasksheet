@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import {
   Box, Paper, Grid, TextField, Button,
   Typography, Container, Autocomplete
@@ -6,7 +6,7 @@ import {
 import dayjs from 'dayjs';
 import { api } from '../utils/api';
 
-const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
+const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSuccess }, ref) => {
   const [form, setForm] = useState({
     date: dayjs().format('YYYY-MM-DD'),
     projectName: '',
@@ -28,6 +28,12 @@ const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
     setForm((prev) => ({ ...prev, totalEffort: total.toFixed(2) }));
   }, [form.hours, form.minutes]);
 
+  useImperativeHandle(ref, () => ({
+    submitForm: () => {
+      handleSubmit({ preventDefault: () => {} });
+    }
+  }));
+
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
@@ -39,65 +45,58 @@ const TasksheetEntryForm = ({ user, projects, taskCategories, onSuccess }) => {
     if (!form.projectName) newErrors.projectName = 'Project name is required';
     if (!form.category) newErrors.category = 'Task category is required';
     if (!form.task?.trim()) newErrors.task = 'Task name is required';
-   // if (!form.hours || parseFloat(form.hours) <= 0) newErrors.hours = 'Hours must be greater than 0';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const totalEffort = (parseInt(form.hours) || 0) * 60 + (parseInt(form.minutes) || 0);
-  if (totalEffort === 0) {
-    alert('Please enter time (hours or minutes)');
-    return;
-  }
+    const totalEffort = (parseInt(form.hours) || 0) * 60 + (parseInt(form.minutes) || 0);
+    if (totalEffort === 0) {
+      alert('Please enter time (hours or minutes)');
+      return;
+    }
 
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  const payload = {
-    entry_date: form.date,
-    user_id: user.id,
-    project_id: form.projectName,
-    task_category_id: form.category,
-    task_name: form.task,
-    hours: parseInt(form.hours || 0),
-    minutes: parseInt(form.minutes || 0),
-    comments: form.comments
+    const payload = {
+      entry_date: form.date,
+      user_id: user.id,
+      project_id: form.projectName,
+      task_category_id: form.category,
+      task_name: form.task,
+      hours: parseInt(form.hours || 0),
+      minutes: parseInt(form.minutes || 0),
+      comments: form.comments
+    };
+
+    try {
+      await api.post('/api/tasksheetEntries', payload);
+      alert('Tasksheet submitted successfully!');
+      if (onSuccess) onSuccess();
+
+      setForm({
+        date: '',
+        projectName: '',
+        category: '',
+        task: '',
+        hours: '',
+        minutes: '',
+        comments: '',
+        totalEffort: '0.00'
+      });
+
+    } catch (error) {
+      console.error('❌ Submission error:', error);
+      const message = error.response?.data?.message || 'There was an error submitting the tasksheet.';
+      alert(message);
+    }
   };
 
-  try {
-    const response = await api.post('/api/tasksheetEntries', payload);
-
- 
-    alert('Tasksheet submitted successfully!');
-    if (onSuccess) onSuccess();
-
-    setForm({
-      date: '',
-      projectName: '',
-      category: '',
-      task: '',
-      hours: '',
-      minutes: '',
-      comments: '',
-      totalEffort: '0.00'
-    });
-
-  } catch (error) {
-    console.error('❌ Submission error:', error);
-
-    // Optional: show server error message if available
-    const message = error.response?.data?.message || 'There was an error submitting the tasksheet.';
-    alert(message);
-  }
-};
-
   return (
-    <Container style={{ width: '90%' }}>
-      <Box display="flex" justifyContent="center" mt={4}>
-        <Paper elevation={3} sx={{ p: 4, width: 700 }}>
-          <Typography variant="h6" gutterBottom>Enter Today's Timesheet</Typography>
+    <Container >
+      <Box display="flex" justifyContent="center"  >
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid size={6}>
@@ -115,37 +114,34 @@ const handleSubmit = async (e) => {
                 />
               </Grid>
 
-            
-
               <Grid item size={12}>
-              <Autocomplete
-  options={projects}
-  getOptionLabel={(option) => option.name}
-  isOptionEqualToValue={(option, value) => option.id === value.id} // ensures matching works
-  getOptionDisabled={(option) => !option.id} // optional
-  renderOption={(props, option) => (
-    <li {...props} key={option.id}>
-      {option.name}
-    </li>
-  )}
-  value={projects.find(p => p.id === form.projectName) || null}
-  onChange={(e, value) => {
-    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
-  }}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Project Name"
-      required
-      error={!!errors.projectName}
-      helperText={errors.projectName}
-    />
-  )}
-/>
-
+                <Autocomplete
+                  options={projects}
+                  getOptionLabel={(option) => option.name}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  getOptionDisabled={(option) => !option.id}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  )}
+                  value={projects.find(p => p.id === form.projectName) || null}
+                  onChange={(e, value) => {
+                    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Project Name"
+                      required
+                      error={!!errors.projectName}
+                      helperText={errors.projectName}
+                    />
+                  )}
+                />
               </Grid>
 
-                <Grid item size={12}>
+              <Grid item size={12}>
                 <Autocomplete
                   options={taskCategories}
                   getOptionLabel={(option) => option.name}
@@ -164,7 +160,8 @@ const handleSubmit = async (e) => {
                   )}
                 />
               </Grid>
-   <Grid item size={12}>
+
+              <Grid item size={12}>
                 <TextField
                   label="Task"
                   name="task"
@@ -174,11 +171,12 @@ const handleSubmit = async (e) => {
                   required
                   error={!!errors.task}
                   helperText={errors.task}
-                  multiline // turns it into a textarea
-                  rows={4}  // adjust height (optional)
+                  multiline
+                  rows={4}
                 />
               </Grid>
-                <Grid item size={4}>
+
+              <Grid item size={4}>
                 <TextField
                   label="Hrs"
                   name="hours"
@@ -186,11 +184,10 @@ const handleSubmit = async (e) => {
                   fullWidth
                   value={form.hours}
                   onChange={handleChange}
-                    
                 />
               </Grid>
 
-                <Grid item size={4}>
+              <Grid item size={4}>
                 <TextField
                   label="Min"
                   name="minutes"
@@ -201,7 +198,7 @@ const handleSubmit = async (e) => {
                 />
               </Grid>
 
-                <Grid item size={4}>
+              <Grid item size={4}>
                 <TextField
                   label="Total Efforts"
                   name="totalEffort"
@@ -211,7 +208,7 @@ const handleSubmit = async (e) => {
                 />
               </Grid>
 
-               <Grid item size={12}>
+              <Grid item size={12}>
                 <TextField
                   label="Comments"
                   name="comments"
@@ -223,17 +220,18 @@ const handleSubmit = async (e) => {
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Button type="submit" variant="contained" fullWidth>
                   Submit Tasksheet
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           </form>
-        </Paper>
-      </Box>
+        </Box>
     </Container>
   );
-};
+});
 
 export default TasksheetEntryForm;
+
+ 
