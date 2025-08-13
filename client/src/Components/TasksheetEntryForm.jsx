@@ -16,7 +16,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
     minutes: '',
     totalEffort: '',
     developerName: user?.email || '',
-    description: '',
+    comments: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -68,7 +68,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
       task_name: form.task,
       hours: parseInt(form.hours || 0),
       minutes: parseInt(form.minutes || 0),
-      description: form.description
+      comments: form.comments
     };
 
     try {
@@ -83,7 +83,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
         task: '',
         hours: '',
         minutes: '',
-        description: '',
+        comments: '',
         totalEffort: '0.00'
       });
 
@@ -213,13 +213,13 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
 
               <Grid item size={12}>
                 <TextField
-                  label="Description"
-                  name="description"
+                  label="Comments"
+                  name="comments"
                   fullWidth
                   multiline
                   rows={1}
                   className='no-resize'
-                  value={form.description}
+                  value={form.comments}
                   onChange={handleChange}
                 InputProps={{
     className: 'no-resize',

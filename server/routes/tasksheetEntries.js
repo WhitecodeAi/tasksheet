@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
       hours,
       minutes,
       
-      description,
+      comments,
       task_name
     } = req.body;
 
@@ -35,9 +35,9 @@ const totalHours = h + m / 60;
 
     const [result] = await pool.query(
       `INSERT INTO tasksheet_entries (
-        user_id, project_id, task_category_id, entry_date, hours, minutes, total_hours,description, task_name
+        user_id, project_id, task_category_id, entry_date, hours, minutes, total_hours,comments, task_name
       ) VALUES (?, ?, ?, ?, ?, ?, ? , ? , ? )`,
-      [user_id, project_id, task_category_id, entry_date, hours, minutes, totalHours, description, task_name]
+      [user_id, project_id, task_category_id, entry_date, hours, minutes, totalHours, comments, task_name]
     );
 
  

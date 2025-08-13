@@ -211,7 +211,7 @@ const [showToast, setShowToast] = useState(false);
                       {entry.minutes.toString().padStart(2, "0")}
                     </Typography>
                   </TableCell>
-                  <TableCell>{entry.description}</TableCell>
+                  <TableCell>{entry.comments}</TableCell>
                   <TableCell align="center">
                     <ButtonGroup variant="text" size="small">
                       <Button onClick={() => handleEdit(entry)}>Edit</Button>
