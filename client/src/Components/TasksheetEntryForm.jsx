@@ -114,34 +114,37 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
                 />
               </Grid>
 
-              <Grid item size={12}>
-                <Autocomplete
-                  options={projects}
-                  getOptionLabel={(option) => option.name}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  getOptionDisabled={(option) => !option.id}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id}>
-                      {option.name}
-                    </li>
-                  )}
-                  value={projects.find(p => p.id === form.projectName) || null}
-                  onChange={(e, value) => {
-                    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Project Name"
-                      required
-                      error={!!errors.projectName}
-                      helperText={errors.projectName}
-                    />
-                  )}
-                />
+              <Grid item size={12} spacing={2} direction={{ xs: 'column', sm: 'row' }} container>
+                <Grid item size={6}>
+             <Autocomplete
+  options={projects}
+  getOptionLabel={(option) => option.name}
+  isOptionEqualToValue={(option, value) => option.id === value.id}
+  getOptionDisabled={(option) => !option.id}
+  renderOption={(props, option) => (
+    <li {...props} key={option.id}>
+      {option.name}
+    </li>
+  )}
+  value={projects.find(p => p.id === form.projectName) || null}
+  onChange={(e, value) => {
+    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
+  }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Project Name"
+      required
+      error={!!errors.projectName}
+      helperText={errors.projectName}
+        
+    />
+  )}
+/>
+
               </Grid>
 
-              <Grid item size={12}>
+              <Grid item size={6}>
                 <Autocomplete
                   options={taskCategories}
                   getOptionLabel={(option) => option.name}
@@ -160,7 +163,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
                   )}
                 />
               </Grid>
-
+            </Grid>
               <Grid item size={12}>
                 <TextField
                   label="Task"
@@ -172,7 +175,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
                   error={!!errors.task}
                   helperText={errors.task}
                   multiline
-                  rows={4}
+                  rows={8}
                 />
               </Grid>
 
@@ -215,8 +218,12 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
                   fullWidth
                   multiline
                   rows={1}
+                  className='no-resize'
                   value={form.comments}
                   onChange={handleChange}
+                InputProps={{
+    className: 'no-resize',
+  }}
                 />
               </Grid>
 

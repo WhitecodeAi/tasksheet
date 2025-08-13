@@ -59,6 +59,30 @@ const totalHours = h + m / 60;
   }
 });
 
+
+//   Delete a tasksheet entry by ID
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await pool.query(
+      'DELETE FROM tasksheet_entries WHERE id = ?',
+      [id]
+    );
+
+    if (result.affectedRows > 0) {
+      res.json({ message: '✅ Entry deleted successfully' });
+    } else {
+      res.status(404).json({ error: '❌ Entry not found or already deleted' });
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: '❌ Failed to delete entry',
+      details: error.message
+    });
+  }
+});
+
 // 📂 Fetch entries for a user with optional time filters
 router.get('/user/:userId', async (req, res) => {
   const { userId } = req.params;

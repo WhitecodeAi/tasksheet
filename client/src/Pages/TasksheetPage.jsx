@@ -65,7 +65,7 @@ const TasksheetPage = () => {
         onClose={() => setDrawerOpen(false)}
         PaperProps={{
           sx: {
-            width: { xs: '100%', sm: 400 },
+            width: { xs: '100%', sm: 400, md: 500 },
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
@@ -93,11 +93,11 @@ const TasksheetPage = () => {
 
         {/* 🔻 Footer */}
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-          <Button onClick={() => setDrawerOpen(false)} color="secondary">
+          <Button   onClick={() => setDrawerOpen(false)} color="secondary">
             Cancel
           </Button>
           <Button variant="contained" onClick={() => formRef.current?.submitForm()}>
-            Save
+            Submit
           </Button>
         </Box>
       </Drawer>
