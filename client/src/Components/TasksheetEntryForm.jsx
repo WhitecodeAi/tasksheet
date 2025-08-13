@@ -11,7 +11,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
     date: dayjs().format('YYYY-MM-DD'),
     projectName: '',
     category: '',
-    task: '',
+    task_name: '',
     hours: '',
     minutes: '',
     totalEffort: '',
@@ -44,7 +44,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
     if (!form.date) newErrors.date = 'Date is required';
     if (!form.projectName) newErrors.projectName = 'Project name is required';
     if (!form.category) newErrors.category = 'Task category is required';
-    if (!form.task?.trim()) newErrors.task = 'Task name is required';
+    if (!form.task_name?.trim()) newErrors.task_name = 'Task name is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,7 +65,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
       user_id: user.id,
       project_id: form.projectName,
       task_category_id: form.category,
-      task_name: form.task,
+      task_name: form.task_name,
       hours: parseInt(form.hours || 0),
       minutes: parseInt(form.minutes || 0),
       comments: form.comments
@@ -80,7 +80,7 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
         date: '',
         projectName: '',
         category: '',
-        task: '',
+        task_name: '',
         hours: '',
         minutes: '',
         comments: '',
@@ -167,13 +167,13 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
               <Grid item size={12}>
                 <TextField
                   label="Task"
-                  name="task"
+                  name="task_name"
                   fullWidth
-                  value={form.task}
+                  value={form.task_name}
                   onChange={handleChange}
                   required
-                  error={!!errors.task}
-                  helperText={errors.task}
+                  error={!!errors.task_name}
+                  helperText={errors.task_name}
                   multiline
                   rows={8}
                 />
