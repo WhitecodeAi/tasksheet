@@ -16,6 +16,9 @@ const TasksheetPage = () => {
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+const [selectedEntry, setSelectedEntry] = useState(null);
+
   const taskListRef = useRef();
   const formRef = useRef(); // 👈 Ref to trigger form submit
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
@@ -34,16 +37,37 @@ const TasksheetPage = () => {
 
   const handleSuccessfulSubmit = () => {
     setDrawerOpen(false); // 👈 Close drawer on success
+    setEditMode(false);
+    setSelectedEntry(null);
+
     if (taskListRef.current?.refreshEntries) {
       taskListRef.current.refreshEntries(); // 🔄 Refresh grid
     }
   };
 
+  const handleEditClick = (entry) => {
+    setSelectedEntry(entry);
+    setEditMode(true);
+    setDrawerOpen(true);
+  };
+
+    const handleDrawerClose = () => {
+    setDrawerOpen(false);
+    setEditMode(false);
+    setSelectedEntry(null);
+  }
+
+  
   return (
     <>
       {/* 🔘 Add Button */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <Button variant="contained" color="primary" onClick={() => setDrawerOpen(true)}>
+        <Button variant="contained" color="primary" 
+          onClick={() => {
+            setDrawerOpen(true);
+            setEditMode(false);
+            setSelectedEntry(null);
+          }}>
           Add
         </Button>
       </Box>
@@ -54,6 +78,8 @@ const TasksheetPage = () => {
           <TasksheetEntriesDisplay
             userId={loggedInUser?.id}
             ref={taskListRef}
+             onEdit={handleEditClick}
+             
           />
         </Grid>
       </Grid>
@@ -74,7 +100,7 @@ const TasksheetPage = () => {
       >
         {/* 🔹 Header */}
         <Box sx={{ p: 2 }}>
-          <Typography variant="h6">Add Tasksheet Entry</Typography>
+          <Typography variant="h6"> {editMode ? 'Edit Tasksheet Entry' : 'Add Tasksheet Entry'}</Typography>
         </Box>
         <Divider />
 
@@ -86,6 +112,11 @@ const TasksheetPage = () => {
             user={loggedInUser}
             taskCategories={taskCategories}
             onSuccess={handleSuccessfulSubmit}
+            initialValues={selectedEntry}
+            editMode={editMode}
+
+            selectedEntry={selectedEntry}
+  
           />
         </Box>
 
@@ -93,7 +124,7 @@ const TasksheetPage = () => {
 
         {/* 🔻 Footer */}
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-          <Button   onClick={() => setDrawerOpen(false)} color="secondary">
+          <Button onClick={handleDrawerClose} color="secondary">
             Cancel
           </Button>
           <Button variant="contained" onClick={() => formRef.current?.submitForm()}>
