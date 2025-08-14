@@ -9,13 +9,8 @@ const Breadcrumbs =  ({ isTasksheetRoute }) => {
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
-  return (<Container className={isTasksheetRoute?'aaa':'bbb'}
-maxWidth={isTasksheetRoute ? 'none'  : 'lg'} sx={{padding:isTasksheetRoute? '10px 0 0 0':'0px'}} >
-    <MUIBreadcrumbs aria-label="breadcrumb" sx={{ 
-      padding: isTasksheetRoute ? '0px 10px' : "20px", // 0 = no padding, 2 = 16px (MUI spacing unit)
-       
-        
-         }}>
+  return (<>
+    <MUIBreadcrumbs aria-label="breadcrumb"  >
       <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard')} sx={{ cursor: 'pointer' }}>
         Home
       </Link>
@@ -35,7 +30,7 @@ maxWidth={isTasksheetRoute ? 'none'  : 'lg'} sx={{padding:isTasksheetRoute? '10p
         );
       })}
     </MUIBreadcrumbs>
-    </Container>
+    </>
   );
 };
 
