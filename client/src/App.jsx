@@ -35,7 +35,7 @@ const AppContent = ({ handleLogin, handleLogout }) => {
           path="/dashboard"
           element={
             isLoggedIn ? (
-              <Layout onLogout={handleLogout}>
+              <Layout onLogout={handleLogout} showBreadcrumbs={false}>
                 <DashboardPage />
               </Layout>
             ) : (
@@ -59,7 +59,7 @@ const AppContent = ({ handleLogin, handleLogout }) => {
           path="/tasksheet-entry"
           element={
             isLoggedIn ? (
-              <Layout onLogout={handleLogout}>
+              <Layout onLogout={handleLogout} takeFullWidth={true} >
                 <TasksheetPage />
               </Layout>
             ) : (
