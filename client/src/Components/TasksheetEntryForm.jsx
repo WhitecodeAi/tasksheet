@@ -6,7 +6,7 @@ import {
 import dayjs from 'dayjs';
 import { api } from '../utils/api';
 
-const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSuccess }, ref) => {
+const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMode, selectedEntry, onSuccess }, ref) => {
   const [form, setForm] = useState({
     date: dayjs().format('YYYY-MM-DD'),
     projectName: '',
@@ -21,6 +21,24 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
 
   const [errors, setErrors] = useState({});
 
+  // ✅ Prefill form on edit
+  useEffect(() => {
+    if (editMode && selectedEntry) {
+      setForm({
+        date: dayjs(selectedEntry.entry_date).format('YYYY-MM-DD'),
+        projectName: selectedEntry.project_id || '',
+        category: selectedEntry.task_category_id || '',
+        task_name: selectedEntry.task_name || '',
+        hours: selectedEntry.hours || '',
+        minutes: selectedEntry.minutes || '',
+        totalEffort: '',
+        developerName: user?.email || '',
+        comments: selectedEntry.comments || '',
+      });
+    }
+  }, [editMode, selectedEntry, user]);
+
+  // ✅ Calculate total effort
   useEffect(() => {
     const h = parseFloat(form.hours || 0);
     const m = parseFloat(form.minutes || 0);
@@ -35,8 +53,10 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
   }));
 
   const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
+    const { name, value } = e.target;
+    const parsedValue = ['hours', 'minutes'].includes(name) ? Number(value) : value;
+    setForm((prev) => ({ ...prev, [name]: parsedValue }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const validateForm = () => {
@@ -72,19 +92,26 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
     };
 
     try {
-      await api.post('/api/tasksheetEntries', payload);
-      alert('Tasksheet submitted successfully!');
+      if (editMode && selectedEntry?.id) {
+        await api.put(`/api/tasksheetEntries/${selectedEntry.id}`, payload);
+        alert('Tasksheet updated successfully!');
+      } else {
+        await api.post('/api/tasksheetEntries', payload);
+        alert('Tasksheet submitted successfully!');
+      }
+
       if (onSuccess) onSuccess();
 
       setForm({
-        date: '',
+        date: dayjs().format('YYYY-MM-DD'),
         projectName: '',
         category: '',
         task_name: '',
         hours: '',
         minutes: '',
         comments: '',
-        totalEffort: '0.00'
+        totalEffort: '0.00',
+        developerName: user?.email || ''
       });
 
     } catch (error) {
@@ -95,150 +122,129 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, onSucce
   };
 
   return (
-    <Container >
-      <Box display="flex" justifyContent="center"  >
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid size={6}>
-                <TextField
-                  label="Date"
-                  type="date"
-                  name="date"
-                  fullWidth
-                  value={form.date}
-                  onChange={handleChange}
-                  InputLabelProps={{ shrink: true }}
-                  required
-                  error={!!errors.date}
-                  helperText={errors.date}
-                />
-              </Grid>
-
-              <Grid item size={12} spacing={2} direction={{ xs: 'column', sm: 'row' }} container>
-                <Grid item size={6}>
-             <Autocomplete
-  options={projects}
-  getOptionLabel={(option) => option.name}
-  isOptionEqualToValue={(option, value) => option.id === value.id}
-  getOptionDisabled={(option) => !option.id}
-  renderOption={(props, option) => (
-    <li {...props} key={option.id}>
-      {option.name}
-    </li>
-  )}
-  value={projects.find(p => p.id === form.projectName) || null}
-  onChange={(e, value) => {
-    setForm(prev => ({ ...prev, projectName: value?.id || '' }));
-  }}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Project Name"
-      required
-      error={!!errors.projectName}
-      helperText={errors.projectName}
-        
-    />
-  )}
-/>
-
-              </Grid>
-
-              <Grid item size={6}>
-                <Autocomplete
-                  options={taskCategories}
-                  getOptionLabel={(option) => option.name}
-                  value={taskCategories.find(tc => tc.id === form.category) || null}
-                  onChange={(e, value) => {
-                    setForm(prev => ({ ...prev, category: value?.id || '' }));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Task Category"
-                      required
-                      error={!!errors.category}
-                      helperText={errors.category}
-                    />
-                  )}
-                />
-              </Grid>
+    <Container>
+      <Box display="flex" justifyContent="center">
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid size={{xs:12, md:6}}>
+              <TextField
+                label="Date"
+                type="date"
+                name="date"
+                fullWidth
+                value={form.date}
+                onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
+                required
+                error={!!errors.date}
+                helperText={errors.date}
+              />
             </Grid>
-              <Grid item size={12}>
-                <TextField
-                  label="Task"
-                  name="task_name"
-                  fullWidth
-                  value={form.task_name}
-                  onChange={handleChange}
-                  required
-                  error={!!errors.task_name}
-                  helperText={errors.task_name}
-                  multiline
-                  rows={8}
-                />
-              </Grid>
-
-              <Grid item size={4}>
-                <TextField
-                  label="Hrs"
-                  name="hours"
-                  type="number"
-                  fullWidth
-                  value={form.hours}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              <Grid item size={4}>
-                <TextField
-                  label="Min"
-                  name="minutes"
-                  type="number"
-                  fullWidth
-                  value={form.minutes}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              <Grid item size={4}>
-                <TextField
-                  label="Total Efforts"
-                  name="totalEffort"
-                  fullWidth
-                  value={form.totalEffort}
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
-
-              <Grid item size={12}>
-                <TextField
-                  label="Comments"
-                  name="comments"
-                  fullWidth
-                  multiline
-                  rows={1}
-                  className='no-resize'
-                  value={form.comments}
-                  onChange={handleChange}
-                InputProps={{
-    className: 'no-resize',
-  }}
-                />
-              </Grid>
-
-              {/* <Grid item xs={12}>
-                <Button type="submit" variant="contained" fullWidth>
-                  Submit Tasksheet
-                </Button>
-              </Grid> */}
+   <Grid container size={12} spacing={2}>
+            <Grid  size={{xs:12, md:6}}>
+              <Autocomplete
+                options={projects}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                value={projects.find(p => p.id === form.projectName) || null}
+                onChange={(e, value) => {
+                  setForm(prev => ({ ...prev, projectName: value?.id || '' }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Project Name"
+                    required
+                    error={!!errors.projectName}
+                    helperText={errors.projectName}
+                  />
+                )}
+              />
             </Grid>
-          </form>
-        </Box>
+
+            <Grid size={{xs:12, md:6}}>
+              <Autocomplete
+                options={taskCategories}
+                getOptionLabel={(option) => option.name}
+                value={taskCategories.find(tc => tc.id === form.category) || null}
+                onChange={(e, value) => {
+                  setForm(prev => ({ ...prev, category: value?.id || '' }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Task Category"
+                    required
+                    error={!!errors.category}
+                    helperText={errors.category}
+                  />
+                )}
+              />
+            </Grid>
+</Grid>
+            <Grid size={{xs:12, md:12}}>
+              <TextField
+                label="Task"
+                name="task_name"
+                fullWidth
+                value={form.task_name}
+                onChange={handleChange}
+                required
+                error={!!errors.task_name}
+                helperText={errors.task_name}
+                multiline
+                rows={8}
+              />
+            </Grid>
+<Grid container>
+            <Grid size={{xs:12, md:4}}>
+              <TextField
+                label="Hrs"
+                name="hours"
+                type="number"
+                fullWidth
+                value={form.hours}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid size={{xs:12, md:4}}>
+              <TextField
+                label="Min"
+                name="minutes"
+                type="number"
+                fullWidth
+                value={form.minutes}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid size={{xs:12, md:4}}>
+              <TextField
+                label="Total Efforts"
+                name="totalEffort"
+                fullWidth
+                value={form.totalEffort}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+</Grid>
+            <Grid size={{xs:12, md:12}}>
+              <TextField
+                label="Comments"
+                name="comments"
+                fullWidth
+                multiline
+                rows={1}
+                value={form.comments}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
+        </form>
+      </Box>
     </Container>
   );
 });
 
 export default TasksheetEntryForm;
-
- 

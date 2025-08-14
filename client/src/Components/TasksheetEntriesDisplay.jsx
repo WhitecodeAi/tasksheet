@@ -23,7 +23,8 @@ import {
 import dayjs from "dayjs";
 import { api } from "../utils/api";
 
-const TasksheetEntriesDisplay = forwardRef(({ userId }, ref) => {
+const TasksheetEntriesDisplay = forwardRef(({ userId, onEdit }, ref) => {
+
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filterRange, setFilterRange] = useState("TODAY");
@@ -129,9 +130,11 @@ const [showToast, setShowToast] = useState(false);
   };
 
   const handleEdit = (entry) => {
-    console.log("Edit clicked for entry:", entry);
-    // Add your edit logic here
-  };
+  if (onEdit) {
+    onEdit(entry); // delegate to parent
+  }
+};
+
 
   const handleDelete = async (entry) => {
     const confirmed = window.confirm(

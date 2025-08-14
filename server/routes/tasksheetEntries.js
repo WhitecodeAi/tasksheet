@@ -129,4 +129,51 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
+// ✏️ Update an existing tasksheet entry by ID
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const {
+    user_id,
+    project_id,
+    task_category_id,
+    entry_date,
+    hours,
+    minutes,
+    comments,
+    task_name
+  } = req.body;
+
+  const h = Number(hours) || 0;
+  const m = Number(minutes) || 0;
+  const totalHours = h + m / 60;
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE tasksheet_entries SET
+        user_id = ?, 
+        project_id = ?, 
+        task_category_id = ?, 
+        entry_date = ?, 
+        hours = ?, 
+        minutes = ?, 
+        total_hours = ?, 
+        comments = ?, 
+        task_name = ?
+      WHERE id = ?`,
+      [user_id, project_id, task_category_id, entry_date, hours, minutes, totalHours, comments, task_name, id]
+    );
+
+    if (result.affectedRows > 0) {
+      res.json({ message: '✅ Entry updated successfully' });
+    } else {
+      res.status(404).json({ error: '❌ Entry not found or update failed' });
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: '❌ Failed to update entry',
+      details: error.message
+    });
+  }
+});
+
 module.exports = router;
