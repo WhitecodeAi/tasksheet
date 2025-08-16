@@ -10,8 +10,13 @@ import {
   Typography,
   Divider,
   Snackbar,
-  Alert
+  Alert,
+  TextField,
+  InputAdornment,
+  Stack,
+  Paper
 } from '@mui/material';
+import { Search } from '@mui/icons-material';
 import { api } from '../utils/api';
 
 const TasksheetPage = () => {
@@ -21,6 +26,8 @@ const TasksheetPage = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterRange, setFilterRange] = useState('TODAY');
 
   const taskListRef = useRef();
   const formRef = useRef(); // 👈 Ref to trigger form submit
@@ -71,17 +78,92 @@ const TasksheetPage = () => {
   
   return (
     <>
-      {/* 🔘 Add Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <Button variant="contained" color="primary" 
-          onClick={() => {
-            setDrawerOpen(true);
-            setEditMode(false);
-            setSelectedEntry(null);
-          }}>
-          Add
-        </Button>
-      </Box>
+      {/* 🔍 Search, Filter & Add Controls - Berry Dashboard Style */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 3,
+          borderRadius: '12px',
+          border: '1px solid #f0f0f0',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2
+          }}
+        >
+          {/* Left: Search Field */}
+          <TextField
+            placeholder="Search entries..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            size="small"
+            sx={{
+              minWidth: 250,
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#f8fafc'
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          {/* Center: Filter Buttons */}
+          <Stack direction="row" spacing={1}>
+            {[
+              { label: "Today", value: "TODAY" },
+              { label: "This Week", value: "WEEK" },
+              { label: "This Month", value: "MONTH" },
+              { label: "All", value: "ALL" },
+            ].map(({ label, value }) => (
+              <Button
+                key={value}
+                onClick={() => setFilterRange(value)}
+                variant={filterRange === value ? "contained" : "outlined"}
+                color={filterRange === value ? "primary" : "inherit"}
+                size="small"
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: '8px',
+                  px: 2
+                }}
+              >
+                {label}
+              </Button>
+            ))}
+          </Stack>
+
+          {/* Right: Add Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{
+              textTransform: 'none',
+              borderRadius: '8px',
+              px: 3,
+              py: 1
+            }}
+            onClick={() => {
+              setDrawerOpen(true);
+              setEditMode(false);
+              setSelectedEntry(null);
+            }}
+          >
+            Add Entry
+          </Button>
+        </Box>
+      </Paper>
 
       {/* 📋 Grid Display */}
       <Grid container >
@@ -91,6 +173,8 @@ const TasksheetPage = () => {
             ref={taskListRef}
             onEdit={handleEditClick}
             onDeleteSuccess={handleDeleteSuccess}
+            searchQuery={searchQuery}
+            filterRange={filterRange}
           />
         </Grid>
       </Grid>
