@@ -28,21 +28,28 @@ const Breadcrumbs = ({ pageTitle }) => {
 
   return (
     <Box
-      display="flex"
-      justifyContent="space-between"
-      alignItems="center"
-      mb={3}
-      py={2}
+      sx={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '16px 20px',
+        marginBottom: '24px',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #f0f0f0',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}
     >
       {/* Left side - Page Title */}
       <Typography
-        variant="h4"
+        variant="h6"
         component="h1"
         sx={{
           fontWeight: 600,
-          fontSize: '1.75rem',
-          color: 'text.primary',
-          textTransform: 'capitalize'
+          fontSize: '1.125rem',
+          color: '#1a1a1a',
+          textTransform: 'capitalize',
+          margin: 0
         }}
       >
         {getPageTitle()}
@@ -53,19 +60,26 @@ const Breadcrumbs = ({ pageTitle }) => {
         aria-label="breadcrumb"
         sx={{
           '& .MuiBreadcrumbs-separator': {
-            color: 'text.secondary',
+            color: '#9e9e9e',
+            margin: '0 8px'
+          },
+          '& .MuiBreadcrumbs-ol': {
+            alignItems: 'center'
           }
         }}
       >
         <Link
           underline="hover"
-          color="text.secondary"
+          color="#757575"
           onClick={() => navigate('/dashboard')}
           sx={{
             cursor: 'pointer',
             fontSize: '0.875rem',
+            fontWeight: 400,
+            textDecoration: 'none',
             '&:hover': {
-              color: 'primary.main'
+              color: '#1976d2',
+              textDecoration: 'underline'
             }
           }}
         >
@@ -78,7 +92,7 @@ const Breadcrumbs = ({ pageTitle }) => {
 
           return isLast ? (
             <Typography
-              color="text.primary"
+              color="#1a1a1a"
               key={to}
               sx={{
                 fontSize: '0.875rem',
@@ -91,15 +105,18 @@ const Breadcrumbs = ({ pageTitle }) => {
           ) : (
             <Link
               underline="hover"
-              color="text.secondary"
+              color="#757575"
               onClick={() => navigate(to)}
               key={to}
               sx={{
                 cursor: 'pointer',
                 fontSize: '0.875rem',
+                fontWeight: 400,
                 textTransform: 'capitalize',
+                textDecoration: 'none',
                 '&:hover': {
-                  color: 'primary.main'
+                  color: '#1976d2',
+                  textDecoration: 'underline'
                 }
               }}
             >
