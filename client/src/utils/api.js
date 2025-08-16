@@ -6,9 +6,10 @@ const apiUrl =
   import.meta?.env?.VITE_API_URL || // Vite
    'http://localhost:3001';          // Fallback for local dev
 
-  
+console.log('🔗 API URL:', apiUrl);
+
 export const api = axios.create({
   baseURL: apiUrl,
   // Add headers or interceptors here if needed later
- 
+
 });
