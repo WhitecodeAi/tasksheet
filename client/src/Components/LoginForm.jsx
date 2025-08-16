@@ -55,16 +55,10 @@ const LoginForm = ({ email, password, error, onEmailChange, onPasswordChange, on
         <Button
           variant="contained"
           fullWidth
-          size="large"
-          sx={{
-            mt: 3,
-            py: 1.5,
-            fontSize: '1rem',
-            fontWeight: 500,
-          }}
+          style={{ marginTop: 20 }}
           onClick={onLogin}
         >
-          Sign In
+          Login
         </Button>
       </Paper>
     </Box>
