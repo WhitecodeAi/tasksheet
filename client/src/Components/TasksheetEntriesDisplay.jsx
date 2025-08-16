@@ -23,7 +23,7 @@ import {
 import dayjs from "dayjs";
 import { api } from "../utils/api";
 
-const TasksheetEntriesDisplay = forwardRef(({ userId, onEdit }, ref) => {
+const TasksheetEntriesDisplay = forwardRef(({ userId, onEdit, onDeleteSuccess }, ref) => {
 
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +145,11 @@ const [showToast, setShowToast] = useState(false);
     try {
       await api.delete(`/api/tasksheetEntries/${entry.id}`);
       await fetchEntries(); // refresh grid
-       setShowToast(true);   // show toast
+      if (onDeleteSuccess) {
+        onDeleteSuccess(); // notify parent
+      } else {
+        setShowToast(true); // fallback to local toast
+      }
     } catch (error) {
       console.error("Failed to delete entry:", error);
     }

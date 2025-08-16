@@ -48,3 +48,6 @@ yarn-error.log*
 
 # VS Code
 .vscode/
+
+# Temporary - exclude API config with hardcoded URL
+client/src/utils/api.js

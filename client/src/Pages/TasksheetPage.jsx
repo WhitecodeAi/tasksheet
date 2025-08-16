@@ -8,7 +8,9 @@ import {
   Button,
   Box,
   Typography,
-  Divider
+  Divider,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { api } from '../utils/api';
 
@@ -17,7 +19,8 @@ const TasksheetPage = () => {
   const [taskCategories, setTaskCategories] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
-const [selectedEntry, setSelectedEntry] = useState(null);
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const taskListRef = useRef();
   const formRef = useRef(); // 👈 Ref to trigger form submit
@@ -35,10 +38,14 @@ const [selectedEntry, setSelectedEntry] = useState(null);
       .catch((err) => console.error('Failed to fetch task categories', err));
   }, []);
 
-  const handleSuccessfulSubmit = () => {
+  const handleSuccessfulSubmit = (isEdit = false) => {
     setDrawerOpen(false); // 👈 Close drawer on success
     setEditMode(false);
     setSelectedEntry(null);
+
+    // Show appropriate snackbar message
+    const message = isEdit ? 'Edited Successfully' : 'Added Successfully';
+    setSnackbar({ open: true, message, severity: 'success' });
 
     if (taskListRef.current?.refreshEntries) {
       taskListRef.current.refreshEntries(); // 🔄 Refresh grid
@@ -49,6 +56,10 @@ const [selectedEntry, setSelectedEntry] = useState(null);
     setSelectedEntry(entry);
     setEditMode(true);
     setDrawerOpen(true);
+  };
+
+  const handleDeleteSuccess = () => {
+    setSnackbar({ open: true, message: 'Deleted Successfully', severity: 'success' });
   };
 
     const handleDrawerClose = () => {
@@ -78,8 +89,8 @@ const [selectedEntry, setSelectedEntry] = useState(null);
           <TasksheetEntriesDisplay
             userId={loggedInUser?.id}
             ref={taskListRef}
-             onEdit={handleEditClick}
-             
+            onEdit={handleEditClick}
+            onDeleteSuccess={handleDeleteSuccess}
           />
         </Grid>
       </Grid>
@@ -111,12 +122,10 @@ const [selectedEntry, setSelectedEntry] = useState(null);
             projects={projects}
             user={loggedInUser}
             taskCategories={taskCategories}
-            onSuccess={handleSuccessfulSubmit}
+            onSuccess={() => handleSuccessfulSubmit(editMode)}
             initialValues={selectedEntry}
             editMode={editMode}
-
             selectedEntry={selectedEntry}
-  
           />
         </Box>
 
@@ -132,6 +141,22 @@ const [selectedEntry, setSelectedEntry] = useState(null);
           </Button>
         </Box>
       </Drawer>
+
+      {/* Snackbar for Add/Edit operations */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
