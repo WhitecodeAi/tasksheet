@@ -45,11 +45,12 @@ const Breadcrumbs = ({ pageTitle }) => {
         variant="h6"
         component="h1"
         sx={{
-          fontWeight: 600,
-          fontSize: '1.125rem',
-          color: '#1a1a1a',
+          fontWeight: 500,
+          fontSize: '1rem',
+          color: '#2e2e2e',
           textTransform: 'capitalize',
-          margin: 0
+          margin: 0,
+          lineHeight: 1.5
         }}
       >
         {getPageTitle()}
