@@ -94,10 +94,8 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
     try {
       if (editMode && selectedEntry?.id) {
         await api.put(`/api/tasksheetEntries/${selectedEntry.id}`, payload);
-        alert('Tasksheet updated successfully!');
       } else {
         await api.post('/api/tasksheetEntries', payload);
-        alert('Tasksheet submitted successfully!');
       }
 
       if (onSuccess) onSuccess();
