@@ -58,6 +58,10 @@ const TasksheetPage = () => {
     setDrawerOpen(true);
   };
 
+  const handleDeleteSuccess = () => {
+    setSnackbar({ open: true, message: 'Deleted Successfully', severity: 'success' });
+  };
+
     const handleDrawerClose = () => {
     setDrawerOpen(false);
     setEditMode(false);
@@ -85,8 +89,8 @@ const TasksheetPage = () => {
           <TasksheetEntriesDisplay
             userId={loggedInUser?.id}
             ref={taskListRef}
-             onEdit={handleEditClick}
-             
+            onEdit={handleEditClick}
+            onDeleteSuccess={handleDeleteSuccess}
           />
         </Grid>
       </Grid>
