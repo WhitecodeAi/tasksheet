@@ -184,7 +184,16 @@ const [showToast, setShowToast] = useState(false);
           No entries found for this period.
         </Typography>
       ) : (
-        <TableContainer component={Paper} sx={{ mt: 3 }}>
+        <TableContainer
+          component={Paper}
+          sx={{
+            mt: 0,
+            borderRadius: '0 0 12px 12px',
+            border: '1px solid #f0f0f0',
+            borderTop: 'none',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          }}
+        >
           <Table>
             <TableHead>
               <TableRow>
