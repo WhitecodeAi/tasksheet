@@ -1,7 +1,22 @@
-import React from 'react';
-import { Box, Paper, Typography, TextField, Button } from '@mui/material';
- 
+import React, { useState } from 'react';
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  IconButton,
+  InputAdornment
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+
 const LoginForm = ({ email, password, error, onEmailChange, onPasswordChange, onLogin }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
       <Paper elevation={3} style={{ padding: 30, width: 400 }}>
@@ -16,18 +31,30 @@ const LoginForm = ({ email, password, error, onEmailChange, onPasswordChange, on
         />
         <TextField
           label="Password"
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           fullWidth
           margin="normal"
           value={password}
           onChange={onPasswordChange}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleTogglePasswordVisibility}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         {error && <Typography color="error">{error}</Typography>}
 
         <Button
           variant="contained"
           fullWidth
-         
           style={{ marginTop: 20 }}
           onClick={onLogin}
         >
