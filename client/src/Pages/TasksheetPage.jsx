@@ -82,9 +82,10 @@ const TasksheetPage = () => {
       <Paper
         sx={{
           p: 2,
-          mb: 3,
-          borderRadius: '12px',
+          mb: 0,
+          borderRadius: '12px 12px 0 0',
           border: '1px solid #f0f0f0',
+          borderBottom: 'none',
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
         }}
       >
@@ -166,7 +167,7 @@ const TasksheetPage = () => {
       </Paper>
 
       {/* 📋 Grid Display */}
-      <Grid container >
+      <Grid container>
         <Grid item size={12}>
           <TasksheetEntriesDisplay
             userId={loggedInUser?.id}
