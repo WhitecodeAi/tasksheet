@@ -27,23 +27,8 @@ const AppContent = ({ handleLogin, handleLogout }) => {
         {/* Redirect root to login */}
         <Route path="/" element={<Navigate to="/login" />} />
 
-        {/* Login page with gradient background */}
-        <Route
-          path="/login"
-          element={
-            <Box
-              sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <LoginPage onLogin={handleLogin} />
-            </Box>
-          }
-        />
+        {/* Login page without layout */}
+        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
 
         {/* Protected routes with layout */}
         <Route
