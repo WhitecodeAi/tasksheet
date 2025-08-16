@@ -150,6 +150,11 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
                 onChange={(e, value) => {
                   setForm(prev => ({ ...prev, projectName: value?.id || '' }));
                 }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                )}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -166,10 +171,16 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
               <Autocomplete
                 options={taskCategories}
                 getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={taskCategories.find(tc => tc.id === form.category) || null}
                 onChange={(e, value) => {
                   setForm(prev => ({ ...prev, category: value?.id || '' }));
                 }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                )}
                 renderInput={(params) => (
                   <TextField
                     {...params}
