@@ -6,7 +6,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { useState } from 'react';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 
 import LoginPage from './Pages/LoginPage';
 import ProjectsPage from './Pages/ProjectsPage';
