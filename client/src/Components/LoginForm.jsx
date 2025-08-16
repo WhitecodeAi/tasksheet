@@ -18,9 +18,25 @@ const LoginForm = ({ email, password, error, onEmailChange, onPasswordChange, on
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-      <Paper elevation={3} style={{ padding: 30, width: 400 }}>
-        <Typography variant="h5" gutterBottom>Login to TaskSheet</Typography>
+    <Box display="flex" justifyContent="center" alignItems="center">
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 4,
+          width: 400,
+          borderRadius: 3,
+          boxShadow: '0px 8px 40px rgba(0,0,0,0.12)',
+          border: '1px solid rgba(255,255,255,0.2)',
+        }}
+      >
+        <Box textAlign="center" mb={3}>
+          <Typography variant="h4" gutterBottom sx={{ color: '#673ab7', fontWeight: 600 }}>
+            Hi, Welcome Back
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#757575' }}>
+            Enter your credentials to continue
+          </Typography>
+        </Box>
 
         <TextField
           label="Email"
