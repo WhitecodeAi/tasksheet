@@ -5,17 +5,16 @@ import Breadcrumbs from './../Components/Breadcrumbs';
 import Footer from './../Components/Footer';
 import { useLocation } from 'react-router-dom';
 
-const Layout = ({ children, onLogout, showBreadcrumbs = true, takeFullWidth = false }) => {
+const Layout = ({ children, onLogout, showBreadcrumbs = true, takeFullWidth = false, pageTitle }) => {
   const location = useLocation();
-  const isTasksheetRoute = location.pathname === '/tasksheet-entry';
- 
+
   return (
  <>
       <Header onLogout={onLogout} />
 <Container maxWidth={takeFullWidth ? false : 'lg'}>
       <Box component="main" flex="1" px={3} py={2}>
-        {showBreadcrumbs &&  <Breadcrumbs isTasksheetRoute={isTasksheetRoute} />}
-       
+        {showBreadcrumbs && <Breadcrumbs pageTitle={pageTitle} />}
+
         <Box>{children}</Box>
       </Box>
     </Container>
