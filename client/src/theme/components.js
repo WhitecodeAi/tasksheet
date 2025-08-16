@@ -2,19 +2,14 @@ export const components = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: 8,
-        padding: '10px 24px',
-        fontWeight: 500,
-        boxShadow: 'none',
-        '&:hover': {
-          boxShadow: '0 4px 12px rgba(103, 58, 183, 0.3)',
-        },
+        borderRadius: 6,
+        padding: '5px 12px',
       },
       containedPrimary: {
-        background: 'linear-gradient(135deg, #673ab7 0%, #9c88ff 100%)',
+        backgroundColor: '#2196f3',
         color: '#fff',
         '&:hover': {
-          background: 'linear-gradient(135deg, #5e35b1 0%, #8c7ae6 100%)',
+          backgroundColor: '#1976d2',
         },
       },
     },
@@ -23,9 +18,7 @@ export const components = {
   MuiPaper: {
     styleOverrides: {
       root: {
-        borderRadius: 12,
-        boxShadow: '0px 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(224, 224, 224, 0.5)',
+        boxShadow: '0px 2px 8px rgba(0,0,0,0.1)',
       },
     },
   },
@@ -78,7 +71,7 @@ export const components = {
           borderColor: '#999',
         },
         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#673ab7',
+          borderColor: '#1976d2',
         },
       },
       notchedOutline: {
@@ -98,7 +91,7 @@ export const components = {
           transform: 'translate(14px, -6px) scale(0.75)',
         },
         '&.Mui-focused': {
-          color: '#673ab7',
+          color: '#1976d2',
         },
       },
     },
