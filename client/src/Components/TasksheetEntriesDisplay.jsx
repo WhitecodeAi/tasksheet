@@ -157,10 +157,6 @@ const [showToast, setShowToast] = useState(false);
 
   return (
     <>
-      <Typography variant="h6" gutterBottom>
-        Tasksheet Entries
-      </Typography>
-
       <Stack direction="row" spacing={1} mb={2}>
         {[
           { label: "Today", value: "TODAY" },
