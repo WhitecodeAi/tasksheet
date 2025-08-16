@@ -5,7 +5,7 @@ import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 
 const Footer = ({ onLogout }) => {
   return (
-    <Box component="Footer"   sx={{ p: 2, textAlign: 'right',  }}>
+    <Box component="footer"   sx={{ p: 2, textAlign: 'right',  }}>
     <Typography variant="body2" color="textSecondary" >Footer comes here 2025</Typography>
     </Box>
   );
