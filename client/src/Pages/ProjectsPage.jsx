@@ -35,42 +35,49 @@ const ProjectForm = ({ onSubmit, initialData, buttonText = "Add Project", onCanc
 
   return (
     <form onSubmit={handleSubmit} >
-   <Grid container spacing={2} alignItems={'center'}>
-  <Grid size={5} >
-       <TextField
-        label="Project Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        fullWidth
-        margin="dense"
-        required
-         size="small"
-      />
-      </Grid>
-        <Grid size={5}>
-      <TextField
-        label="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        fullWidth
-        margin="dense"
-        size="small"
-      />
-    </Grid>
-     <Grid size={2}>
-    
-        <Button type="submit" variant="contained">
-          {buttonText}
-        </Button>
-        {initialData && (
-          <Button variant="text" onClick={onCancel} sx={{ ml: 2 }}>
-            Cancel
-          </Button>
-        )}
-     
-      </Grid>
+      <Grid container spacing={2} alignItems={'center'}>
+        <Grid size={4}>
+          <TextField
+            label="Project Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            margin="dense"
+            required
+            size="small"
+          />
         </Grid>
-
+        <Grid size={4}>
+          <TextField
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            fullWidth
+            margin="dense"
+            size="small"
+          />
+        </Grid>
+        <Grid size={4} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Button
+            type="submit"
+            variant="contained"
+            size="small"
+            sx={{ px: 2 }}
+          >
+            {buttonText}
+          </Button>
+          {initialData && (
+            <Button
+              variant="outlined"
+              onClick={onCancel}
+              size="small"
+              sx={{ px: 2 }}
+            >
+              Cancel
+            </Button>
+          )}
+        </Grid>
+      </Grid>
     </form>
   );
 };
@@ -263,7 +270,7 @@ const handleDeleteProject = (id) => {
               }
             }}
             initialData={editingProject}
-            buttonText={editingProject ? "Update" : "Add Project"}
+            buttonText={editingProject ? "Update" : "Save"}
             onCancel={() => {
               setEditingProject(null);
               setShowAddForm(false);
