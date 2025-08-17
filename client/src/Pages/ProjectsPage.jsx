@@ -152,42 +152,117 @@ const handleDeleteProject = (id) => {
 };
   return (<>
     <Container>
-      <Typography variant="h6" gutterBottom>
-        {editingProject ? "Edit Project" : "Add New Project"}
-      </Typography>
-
-      <ProjectForm  
-        onSubmit={editingProject ? handleUpdateProject : handleAddProject}
-        initialData={editingProject}
-        buttonText={editingProject ? "Update" : "Add Project"}
-        onCancel={() => setEditingProject(null)}
-      />
-<Divider style={{margin:'15px 0'}} />
-
-<Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
- <Typography variant="h6"  sx={{ whiteSpace: 'nowrap' }}>
-       List of Projects
-      </Typography>
- <TextField 
-        label="Search Projects..."
-        variant="outlined"
-        fullWidth
-        size='small'
-        margin='dense'
-        value={searchText}
-        onChange={(e) => {
-          setSearchText(e.target.value);
-          setPage(0);
+      {/* Search & Add Controls - Berry Dashboard Style */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 0,
+          borderRadius: '12px 12px 0 0',
+          border: '1px solid #f0f0f0',
+          borderBottom: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
         }}
-        sx={{  width:'220px' }}
-      />
-</Box>
-     
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 2
+          }}
+        >
+          {/* Left: Search Field */}
+          <TextField
+            placeholder="Search projects..."
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+              setPage(0);
+            }}
+            size="small"
+            sx={{
+              minWidth: 250,
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#f8fafc'
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
 
- 
-      
+          {/* Right: Add Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{
+              textTransform: 'none',
+              borderRadius: '8px',
+              px: 3,
+              py: 1
+            }}
+            onClick={() => {
+              setShowAddForm(!showAddForm);
+              setEditingProject(null); // Clear editing mode when toggling add form
+            }}
+          >
+            <Add sx={{ mr: 1, fontSize: '1.1rem' }} />
+            {showAddForm ? 'Cancel' : 'Add Project'}
+          </Button>
+        </Box>
+      </Paper>
 
-      <TableContainer component={Paper}  sx={{ borderTop: '1px solid #eee' }} >
+      {/* Inline Add/Edit Form */}
+      {(showAddForm || editingProject) && (
+        <Paper
+          sx={{
+            p: 3,
+            mb: 0,
+            borderRadius: 0,
+            border: '1px solid #f0f0f0',
+            borderTop: 'none',
+            borderBottom: 'none',
+            backgroundColor: '#fafbfc'
+          }}
+        >
+          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+            {editingProject ? "Edit Project" : "Add New Project"}
+          </Typography>
+          <ProjectForm
+            onSubmit={(project) => {
+              if (editingProject) {
+                handleUpdateProject(project);
+              } else {
+                handleAddProject(project);
+                setShowAddForm(false); // Hide form after adding
+              }
+            }}
+            initialData={editingProject}
+            buttonText={editingProject ? "Update" : "Add Project"}
+            onCancel={() => {
+              setEditingProject(null);
+              setShowAddForm(false);
+            }}
+          />
+        </Paper>
+      )}
+
+      {/* Table Container */}
+      <TableContainer
+        component={Paper}
+        sx={{
+          mt: 0,
+          borderRadius: (showAddForm || editingProject) ? '0 0 12px 12px' : '0 0 12px 12px',
+          border: '1px solid #f0f0f0',
+          borderTop: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
+      >
         <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}> 
           <TableHead>
             <TableRow>
