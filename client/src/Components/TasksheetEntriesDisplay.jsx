@@ -194,7 +194,7 @@ const [showToast, setShowToast] = useState(false);
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
           }}
         >
-          <Table>
+          <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}>
             <TableHead>
               <TableRow>
                 <TableCell>Date</TableCell>
