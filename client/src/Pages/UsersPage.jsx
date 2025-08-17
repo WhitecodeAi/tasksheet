@@ -245,7 +245,7 @@ const handleChange = (e) => {
             }}
             onClick={handleAddUserClick}
           >
-            <AddIcon sx={{ mr: 1, fontSize: '1.1rem' }} /> Add User
+            Add New
           </Button>
         </Box>
       </Paper>
