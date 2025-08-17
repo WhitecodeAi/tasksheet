@@ -187,7 +187,7 @@ const handleDeleteProject = (id) => {
       
 
       <TableContainer component={Paper}  sx={{ borderTop: '1px solid #eee' }} >
-        <Table size="small"> 
+        <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}> 
           <TableHead>
             <TableRow>
               <TableCell sortDirection={orderBy === 'name' ? order : false}>
