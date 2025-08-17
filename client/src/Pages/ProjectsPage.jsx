@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import {
  Divider, CircularProgress,Container, Box, TextField, Button,
- Typography, Grid, IconButton, InputAdornment
+ Typography, Grid, IconButton, InputAdornment, Fab, Tooltip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -204,23 +204,18 @@ const handleDeleteProject = (id) => {
           />
 
           {/* Right: Add Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{
-              textTransform: 'none',
-              borderRadius: '8px',
-              px: 3,
-              py: 1
-            }}
-            onClick={() => {
-              setShowAddForm(!showAddForm);
-              setEditingProject(null); // Clear editing mode when toggling add form
-            }}
-          >
-            {showAddForm ? 'Cancel' : 'Add New'}
-          </Button>
+          <Tooltip title={showAddForm ? "Cancel" : "Add Project"}>
+            <Fab
+              color="primary"
+              size="small"
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                setEditingProject(null); // Clear editing mode when toggling add form
+              }}
+            >
+              {showAddForm ? '×' : <Add />}
+            </Fab>
+          </Tooltip>
         </Box>
       </Paper>
 
