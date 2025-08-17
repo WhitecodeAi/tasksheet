@@ -398,17 +398,29 @@ const handleChange = (e) => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-       
-           <Button onClick={handleSaveUser} variant="contained" disabled={isLoading}>
-    {isLoading
-      ? isEditing
-        ? 'Saving Changes...'
-        : 'Adding User...'
-      : isEditing
-        ? 'Save Changes'
-        : 'Add'}
-  </Button> 
+          <Button
+            onClick={() => setOpenDialog(false)}
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleSaveUser}
+            variant="contained"
+            disabled={isLoading}
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
+            {isLoading
+              ? isEditing
+                ? 'Saving Changes...'
+                : 'Adding User...'
+              : isEditing
+                ? 'Save Changes'
+                : 'Add'}
+          </Button> 
   {isLoading && (
   <Box sx={{ textAlign: 'center', mt: 2 }}>
     <CircularProgress size={24} />
