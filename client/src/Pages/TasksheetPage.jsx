@@ -136,7 +136,9 @@ const TasksheetPage = () => {
                 sx={{
                   textTransform: 'none',
                   borderRadius: '8px',
-                  px: 2
+                  px: 3,
+                  py: 1,
+                  minHeight: '32px'
                 }}
               >
                 {label}
