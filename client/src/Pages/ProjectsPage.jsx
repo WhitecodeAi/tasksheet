@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Search, Add } from '@mui/icons-material';
+import { Search, Add, PushPin, PushPinOutlined } from '@mui/icons-material';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TablePagination, TableSortLabel} from '@mui/material';
@@ -88,6 +88,7 @@ const [snackbarOpen, setSnackbarOpen] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState('');
 const [deletingId, setDeletingId] = useState(null);
 const [showAddForm, setShowAddForm] = useState(false);
+const [isPinned, setIsPinned] = useState(false);
 
 const filtered = projects.filter(p =>
   p.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -230,16 +231,36 @@ const handleDeleteProject = (id) => {
             backgroundColor: '#fafbfc'
           }}
         >
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-            {editingProject ? "Edit Project" : "Add New Project"}
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6">
+              {editingProject ? "Edit Project" : "Add New Project"}
+            </Typography>
+            {!editingProject && (
+              <IconButton
+                size="small"
+                onClick={() => setIsPinned(!isPinned)}
+                sx={{
+                  color: isPinned ? '#1976d2' : '#9e9e9e',
+                  '&:hover': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                  }
+                }}
+                title={isPinned ? "Unpin form (closes after adding)" : "Pin form (stays open after adding)"}
+              >
+                {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
+              </IconButton>
+            )}
+          </Box>
           <ProjectForm
             onSubmit={(project) => {
               if (editingProject) {
                 handleUpdateProject(project);
               } else {
                 handleAddProject(project);
-                setShowAddForm(false); // Hide form after adding
+                // Only hide form if not pinned
+                if (!isPinned) {
+                  setShowAddForm(false);
+                }
               }
             }}
             initialData={editingProject}
@@ -247,6 +268,7 @@ const handleDeleteProject = (id) => {
             onCancel={() => {
               setEditingProject(null);
               setShowAddForm(false);
+              setIsPinned(false); // Reset pin state when canceling
             }}
           />
         </Paper>
