@@ -38,6 +38,27 @@ export const components = {
     },
   },
 
+  MuiFab: {
+    styleOverrides: {
+      root: {
+        boxShadow: '0 3px 12px rgba(25, 118, 210, 0.24)',
+        '&:hover': {
+          boxShadow: '0 6px 20px rgba(25, 118, 210, 0.32)',
+        },
+      },
+      primary: {
+        backgroundColor: '#1976d2',
+        color: '#ffffff',
+        '&:hover': {
+          backgroundColor: '#1565c0',
+        },
+        '&:active': {
+          backgroundColor: '#0d47a1',
+        },
+      },
+    },
+  },
+
   MuiPaper: {
     styleOverrides: {
       root: {
