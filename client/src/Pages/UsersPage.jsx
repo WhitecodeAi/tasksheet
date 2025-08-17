@@ -303,8 +303,21 @@ const handleChange = (e) => {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell align="right">
-                    <Button size="small" onClick={() => handleEdit(user.user_id)}>Edit</Button>
-                    <Button size="small" color="error" onClick={() => handleDelete(user.user_id)}>Delete</Button>
+                    <Button
+                      size="small"
+                      onClick={() => handleEdit(user.user_id)}
+                      sx={{ px: 2, py: 1, minHeight: '32px', mr: 1 }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(user.user_id)}
+                      sx={{ px: 2, py: 1, minHeight: '32px' }}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
