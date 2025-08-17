@@ -3,9 +3,11 @@ import {
   Container, Typography, Button, Table, TableHead,
   TableRow, TableCell, TableBody, Paper, Box,
   Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, MenuItem, TablePagination, TableSortLabel, CircularProgress
+  TextField, MenuItem, TablePagination, TableSortLabel, CircularProgress,
+  TableContainer, InputAdornment
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { Search } from '@mui/icons-material';
 import axios from 'axios';
 import { api } from '../utils/api';
 
