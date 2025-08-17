@@ -212,8 +212,7 @@ const handleDeleteProject = (id) => {
               setEditingProject(null); // Clear editing mode when toggling add form
             }}
           >
-            <Add sx={{ mr: 1, fontSize: '1.1rem' }} />
-            {showAddForm ? 'Cancel' : 'Add Project'}
+            {showAddForm ? 'Cancel' : 'Add New'}
           </Button>
         </Box>
       </Paper>
