@@ -14,9 +14,11 @@ import {
   TextField,
   InputAdornment,
   Stack,
-  Paper
+  Paper,
+  Fab,
+  Tooltip
 } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { Search, Add } from '@mui/icons-material';
 import { api } from '../utils/api';
 
 const TasksheetPage = () => {
@@ -147,24 +149,19 @@ const TasksheetPage = () => {
           </Stack>
 
           {/* Right: Add Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{
-              textTransform: 'none',
-              borderRadius: '8px',
-              px: 3,
-              py: 1
-            }}
-            onClick={() => {
-              setDrawerOpen(true);
-              setEditMode(false);
-              setSelectedEntry(null);
-            }}
-          >
-            Add New
-          </Button>
+          <Tooltip title="Add Tasksheet Entry">
+            <Fab
+              color="primary"
+              size="small"
+              onClick={() => {
+                setDrawerOpen(true);
+                setEditMode(false);
+                setSelectedEntry(null);
+              }}
+            >
+              <Add />
+            </Fab>
+          </Tooltip>
         </Box>
       </Paper>
 
