@@ -3,9 +3,11 @@ import {
   Container, Typography, Button, Table, TableHead,
   TableRow, TableCell, TableBody, Paper, Box,
   Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, MenuItem, TablePagination, TableSortLabel, CircularProgress
+  TextField, MenuItem, TablePagination, TableSortLabel, CircularProgress,
+  TableContainer, InputAdornment, Fab, Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { Search } from '@mui/icons-material';
 import axios from 'axios';
 import { api } from '../utils/api';
 
@@ -190,24 +192,71 @@ const handleChange = (e) => {
     : filteredUsers.slice().reverse();
   return (
     <Container>
-      <Box display="flex" justifyContent="space-between" mt={4} mb={2}>
-        <Typography variant="h5">👥 Manage Users</Typography>
-        <Box display="flex" gap={2}>
+      {/* Search & Add Controls - Berry Dashboard Style */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 0,
+          borderRadius: '12px 12px 0 0',
+          border: '1px solid #f0f0f0',
+          borderBottom: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 2
+          }}
+        >
+          {/* Left: Search Field */}
           <TextField
-            label="🔍 Search Users"
-            variant="outlined"
-            size="small"
+            placeholder="Search users..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            size="small"
+            sx={{
+              minWidth: 250,
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#f8fafc'
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
+                </InputAdornment>
+              ),
+            }}
           />
-          <Button variant="contained" color="primary" onClick={handleAddUserClick}>
-            <AddIcon/> Add User
-          </Button>
-        </Box>
-      </Box>
 
-      <Paper>
-        <Table>
+          {/* Right: Add Button */}
+          <Tooltip title="Add User">
+            <Fab
+              color="primary"
+              size="small"
+              onClick={handleAddUserClick}
+            >
+              <AddIcon />
+            </Fab>
+          </Tooltip>
+        </Box>
+      </Paper>
+
+      {/* Table Container */}
+      <TableContainer
+        component={Paper}
+        sx={{
+          mt: 0,
+          borderRadius: '0 0 12px 12px',
+          border: '1px solid #f0f0f0',
+          borderTop: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}>
           <TableHead>
             <TableRow>
               <TableCell sortDirection={orderBy === 'name' ? order : false}>
@@ -249,8 +298,21 @@ const handleChange = (e) => {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell align="right">
-                    <Button size="small" onClick={() => handleEdit(user.user_id)}>Edit</Button>
-                    <Button size="small" color="error" onClick={() => handleDelete(user.user_id)}>Delete</Button>
+                    <Button
+                      size="small"
+                      onClick={() => handleEdit(user.user_id)}
+                      sx={{ px: 2, py: 1, minHeight: '32px', mr: 1 }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(user.user_id)}
+                      sx={{ px: 2, py: 1, minHeight: '32px' }}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -265,7 +327,7 @@ const handleChange = (e) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25]}
         />
-      </Paper>
+      </TableContainer>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>{isEditing ? 'Edit User' : 'Add New User'}</DialogTitle>
@@ -331,17 +393,29 @@ const handleChange = (e) => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-       
-           <Button onClick={handleSaveUser} variant="contained" disabled={isLoading}>
-    {isLoading
-      ? isEditing
-        ? 'Saving Changes...'
-        : 'Adding User...'
-      : isEditing
-        ? 'Save Changes'
-        : 'Add'}
-  </Button> 
+          <Button
+            onClick={() => setOpenDialog(false)}
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleSaveUser}
+            variant="contained"
+            disabled={isLoading}
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
+            {isLoading
+              ? isEditing
+                ? 'Saving Changes...'
+                : 'Adding User...'
+              : isEditing
+                ? 'Save Changes'
+                : 'Add'}
+          </Button> 
   {isLoading && (
   <Box sx={{ textAlign: 'center', mt: 2 }}>
     <CircularProgress size={24} />

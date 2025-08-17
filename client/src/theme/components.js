@@ -2,14 +2,58 @@ export const components = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: 6,
-        padding: '5px 12px',
+        borderRadius: 8,
+        textTransform: 'none',
+        fontWeight: 500,
+        boxShadow: 'none',
+        '&:hover': {
+          boxShadow: '0 2px 8px rgba(25, 118, 210, 0.24)',
+        },
       },
       containedPrimary: {
-        backgroundColor: '#2196f3',
-        color: '#fff',
+        backgroundColor: '#1976d2',
+        color: '#ffffff',
         '&:hover': {
-          backgroundColor: '#1976d2',
+          backgroundColor: '#1565c0',
+          boxShadow: '0 4px 12px rgba(25, 118, 210, 0.32)',
+        },
+        '&:active': {
+          backgroundColor: '#0d47a1',
+        },
+      },
+      outlinedPrimary: {
+        borderColor: '#1976d2',
+        color: '#1976d2',
+        '&:hover': {
+          backgroundColor: 'rgba(25, 118, 210, 0.04)',
+          borderColor: '#1565c0',
+        },
+      },
+      textPrimary: {
+        color: '#1976d2',
+        '&:hover': {
+          backgroundColor: 'rgba(25, 118, 210, 0.04)',
+        },
+      },
+    },
+  },
+
+  MuiFab: {
+    styleOverrides: {
+      root: {
+        boxShadow: '0 3px 12px rgba(25, 118, 210, 0.24)',
+        '&:hover': {
+          boxShadow: '0 6px 20px rgba(25, 118, 210, 0.32)',
+        },
+      },
+      primary: {
+        backgroundColor: '#1976d2',
+        color: '#ffffff',
+        '&:hover': {
+          backgroundColor: '#1565c0',
+        },
+        '&:active': {
+          backgroundColor: '#0d47a1',
         },
       },
     },

@@ -139,6 +139,14 @@ switch (user.role) {
         <Button
           variant="contained"
           color="primary"
+          size="small"
+          sx={{
+            px: 3,
+            py: 1,
+            minHeight: '32px',
+            textTransform: 'none',
+            borderRadius: '8px'
+          }}
           href={`/tasksheet-entry?date=${dayjs().format('YYYY-MM-DD')}`}
         >
           Enter Today’s Tasksheet

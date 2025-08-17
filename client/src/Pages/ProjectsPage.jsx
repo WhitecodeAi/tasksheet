@@ -3,10 +3,11 @@ import axios from 'axios';
 
 import {
  Divider, CircularProgress,Container, Box, TextField, Button,
- Typography, Grid, IconButton
+ Typography, Grid, IconButton, InputAdornment, Fab, Tooltip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { Search, Add, PushPin, PushPinOutlined } from '@mui/icons-material';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TablePagination, TableSortLabel} from '@mui/material';
@@ -34,42 +35,49 @@ const ProjectForm = ({ onSubmit, initialData, buttonText = "Add Project", onCanc
 
   return (
     <form onSubmit={handleSubmit} >
-   <Grid container spacing={2} alignItems={'center'}>
-  <Grid size={5} >
-       <TextField
-        label="Project Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        fullWidth
-        margin="dense"
-        required
-         size="small"
-      />
-      </Grid>
-        <Grid size={5}>
-      <TextField
-        label="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        fullWidth
-        margin="dense"
-        size="small"
-      />
-    </Grid>
-     <Grid size={2}>
-    
-        <Button type="submit" variant="contained">
-          {buttonText}
-        </Button>
-        {initialData && (
-          <Button variant="text" onClick={onCancel} sx={{ ml: 2 }}>
-            Cancel
-          </Button>
-        )}
-     
-      </Grid>
+      <Grid container spacing={2} alignItems={'center'}>
+        <Grid size={4}>
+          <TextField
+            label="Project Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            margin="dense"
+            required
+            size="small"
+          />
         </Grid>
-
+        <Grid size={4}>
+          <TextField
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            fullWidth
+            margin="dense"
+            size="small"
+          />
+        </Grid>
+        <Grid size={4} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Button
+            type="submit"
+            variant="contained"
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
+            {buttonText}
+          </Button>
+          {initialData && (
+            <Button
+              variant="outlined"
+              onClick={onCancel}
+              size="small"
+              sx={{ px: 3, py: 1, minHeight: '32px' }}
+            >
+              Cancel
+            </Button>
+          )}
+        </Grid>
+      </Grid>
     </form>
   );
 };
@@ -85,8 +93,9 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
 
 const [snackbarOpen, setSnackbarOpen] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState('');
-
 const [deletingId, setDeletingId] = useState(null);
+const [showAddForm, setShowAddForm] = useState(false);
+const [isPinned, setIsPinned] = useState(false);
 
 const filtered = projects.filter(p =>
   p.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -151,43 +160,133 @@ const handleDeleteProject = (id) => {
 };
   return (<>
     <Container>
-      <Typography variant="h6" gutterBottom>
-        {editingProject ? "Edit Project" : "Add New Project"}
-      </Typography>
-
-      <ProjectForm  
-        onSubmit={editingProject ? handleUpdateProject : handleAddProject}
-        initialData={editingProject}
-        buttonText={editingProject ? "Update" : "Add Project"}
-        onCancel={() => setEditingProject(null)}
-      />
-<Divider style={{margin:'15px 0'}} />
-
-<Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
- <Typography variant="h6"  sx={{ whiteSpace: 'nowrap' }}>
-       List of Projects
-      </Typography>
- <TextField 
-        label="Search Projects..."
-        variant="outlined"
-        fullWidth
-        size='small'
-        margin='dense'
-        value={searchText}
-        onChange={(e) => {
-          setSearchText(e.target.value);
-          setPage(0);
+      {/* Search & Add Controls - Berry Dashboard Style */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 0,
+          borderRadius: '12px 12px 0 0',
+          border: '1px solid #f0f0f0',
+          borderBottom: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
         }}
-        sx={{  width:'220px' }}
-      />
-</Box>
-     
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 2
+          }}
+        >
+          {/* Left: Search Field */}
+          <TextField
+            placeholder="Search projects..."
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+              setPage(0);
+            }}
+            size="small"
+            sx={{
+              minWidth: 250,
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#f8fafc'
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
 
- 
-      
+          {/* Right: Add Button */}
+          <Tooltip title={showAddForm ? "Cancel" : "Add Project"}>
+            <Fab
+              color="primary"
+              size="small"
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                setEditingProject(null); // Clear editing mode when toggling add form
+              }}
+            >
+              {showAddForm ? '×' : <Add />}
+            </Fab>
+          </Tooltip>
+        </Box>
+      </Paper>
 
-      <TableContainer component={Paper}  sx={{ borderTop: '1px solid #eee' }} >
-        <Table size="small"> 
+      {/* Inline Add/Edit Form */}
+      {(showAddForm || editingProject) && (
+        <Paper
+          sx={{
+            p: 3,
+            mb: 0,
+            borderRadius: 0,
+            border: '1px solid #f0f0f0',
+            borderTop: 'none',
+            borderBottom: 'none',
+            backgroundColor: '#fafbfc'
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6">
+              {editingProject ? "Edit Project" : "Add New Project"}
+            </Typography>
+            {!editingProject && (
+              <IconButton
+                size="small"
+                onClick={() => setIsPinned(!isPinned)}
+                sx={{
+                  color: isPinned ? '#1976d2' : '#9e9e9e',
+                  '&:hover': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                  }
+                }}
+                title={isPinned ? "Unpin form (closes after adding)" : "Pin form (stays open after adding)"}
+              >
+                {isPinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
+              </IconButton>
+            )}
+          </Box>
+          <ProjectForm
+            onSubmit={(project) => {
+              if (editingProject) {
+                handleUpdateProject(project);
+              } else {
+                handleAddProject(project);
+                // Only hide form if not pinned
+                if (!isPinned) {
+                  setShowAddForm(false);
+                }
+              }
+            }}
+            initialData={editingProject}
+            buttonText={editingProject ? "Update" : "Save"}
+            onCancel={() => {
+              setEditingProject(null);
+              setShowAddForm(false);
+              setIsPinned(false); // Reset pin state when canceling
+            }}
+          />
+        </Paper>
+      )}
+
+      {/* Table Container */}
+      <TableContainer
+        component={Paper}
+        sx={{
+          mt: 0,
+          borderRadius: (showAddForm || editingProject) ? '0 0 12px 12px' : '0 0 12px 12px',
+          border: '1px solid #f0f0f0',
+          borderTop: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}> 
           <TableHead>
             <TableRow>
               <TableCell sortDirection={orderBy === 'name' ? order : false}>
@@ -231,17 +330,25 @@ const handleDeleteProject = (id) => {
                 <TableCell>{project.name}</TableCell>
                 <TableCell>{project.description}</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => setEditingProject(project)}><EditIcon /></IconButton>
-             <IconButton
-  onClick={() => handleDeleteProject(project.id)}
-  disabled={deletingId === project.id}
->
-  {deletingId === project.id ? (
-    <CircularProgress size={20} />
-  ) : (
-    <DeleteIcon />
-  )}
-</IconButton>
+                  <IconButton
+                    onClick={() => setEditingProject(project)}
+                    size="small"
+                    sx={{ minHeight: '32px', minWidth: '32px' }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDeleteProject(project.id)}
+                    disabled={deletingId === project.id}
+                    size="small"
+                    sx={{ minHeight: '32px', minWidth: '32px' }}
+                  >
+                    {deletingId === project.id ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      <DeleteIcon />
+                    )}
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}

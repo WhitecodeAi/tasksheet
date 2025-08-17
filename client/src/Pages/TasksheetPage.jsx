@@ -10,8 +10,15 @@ import {
   Typography,
   Divider,
   Snackbar,
-  Alert
+  Alert,
+  TextField,
+  InputAdornment,
+  Stack,
+  Paper,
+  Fab,
+  Tooltip
 } from '@mui/material';
+import { Search, Add } from '@mui/icons-material';
 import { api } from '../utils/api';
 
 const TasksheetPage = () => {
@@ -21,6 +28,8 @@ const TasksheetPage = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterRange, setFilterRange] = useState('TODAY');
 
   const taskListRef = useRef();
   const formRef = useRef(); // 👈 Ref to trigger form submit
@@ -71,26 +80,101 @@ const TasksheetPage = () => {
   
   return (
     <>
-      {/* 🔘 Add Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <Button variant="contained" color="primary" 
-          onClick={() => {
-            setDrawerOpen(true);
-            setEditMode(false);
-            setSelectedEntry(null);
-          }}>
-          Add
-        </Button>
-      </Box>
+      {/* 🔍 Search, Filter & Add Controls - Berry Dashboard Style */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 0,
+          borderRadius: '12px 12px 0 0',
+          border: '1px solid #f0f0f0',
+          borderBottom: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2
+          }}
+        >
+          {/* Left: Search Field */}
+          <TextField
+            placeholder="Search entries..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            size="small"
+            sx={{
+              minWidth: 250,
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#f8fafc'
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          {/* Center: Filter Buttons */}
+          <Stack direction="row" spacing={1}>
+            {[
+              { label: "Today", value: "TODAY" },
+              { label: "This Week", value: "WEEK" },
+              { label: "This Month", value: "MONTH" },
+              { label: "All", value: "ALL" },
+            ].map(({ label, value }) => (
+              <Button
+                key={value}
+                onClick={() => setFilterRange(value)}
+                variant={filterRange === value ? "contained" : "outlined"}
+                color={filterRange === value ? "primary" : "inherit"}
+                size="small"
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: '8px',
+                  px: 3,
+                  py: 1,
+                  minHeight: '32px'
+                }}
+              >
+                {label}
+              </Button>
+            ))}
+          </Stack>
+
+          {/* Right: Add Button */}
+          <Tooltip title="Add Tasksheet Entry">
+            <Fab
+              color="primary"
+              size="small"
+              onClick={() => {
+                setDrawerOpen(true);
+                setEditMode(false);
+                setSelectedEntry(null);
+              }}
+            >
+              <Add />
+            </Fab>
+          </Tooltip>
+        </Box>
+      </Paper>
 
       {/* 📋 Grid Display */}
-      <Grid container >
+      <Grid container>
         <Grid item size={12}>
           <TasksheetEntriesDisplay
             userId={loggedInUser?.id}
             ref={taskListRef}
             onEdit={handleEditClick}
             onDeleteSuccess={handleDeleteSuccess}
+            searchQuery={searchQuery}
+            filterRange={filterRange}
           />
         </Grid>
       </Grid>
@@ -133,10 +217,20 @@ const TasksheetPage = () => {
 
         {/* 🔻 Footer */}
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-          <Button onClick={handleDrawerClose} color="secondary">
+          <Button
+            onClick={handleDrawerClose}
+            color="secondary"
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
             Cancel
           </Button>
-          <Button variant="contained" onClick={() => formRef.current?.submitForm()}>
+          <Button
+            variant="contained"
+            onClick={() => formRef.current?.submitForm()}
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
             Submit
           </Button>
         </Box>

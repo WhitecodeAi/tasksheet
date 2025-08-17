@@ -23,11 +23,11 @@ import {
 import dayjs from "dayjs";
 import { api } from "../utils/api";
 
-const TasksheetEntriesDisplay = forwardRef(({ userId, onEdit, onDeleteSuccess }, ref) => {
+const TasksheetEntriesDisplay = forwardRef(({ userId, onEdit, onDeleteSuccess, searchQuery = '', filterRange = 'TODAY' }, ref) => {
 
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [filterRange, setFilterRange] = useState("TODAY");
+  // filterRange is now passed as prop
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
 const [showToast, setShowToast] = useState(false);
@@ -75,9 +75,7 @@ const [showToast, setShowToast] = useState(false);
     fetchEntries();
   }, [userId]);
 
-  const applyDateFilter = (rangeLabel) => {
-    setFilterRange(rangeLabel);
-  };
+  // applyDateFilter is now handled by parent component
 
   const getProjectName = (id) => {
     const project = projects.find((p) => String(p.id) === String(id));
@@ -93,6 +91,7 @@ const [showToast, setShowToast] = useState(false);
     const now = dayjs();
     let filtered = [];
 
+    // First apply date filter
     switch (filterRange) {
       case "TODAY":
         filtered = entries.filter((e) =>
@@ -122,6 +121,24 @@ const [showToast, setShowToast] = useState(false);
       default:
         filtered = [...entries];
         break;
+    }
+
+    // Then apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((entry) => {
+        const projectName = getProjectName(entry.project_id).toLowerCase();
+        const categoryName = getCategoryName(entry.task_category_id).toLowerCase();
+        const taskName = (entry.task_name || '').toLowerCase();
+        const comments = (entry.comments || '').toLowerCase();
+
+        return (
+          projectName.includes(query) ||
+          categoryName.includes(query) ||
+          taskName.includes(query) ||
+          comments.includes(query)
+        );
+      });
     }
 
     return filtered.sort(
@@ -157,27 +174,6 @@ const [showToast, setShowToast] = useState(false);
 
   return (
     <>
-      <Typography variant="h6" gutterBottom>
-        Tasksheet Entries
-      </Typography>
-
-      <Stack direction="row" spacing={1} mb={2}>
-        {[
-          { label: "Today", value: "TODAY" },
-          { label: "This Week", value: "WEEK" },
-          { label: "This Month", value: "MONTH" },
-          { label: "All", value: "ALL" },
-        ].map(({ label, value }) => (
-          <Button
-            key={value}
-            onClick={() => applyDateFilter(value)}
-            variant={filterRange === value ? "contained" : "outlined"}
-            color={filterRange === value ? "primary" : "inherit"}
-          >
-            {label}
-          </Button>
-        ))}
-      </Stack>
 
       {isLoading ? (
         <Typography variant="body1" sx={{ textAlign: "center" }}>
@@ -188,8 +184,17 @@ const [showToast, setShowToast] = useState(false);
           No entries found for this period.
         </Typography>
       ) : (
-        <TableContainer component={Paper} sx={{ mt: 3 }}>
-          <Table>
+        <TableContainer
+          component={Paper}
+          sx={{
+            mt: 0,
+            borderRadius: '0 0 12px 12px',
+            border: '1px solid #f0f0f0',
+            borderTop: 'none',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          }}
+        >
+          <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}>
             <TableHead>
               <TableRow>
                 <TableCell>Date</TableCell>
@@ -221,8 +226,17 @@ const [showToast, setShowToast] = useState(false);
                   <TableCell>{entry.comments}</TableCell>
                   <TableCell align="center">
                     <ButtonGroup variant="text" size="small">
-                      <Button onClick={() => handleEdit(entry)}>Edit</Button>
-                      <Button color="error" onClick={() => handleDelete(entry)}>
+                      <Button
+                        onClick={() => handleEdit(entry)}
+                        sx={{ px: 2, py: 1, minHeight: '32px' }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        color="error"
+                        onClick={() => handleDelete(entry)}
+                        sx={{ px: 2, py: 1, minHeight: '32px' }}
+                      >
                         Delete
                       </Button>
                     </ButtonGroup>
