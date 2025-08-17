@@ -55,7 +55,15 @@ const LoginForm = ({ email, password, error, onEmailChange, onPasswordChange, on
         <Button
           variant="contained"
           fullWidth
-          style={{ marginTop: 20 }}
+          size="small"
+          sx={{
+            mt: 3,
+            px: 3,
+            py: 1,
+            minHeight: '32px',
+            textTransform: 'none',
+            borderRadius: '8px'
+          }}
           onClick={onLogin}
         >
           Login
