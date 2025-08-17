@@ -226,8 +226,17 @@ const [showToast, setShowToast] = useState(false);
                   <TableCell>{entry.comments}</TableCell>
                   <TableCell align="center">
                     <ButtonGroup variant="text" size="small">
-                      <Button onClick={() => handleEdit(entry)}>Edit</Button>
-                      <Button color="error" onClick={() => handleDelete(entry)}>
+                      <Button
+                        onClick={() => handleEdit(entry)}
+                        sx={{ px: 2, py: 1, minHeight: '32px' }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        color="error"
+                        onClick={() => handleDelete(entry)}
+                        sx={{ px: 2, py: 1, minHeight: '32px' }}
+                      >
                         Delete
                       </Button>
                     </ButtonGroup>
