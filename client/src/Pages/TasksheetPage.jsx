@@ -161,7 +161,7 @@ const TasksheetPage = () => {
               setSelectedEntry(null);
             }}
           >
-            Add Entry
+            Add New
           </Button>
         </Box>
       </Paper>
