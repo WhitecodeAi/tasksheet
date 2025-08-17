@@ -4,7 +4,7 @@ import {
   TableRow, TableCell, TableBody, Paper, Box,
   Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, MenuItem, TablePagination, TableSortLabel, CircularProgress,
-  TableContainer, InputAdornment
+  TableContainer, InputAdornment, Fab, Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { Search } from '@mui/icons-material';
@@ -233,20 +233,15 @@ const handleChange = (e) => {
           />
 
           {/* Right: Add Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{
-              textTransform: 'none',
-              borderRadius: '8px',
-              px: 3,
-              py: 1
-            }}
-            onClick={handleAddUserClick}
-          >
-            Add New
-          </Button>
+          <Tooltip title="Add User">
+            <Fab
+              color="primary"
+              size="small"
+              onClick={handleAddUserClick}
+            >
+              <AddIcon />
+            </Fab>
+          </Tooltip>
         </Box>
       </Paper>
 
