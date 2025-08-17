@@ -62,7 +62,7 @@ const ProjectForm = ({ onSubmit, initialData, buttonText = "Add Project", onCanc
             type="submit"
             variant="contained"
             size="small"
-            sx={{ px: 2 }}
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
           >
             {buttonText}
           </Button>
@@ -71,7 +71,7 @@ const ProjectForm = ({ onSubmit, initialData, buttonText = "Add Project", onCanc
               variant="outlined"
               onClick={onCancel}
               size="small"
-              sx={{ px: 2 }}
+              sx={{ px: 3, py: 1, minHeight: '32px' }}
             >
               Cancel
             </Button>
