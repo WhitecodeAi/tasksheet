@@ -207,7 +207,7 @@ const handleChange = (e) => {
       </Box>
 
       <Paper>
-        <Table>
+        <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}>
           <TableHead>
             <TableRow>
               <TableCell sortDirection={orderBy === 'name' ? order : false}>
