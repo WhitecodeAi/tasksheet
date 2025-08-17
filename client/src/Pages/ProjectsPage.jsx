@@ -335,17 +335,25 @@ const handleDeleteProject = (id) => {
                 <TableCell>{project.name}</TableCell>
                 <TableCell>{project.description}</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => setEditingProject(project)}><EditIcon /></IconButton>
-             <IconButton
-  onClick={() => handleDeleteProject(project.id)}
-  disabled={deletingId === project.id}
->
-  {deletingId === project.id ? (
-    <CircularProgress size={20} />
-  ) : (
-    <DeleteIcon />
-  )}
-</IconButton>
+                  <IconButton
+                    onClick={() => setEditingProject(project)}
+                    size="small"
+                    sx={{ minHeight: '32px', minWidth: '32px' }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDeleteProject(project.id)}
+                    disabled={deletingId === project.id}
+                    size="small"
+                    sx={{ minHeight: '32px', minWidth: '32px' }}
+                  >
+                    {deletingId === project.id ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      <DeleteIcon />
+                    )}
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
