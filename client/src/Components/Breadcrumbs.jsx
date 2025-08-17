@@ -1,6 +1,8 @@
 import React from 'react';
 import { Breadcrumbs as MUIBreadcrumbs, Link, Typography, Box } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
+import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 
 const Breadcrumbs = ({ pageTitle }) => {
   const location = useLocation();
@@ -84,7 +86,7 @@ const Breadcrumbs = ({ pageTitle }) => {
             }
           }}
         >
-          Home
+       <HomeTwoToneIcon/>
         </Link>
 
         {pathnames.map((value, index) => {

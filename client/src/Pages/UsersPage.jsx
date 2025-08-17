@@ -191,7 +191,7 @@ const handleChange = (e) => {
     ? filteredUsers.slice().sort(getComparator(order, orderBy))
     : filteredUsers.slice().reverse();
   return (
-    <Container>
+    <>
       {/* Search & Add Controls - Berry Dashboard Style */}
       <Paper
         sx={{
@@ -423,7 +423,7 @@ const handleChange = (e) => {
 )}
         </DialogActions>
       </Dialog>
-    </Container>
+    </>
   );
 };
 

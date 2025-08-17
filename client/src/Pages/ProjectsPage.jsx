@@ -7,6 +7,8 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+ import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import { Search, Add, PushPin, PushPinOutlined } from '@mui/icons-material';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
@@ -159,7 +161,7 @@ const handleDeleteProject = (id) => {
     });
 };
   return (<>
-    <Container>
+    
       {/* Search & Add Controls - Berry Dashboard Style */}
       <Paper
         sx={{
@@ -335,7 +337,8 @@ const handleDeleteProject = (id) => {
                     size="small"
                     sx={{ minHeight: '32px', minWidth: '32px' }}
                   >
-                    <EditIcon />
+                    <EditTwoToneIcon />
+                    
                   </IconButton>
                   <IconButton
                     onClick={() => handleDeleteProject(project.id)}
@@ -346,7 +349,8 @@ const handleDeleteProject = (id) => {
                     {deletingId === project.id ? (
                       <CircularProgress size={20} />
                     ) : (
-                      <DeleteIcon />
+                      <DeleteTwoToneIcon />
+                     
                     )}
                   </IconButton>
                 </TableCell>
@@ -369,7 +373,7 @@ const handleDeleteProject = (id) => {
         />
       </TableContainer>
 
-    </Container>
+    
     <Snackbar
   open={snackbarOpen}
   autoHideDuration={3000}
