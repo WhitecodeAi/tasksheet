@@ -3,10 +3,11 @@ import axios from 'axios';
 
 import {
  Divider, CircularProgress,Container, Box, TextField, Button,
- Typography, Grid, IconButton
+ Typography, Grid, IconButton, InputAdornment
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { Search, Add } from '@mui/icons-material';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TablePagination, TableSortLabel} from '@mui/material';
@@ -85,8 +86,8 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
 
 const [snackbarOpen, setSnackbarOpen] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState('');
-
 const [deletingId, setDeletingId] = useState(null);
+const [showAddForm, setShowAddForm] = useState(false);
 
 const filtered = projects.filter(p =>
   p.name.toLowerCase().includes(searchText.toLowerCase()) ||
