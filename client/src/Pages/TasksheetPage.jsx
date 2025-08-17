@@ -220,10 +220,20 @@ const TasksheetPage = () => {
 
         {/* 🔻 Footer */}
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-          <Button onClick={handleDrawerClose} color="secondary">
+          <Button
+            onClick={handleDrawerClose}
+            color="secondary"
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
             Cancel
           </Button>
-          <Button variant="contained" onClick={() => formRef.current?.submitForm()}>
+          <Button
+            variant="contained"
+            onClick={() => formRef.current?.submitForm()}
+            size="small"
+            sx={{ px: 3, py: 1, minHeight: '32px' }}
+          >
             Submit
           </Button>
         </Box>
