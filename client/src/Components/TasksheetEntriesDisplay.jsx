@@ -408,7 +408,7 @@ const [showToast, setShowToast] = useState(false);
             size="small"
             onClick={() => handleEdit(params.row)}
             sx={{
-              px: 2,
+              px: 1,
               py: 1,
               minHeight: '32px',
               boxShadow: 'none',
