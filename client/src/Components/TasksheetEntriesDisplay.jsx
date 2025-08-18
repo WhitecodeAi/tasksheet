@@ -477,6 +477,7 @@ const [showToast, setShowToast] = useState(false);
             pageSizeOptions={[10, 25, 50, 100]}
             sortModel={sortModel}
             onSortModelChange={setSortModel}
+            getRowHeight={() => 'auto'}
             initialState={{
               pagination: {
                 paginationModel: {
