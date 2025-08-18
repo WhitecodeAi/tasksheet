@@ -26,6 +26,7 @@ const TasksheetEntriesDisplay = forwardRef(({
   onDeleteSuccess,
   searchQuery = '',
   filterRange = 'TODAY',
+  activeFilters = {},
   showFilters = false,
   showColumnMenu = false,
   onFiltersChange,
@@ -156,6 +157,47 @@ const [showToast, setShowToast] = useState(false);
           comments.includes(query)
         );
       });
+    }
+
+    // Apply advanced filters
+    if (activeFilters) {
+      // Date range filter
+      if (activeFilters.dateRange?.from || activeFilters.dateRange?.to) {
+        filtered = filtered.filter((entry) => {
+          const entryDate = dayjs(entry.entry_date);
+          const fromDate = activeFilters.dateRange?.from ? dayjs(activeFilters.dateRange.from) : null;
+          const toDate = activeFilters.dateRange?.to ? dayjs(activeFilters.dateRange.to) : null;
+
+          if (fromDate && entryDate.isBefore(fromDate, 'day')) return false;
+          if (toDate && entryDate.isAfter(toDate, 'day')) return false;
+          return true;
+        });
+      }
+
+      // Hours range filter
+      if (activeFilters.hoursRange?.min || activeFilters.hoursRange?.max) {
+        filtered = filtered.filter((entry) => {
+          const totalHours = entry.hours + (entry.minutes / 60);
+          const minHours = parseFloat(activeFilters.hoursRange?.min) || 0;
+          const maxHours = parseFloat(activeFilters.hoursRange?.max) || Infinity;
+
+          return totalHours >= minHours && totalHours <= maxHours;
+        });
+      }
+
+      // Project filter (if needed later)
+      if (activeFilters.projects?.length > 0) {
+        filtered = filtered.filter((entry) =>
+          activeFilters.projects.includes(entry.project_id)
+        );
+      }
+
+      // Category filter (if needed later)
+      if (activeFilters.categories?.length > 0) {
+        filtered = filtered.filter((entry) =>
+          activeFilters.categories.includes(entry.task_category_id)
+        );
+      }
     }
 
     return filtered.sort(
