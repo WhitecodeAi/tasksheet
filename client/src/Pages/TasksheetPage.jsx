@@ -41,6 +41,8 @@ const TasksheetPage = () => {
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [columnMenuAnchor, setColumnMenuAnchor] = useState(null);
   const [filterMenuAnchor, setFilterMenuAnchor] = useState(null);
+  const [showHorizontalFilters, setShowHorizontalFilters] = useState(false);
+  const [dataGridFilters, setDataGridFilters] = useState([]);
   const [activeFilters, setActiveFilters] = useState({
     projects: [],
     categories: [],
