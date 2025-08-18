@@ -356,11 +356,16 @@ const [showToast, setShowToast] = useState(false);
       filterable: true,
       hide: !columnVisibility.task_name,
       renderCell: (params) => (
-        <Tooltip title={params.value}>
-          <Box sx={{ whiteSpace: 'pre-line', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {params.value}
-          </Box>
-        </Tooltip>
+        <Box sx={{
+          whiteSpace: 'pre-line',
+          wordWrap: 'break-word',
+          overflow: 'visible',
+          width: '100%',
+          padding: '8px 0',
+          lineHeight: 1.4
+        }}>
+          {params.value}
+        </Box>
       ),
     },
     {
