@@ -36,7 +36,6 @@ const TasksheetEntriesDisplay = forwardRef(({
 
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const apiRef = useGridApiRef();
   // filterRange is now passed as prop
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
