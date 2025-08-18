@@ -38,6 +38,16 @@ const TasksheetEntriesDisplay = forwardRef(({
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
 const [showToast, setShowToast] = useState(false);
+  const [columnVisibility, setColumnVisibility] = useState({
+    entry_date: true,
+    project_name: true,
+    category_name: true,
+    task_name: true,
+    total_time: true,
+    comments: true,
+    actions: true,
+  });
+  const [sortModel, setSortModel] = useState([{ field: 'entry_date', sort: 'desc' }]);
   const fetchEntries = async () => {
     setIsLoading(true);
     try {
