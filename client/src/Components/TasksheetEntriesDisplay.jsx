@@ -16,7 +16,7 @@ import {
   Box,
   Tooltip
 } from "@mui/material";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbarFilterButton } from '@mui/x-data-grid';
 import dayjs from "dayjs";
 import { api } from "../utils/api";
 
