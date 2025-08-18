@@ -396,7 +396,7 @@ const [showToast, setShowToast] = useState(false);
     },
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: '',
       width: 140,
       sortable: false,
       disableColumnMenu: true,
