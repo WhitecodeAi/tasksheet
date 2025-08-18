@@ -39,6 +39,7 @@ const TasksheetPage = () => {
   const [filterRange, setFilterRange] = useState('TODAY');
   const [showFilters, setShowFilters] = useState(false);
   const [showColumnMenu, setShowColumnMenu] = useState(false);
+  const [columnMenuAnchor, setColumnMenuAnchor] = useState(null);
 
   const taskListRef = useRef();
   const formRef = useRef(); // 👈 Ref to trigger form submit
