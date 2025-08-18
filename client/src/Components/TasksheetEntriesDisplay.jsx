@@ -358,7 +358,6 @@ const [showToast, setShowToast] = useState(false);
       type: 'string',
       sortable: true,
       filterable: true,
-      hide: !columnVisibility.task_name,
       renderCell: (params) => (
         <Box sx={{
           whiteSpace: 'pre-line',
