@@ -364,30 +364,6 @@ const [showToast, setShowToast] = useState(false);
 
   return (
     <>
-      {/* Simple Filter Panel */}
-      {showFilters && (
-        <Paper
-          sx={{
-            p: 2,
-            mb: 0,
-            borderRadius: 0,
-            border: '1px solid #f0f0f0',
-            borderTop: 'none',
-            borderBottom: 'none',
-            backgroundColor: '#f8fafc'
-          }}
-        >
-          <Typography variant="subtitle2" gutterBottom>
-            Quick Filters
-          </Typography>
-          <Stack direction="row" spacing={2} flexWrap="wrap">
-            <Typography variant="body2" color="text.secondary">
-              Use the search box above to filter entries, or click column headers to sort.
-            </Typography>
-          </Stack>
-        </Paper>
-      )}
-
       {isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
           <CircularProgress />
