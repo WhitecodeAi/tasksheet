@@ -268,7 +268,7 @@ const TasksheetPage = () => {
             </Typography>
 
             {/* Column Selection */}
-            <FormControl size="small" sx={{ minWidth: 150 }}>
+            <FormControl size="small" sx={{ minWidth: 150, '& .MuiInputBase-root': { minHeight: '32px' } }}>
               <InputLabel>Column</InputLabel>
               <Select
                 value={singleFilter.column}
@@ -289,7 +289,7 @@ const TasksheetPage = () => {
             </FormControl>
 
             {/* Operator Selection */}
-            <FormControl size="small" sx={{ minWidth: 120 }}>
+            <FormControl size="small" sx={{ minWidth: 120, '& .MuiInputBase-root': { minHeight: '32px' } }}>
               <InputLabel>Operator</InputLabel>
               <Select
                 value={singleFilter.operator}
@@ -324,7 +324,10 @@ const TasksheetPage = () => {
                 isActive: e.target.value.trim() !== ''
               }))}
               InputLabelProps={singleFilter.column === 'entry_date' ? { shrink: true } : {}}
-              sx={{ minWidth: 150 }}
+              sx={{
+                minWidth: 150,
+                '& .MuiInputBase-root': { minHeight: '32px' }
+              }}
             />
 
             {/* Clear Button */}
