@@ -16,11 +16,21 @@ import {
   Box,
   Tooltip
 } from "@mui/material";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarExport } from '@mui/x-data-grid';
 import dayjs from "dayjs";
 import { api } from "../utils/api";
 
-const TasksheetEntriesDisplay = forwardRef(({ userId, onEdit, onDeleteSuccess, searchQuery = '', filterRange = 'TODAY' }, ref) => {
+const TasksheetEntriesDisplay = forwardRef(({
+  userId,
+  onEdit,
+  onDeleteSuccess,
+  searchQuery = '',
+  filterRange = 'TODAY',
+  showFilters = false,
+  showColumnMenu = false,
+  onFiltersChange,
+  onColumnMenuChange
+}, ref) => {
 
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -279,11 +289,31 @@ const [showToast, setShowToast] = useState(false);
             disableRowSelectionOnClick
             hideFooterSelectedRowCount
             pageSizeOptions={[10, 25, 50, 100]}
+            filterMode="client"
+            disableColumnFilter={!showFilters}
+            disableColumnSelector={!showColumnMenu}
             initialState={{
               pagination: {
                 paginationModel: {
                   pageSize: 25,
                 },
+              },
+              filter: {
+                filterModel: {
+                  items: [],
+                },
+              },
+              columns: {
+                columnVisibilityModel: {},
+              },
+            }}
+            slots={{
+              toolbar: showFilters || showColumnMenu ? GridToolbarContainer : null,
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: false,
+                showExport: true,
               },
             }}
             sx={{
