@@ -314,23 +314,59 @@ const TasksheetPage = () => {
               </Select>
             </FormControl>
 
-            {/* Value Input */}
-            <TextField
-              size="small"
-              label="Value"
-              type={singleFilter.column === 'entry_date' ? 'date' : 'text'}
-              value={singleFilter.value}
-              onChange={(e) => setSingleFilter(prev => ({
-                ...prev,
-                value: e.target.value,
-                isActive: e.target.value.trim() !== ''
-              }))}
-              InputLabelProps={singleFilter.column === 'entry_date' ? { shrink: true } : {}}
-              sx={{
-                minWidth: 150,
-                '& .MuiInputBase-root': { minHeight: '32px' }
-              }}
-            />
+            {/* Value Input - Show date range for Date column, single input for others */}
+            {singleFilter.column === 'entry_date' ? (
+              <>
+                <TextField
+                  size="small"
+                  label="From Date"
+                  type="date"
+                  value={singleFilter.fromDate}
+                  onChange={(e) => setSingleFilter(prev => ({
+                    ...prev,
+                    fromDate: e.target.value,
+                    isActive: (e.target.value.trim() !== '' || prev.toDate.trim() !== '')
+                  }))}
+                  InputLabelProps={{ shrink: true }}
+                  sx={{
+                    minWidth: 140,
+                    '& .MuiInputBase-root': { minHeight: '32px' }
+                  }}
+                />
+                <TextField
+                  size="small"
+                  label="To Date"
+                  type="date"
+                  value={singleFilter.toDate}
+                  onChange={(e) => setSingleFilter(prev => ({
+                    ...prev,
+                    toDate: e.target.value,
+                    isActive: (prev.fromDate.trim() !== '' || e.target.value.trim() !== '')
+                  }))}
+                  InputLabelProps={{ shrink: true }}
+                  sx={{
+                    minWidth: 140,
+                    '& .MuiInputBase-root': { minHeight: '32px' }
+                  }}
+                />
+              </>
+            ) : (
+              <TextField
+                size="small"
+                label="Value"
+                type="text"
+                value={singleFilter.value}
+                onChange={(e) => setSingleFilter(prev => ({
+                  ...prev,
+                  value: e.target.value,
+                  isActive: e.target.value.trim() !== ''
+                }))}
+                sx={{
+                  minWidth: 150,
+                  '& .MuiInputBase-root': { minHeight: '32px' }
+                }}
+              />
+            )}
 
             {/* Clear Button */}
             <Button
