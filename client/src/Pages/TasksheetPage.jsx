@@ -313,6 +313,112 @@ const TasksheetPage = () => {
         </Box>
       </Drawer>
 
+      {/* Filter Menu */}
+      <Menu
+        anchorEl={filterMenuAnchor}
+        open={Boolean(filterMenuAnchor)}
+        onClose={() => setFilterMenuAnchor(null)}
+        PaperProps={{
+          sx: { width: 300, maxHeight: 400 }
+        }}
+      >
+        <MenuItem disabled>
+          <Typography variant="subtitle2" fontWeight={600}>
+            Filter Options
+          </Typography>
+        </MenuItem>
+        <Divider />
+
+        {/* Date Range Filter */}
+        <MenuItem disabled>
+          <Typography variant="body2" fontWeight={500} color="text.secondary">
+            Date Range
+          </Typography>
+        </MenuItem>
+        <Box sx={{ px: 2, pb: 1 }}>
+          <Stack direction="row" spacing={1}>
+            <TextField
+              size="small"
+              type="date"
+              label="From"
+              value={activeFilters.dateRange?.from || ''}
+              onChange={(e) => setActiveFilters(prev => ({
+                ...prev,
+                dateRange: { ...prev.dateRange, from: e.target.value }
+              }))}
+              InputLabelProps={{ shrink: true }}
+              sx={{ flex: 1 }}
+            />
+            <TextField
+              size="small"
+              type="date"
+              label="To"
+              value={activeFilters.dateRange?.to || ''}
+              onChange={(e) => setActiveFilters(prev => ({
+                ...prev,
+                dateRange: { ...prev.dateRange, to: e.target.value }
+              }))}
+              InputLabelProps={{ shrink: true }}
+              sx={{ flex: 1 }}
+            />
+          </Stack>
+        </Box>
+
+        {/* Hours Range Filter */}
+        <MenuItem disabled>
+          <Typography variant="body2" fontWeight={500} color="text.secondary">
+            Hours Range
+          </Typography>
+        </MenuItem>
+        <Box sx={{ px: 2, pb: 1 }}>
+          <Stack direction="row" spacing={1}>
+            <TextField
+              size="small"
+              type="number"
+              label="Min Hours"
+              value={activeFilters.hoursRange.min}
+              onChange={(e) => setActiveFilters(prev => ({
+                ...prev,
+                hoursRange: { ...prev.hoursRange, min: e.target.value }
+              }))}
+              sx={{ flex: 1 }}
+            />
+            <TextField
+              size="small"
+              type="number"
+              label="Max Hours"
+              value={activeFilters.hoursRange.max}
+              onChange={(e) => setActiveFilters(prev => ({
+                ...prev,
+                hoursRange: { ...prev.hoursRange, max: e.target.value }
+              }))}
+              sx={{ flex: 1 }}
+            />
+          </Stack>
+        </Box>
+
+        <Divider />
+
+        {/* Clear Filters */}
+        <MenuItem
+          onClick={() => {
+            setActiveFilters({
+              projects: [],
+              categories: [],
+              dateRange: null,
+              hoursRange: { min: '', max: '' }
+            });
+            setFilterMenuAnchor(null);
+          }}
+        >
+          <Typography color="error">Clear All Filters</Typography>
+        </MenuItem>
+
+        <MenuItem onClick={() => setFilterMenuAnchor(null)}>
+          <Typography color="primary">Apply Filters</Typography>
+        </MenuItem>
+      </Menu>
+
       {/* Column Management Menu */}
       <Menu
         anchorEl={columnMenuAnchor}
