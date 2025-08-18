@@ -73,17 +73,6 @@ const [showToast, setShowToast] = useState(false);
     fetchReferenceData();
   }, []);
 
-  // Handle DataGrid filter panel visibility
-  useEffect(() => {
-    if (apiRef.current) {
-      if (showDataGridFilters) {
-        apiRef.current.showFilterPanel();
-      } else {
-        apiRef.current.hideFilterPanel();
-      }
-    }
-  }, [showDataGridFilters]);
-
   useImperativeHandle(ref, () => ({
     refreshEntries: fetchEntries,
   }));
