@@ -287,20 +287,32 @@ const [showToast, setShowToast] = useState(false);
             }}
             sx={{
               border: 'none',
+              backgroundColor: '#ffffff',
+              '& .MuiDataGrid-main': {
+                backgroundColor: '#ffffff',
+              },
+              '& .MuiDataGrid-virtualScroller': {
+                backgroundColor: '#ffffff',
+              },
               '& .MuiDataGrid-cell': {
                 fontSize: '0.875rem',
                 py: 1,
+                backgroundColor: '#ffffff',
               },
               '& .MuiDataGrid-columnHeader': {
                 backgroundColor: '#f8fafc',
                 fontSize: '0.875rem',
                 fontWeight: 600,
               },
+              '& .MuiDataGrid-row': {
+                backgroundColor: '#ffffff',
+              },
               '& .MuiDataGrid-row:hover': {
                 backgroundColor: '#f5f5f5',
               },
               '& .MuiDataGrid-footer': {
                 borderTop: '1px solid #f0f0f0',
+                backgroundColor: '#ffffff',
               },
             }}
             slots={{
