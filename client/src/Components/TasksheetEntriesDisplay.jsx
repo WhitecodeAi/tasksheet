@@ -401,7 +401,6 @@ const [showToast, setShowToast] = useState(false);
       width: 140,
       sortable: false,
       disableColumnMenu: true,
-      hide: !columnVisibility.actions,
       renderCell: (params) => (
         <Box sx={{ display: 'flex',}}>
           <Button
