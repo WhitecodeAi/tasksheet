@@ -16,7 +16,7 @@ import {
   Box,
   Tooltip
 } from "@mui/material";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
 import dayjs from "dayjs";
 import { api } from "../utils/api";
 
@@ -36,6 +36,7 @@ const TasksheetEntriesDisplay = forwardRef(({
 
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const apiRef = useGridApiRef();
   // filterRange is now passed as prop
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
@@ -72,6 +73,17 @@ const [showToast, setShowToast] = useState(false);
   useEffect(() => {
     fetchReferenceData();
   }, []);
+
+  // Handle DataGrid filter panel visibility
+  useEffect(() => {
+    if (apiRef.current) {
+      if (showDataGridFilters) {
+        apiRef.current.showFilterPanel();
+      } else {
+        apiRef.current.hideFilterPanel();
+      }
+    }
+  }, [showDataGridFilters]);
 
   useImperativeHandle(ref, () => ({
     refreshEntries: fetchEntries,
@@ -397,6 +409,7 @@ const [showToast, setShowToast] = useState(false);
           }}
         >
           <DataGrid
+            ref={apiRef}
             rows={getFilteredEntries()}
             columns={columns}
             autoHeight
@@ -406,16 +419,6 @@ const [showToast, setShowToast] = useState(false);
             sortModel={sortModel}
             onSortModelChange={setSortModel}
             filterMode="client"
-            filterModel={showDataGridFilters ? undefined : { items: [] }}
-            componentsProps={{
-              panel: {
-                sx: {
-                  '& .MuiDataGrid-filterForm': {
-                    padding: 2,
-                  },
-                },
-              },
-            }}
             slotProps={{
               filterPanel: {
                 sx: {
