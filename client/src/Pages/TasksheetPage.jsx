@@ -232,6 +232,10 @@ const TasksheetPage = () => {
             onDeleteSuccess={handleDeleteSuccess}
             searchQuery={searchQuery}
             filterRange={filterRange}
+            showFilters={showFilters}
+            showColumnMenu={showColumnMenu}
+            onFiltersChange={setShowFilters}
+            onColumnMenuChange={setShowColumnMenu}
           />
         </Grid>
       </Grid>
