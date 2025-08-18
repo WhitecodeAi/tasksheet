@@ -402,7 +402,7 @@ const [showToast, setShowToast] = useState(false);
       disableColumnMenu: true,
       hide: !columnVisibility.actions,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', gap: 0.25 }}>
+        <Box sx={{ display: 'flex',}}>
           <Button
             variant="text"
             size="small"
