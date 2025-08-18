@@ -440,6 +440,8 @@ const TasksheetPage = () => {
             filterRange={filterRange}
             activeFilters={activeFilters}
             singleFilter={singleFilter}
+            columnVisibility={columnVisibility}
+            onColumnVisibilityChange={setColumnVisibility}
             showFilters={showFilters}
             showColumnMenu={showColumnMenu}
             onFiltersChange={setShowFilters}
