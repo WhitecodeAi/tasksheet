@@ -86,6 +86,11 @@ const TasksheetPage = () => {
       .catch((err) => console.error('Failed to fetch task categories', err));
   }, []);
 
+  // Debug columnVisibility changes
+  useEffect(() => {
+    console.log('TasksheetPage columnVisibility changed:', columnVisibility);
+  }, [columnVisibility]);
+
   const handleSuccessfulSubmit = (isEdit = false) => {
     setDrawerOpen(false); // 👈 Close drawer on success
     setEditMode(false);
