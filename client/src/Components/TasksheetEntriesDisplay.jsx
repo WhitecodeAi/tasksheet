@@ -29,7 +29,6 @@ const TasksheetEntriesDisplay = forwardRef(({
   activeFilters = {},
   showFilters = false,
   showColumnMenu = false,
-  showDataGridFilters = false,
   onFiltersChange,
   onColumnMenuChange
 }, ref) => {
