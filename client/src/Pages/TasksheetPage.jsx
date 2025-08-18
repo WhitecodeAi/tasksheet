@@ -172,13 +172,10 @@ const TasksheetPage = () => {
             <Tooltip title="Filter & Sort">
               <IconButton
                 size="small"
-                onClick={(event) => {
-                  if (taskListRef.current?.triggerFilterPanel) {
-                    taskListRef.current.triggerFilterPanel(event.currentTarget);
-                  }
-                }}
+                onClick={() => setShowHorizontalFilters(!showHorizontalFilters)}
                 sx={{
-                  color: '#9e9e9e',
+                  color: (showHorizontalFilters || dataGridFilters.length > 0) ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: (showHorizontalFilters || dataGridFilters.length > 0) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
                     color: '#1976d2'
