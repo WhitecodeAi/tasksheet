@@ -182,8 +182,8 @@ const TasksheetPage = () => {
                 size="small"
                 onClick={() => setShowHorizontalFilters(!showHorizontalFilters)}
                 sx={{
-                  color: (showHorizontalFilters || dataGridFilters.length > 0) ? '#1976d2' : '#9e9e9e',
-                  backgroundColor: (showHorizontalFilters || dataGridFilters.length > 0) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
+                  color: (showHorizontalFilters || singleFilter.isActive) ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: (showHorizontalFilters || singleFilter.isActive) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
                     color: '#1976d2'
