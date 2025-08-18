@@ -267,7 +267,8 @@ const [showToast, setShowToast] = useState(false);
             border: '1px solid #f0f0f0',
             borderTop: 'none',
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            backgroundColor: '#ffffff'
           }}
         >
           <DataGrid
