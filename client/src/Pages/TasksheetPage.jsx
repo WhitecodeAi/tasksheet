@@ -628,7 +628,11 @@ const TasksheetPage = () => {
           setColumnSearchQuery('');
         }}
         PaperProps={{
-          sx: { width: 280, maxHeight: 400 }
+          sx: {
+            width: 280,
+            maxHeight: '70vh',
+            overflowY: 'auto'
+          }
         }}
       >
         <MenuItem disabled>
