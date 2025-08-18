@@ -26,8 +26,7 @@ import {
   ListItemText,
   FormControl,
   InputLabel,
-  Select,
-  InputAdornment
+  Select
 } from '@mui/material';
 import { Search, Add, FilterList, ViewColumn, FileDownload, Settings } from '@mui/icons-material';
 import { api } from '../utils/api';
