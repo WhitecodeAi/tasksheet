@@ -253,10 +253,8 @@ const [showToast, setShowToast] = useState(false);
   };
 
   // Function to trigger the filter panel
-  const triggerFilterPanel = () => {
-    if (filterButtonRef.current) {
-      filterButtonRef.current.click();
-    }
+  const triggerFilterPanel = (anchorEl) => {
+    setFilterPanelAnchor(anchorEl);
   };
 
   // Expose functions to parent
