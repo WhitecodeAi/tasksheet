@@ -209,13 +209,31 @@ const [showToast, setShowToast] = useState(false);
     }
 
     // Apply single filter
-    if (singleFilter?.isActive && singleFilter?.value) {
+    if (singleFilter?.isActive) {
       filtered = filtered.filter((entry) => {
+        // Handle date range filtering
+        if (singleFilter.column === 'entry_date' && (singleFilter.fromDate || singleFilter.toDate)) {
+          const entryDate = dayjs(entry.entry_date);
+
+          if (singleFilter.fromDate && singleFilter.toDate) {
+            // Both dates provided - filter between dates (inclusive)
+            return entryDate.isSameOrAfter(dayjs(singleFilter.fromDate), 'day') &&
+                   entryDate.isSameOrBefore(dayjs(singleFilter.toDate), 'day');
+          } else if (singleFilter.fromDate) {
+            // Only from date - filter from this date onwards
+            return entryDate.isSameOrAfter(dayjs(singleFilter.fromDate), 'day');
+          } else if (singleFilter.toDate) {
+            // Only to date - filter up to this date
+            return entryDate.isSameOrBefore(dayjs(singleFilter.toDate), 'day');
+          }
+          return true;
+        }
+
+        // Handle other column filtering
+        if (!singleFilter.value) return true;
+
         let fieldValue = '';
         switch (singleFilter.column) {
-          case 'entry_date':
-            fieldValue = dayjs(entry.entry_date).format('YYYY-MM-DD');
-            break;
           case 'project_name':
             fieldValue = getProjectName(entry.project_id);
             break;
@@ -247,21 +265,6 @@ const [showToast, setShowToast] = useState(false);
             return cellValue.startsWith(filterValue);
           case 'endsWith':
             return cellValue.endsWith(filterValue);
-          case 'is':
-            if (singleFilter.column === 'entry_date') {
-              return dayjs(entry.entry_date).format('YYYY-MM-DD') === singleFilter.value;
-            }
-            return cellValue === filterValue;
-          case 'after':
-            if (singleFilter.column === 'entry_date') {
-              return dayjs(entry.entry_date).isAfter(dayjs(singleFilter.value));
-            }
-            return false;
-          case 'before':
-            if (singleFilter.column === 'entry_date') {
-              return dayjs(entry.entry_date).isBefore(dayjs(singleFilter.value));
-            }
-            return false;
           default:
             return true;
         }
