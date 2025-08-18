@@ -372,8 +372,17 @@ const TasksheetPage = () => {
             <Button
               size="small"
               color="error"
-              onClick={() => setSingleFilter(prev => ({ ...prev, value: '', isActive: false }))}
-              disabled={!singleFilter.value}
+              onClick={() => setSingleFilter(prev => ({
+                ...prev,
+                value: '',
+                fromDate: '',
+                toDate: '',
+                isActive: false
+              }))}
+              disabled={singleFilter.column === 'entry_date' ?
+                (!singleFilter.fromDate && !singleFilter.toDate) :
+                !singleFilter.value
+              }
               sx={{ px: 3, py: 1, minHeight: '32px' }}
             >
               Clear
