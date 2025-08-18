@@ -46,6 +46,15 @@ const TasksheetPage = () => {
   const [columnMenuAnchor, setColumnMenuAnchor] = useState(null);
   const [filterMenuAnchor, setFilterMenuAnchor] = useState(null);
   const [showHorizontalFilters, setShowHorizontalFilters] = useState(false);
+  const [columnVisibility, setColumnVisibility] = useState({
+    entry_date: true,
+    project_name: true,
+    category_name: true,
+    task_name: true,
+    total_time: true,
+    comments: true,
+    actions: true,
+  });
   const [singleFilter, setSingleFilter] = useState({
     column: 'project_name',
     operator: 'contains',
