@@ -348,31 +348,16 @@ const [showToast, setShowToast] = useState(false);
             disableRowSelectionOnClick
             hideFooterSelectedRowCount
             pageSizeOptions={[10, 25, 50, 100]}
-            filterMode="client"
-            disableColumnFilter={!showFilters}
-            disableColumnSelector={!showColumnMenu}
+            sortModel={sortModel}
+            onSortModelChange={setSortModel}
             initialState={{
               pagination: {
                 paginationModel: {
                   pageSize: 25,
                 },
               },
-              filter: {
-                filterModel: {
-                  items: [],
-                },
-              },
-              columns: {
-                columnVisibilityModel: {},
-              },
-            }}
-            slots={{
-              toolbar: showFilters || showColumnMenu ? GridToolbarContainer : null,
-            }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: false,
-                showExport: true,
+              sorting: {
+                sortModel: [{ field: 'entry_date', sort: 'desc' }],
               },
             }}
             sx={{
