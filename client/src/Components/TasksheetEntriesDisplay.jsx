@@ -43,12 +43,6 @@ const TasksheetEntriesDisplay = forwardRef(({
 
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [filterPanelAnchor, setFilterPanelAnchor] = useState(null);
-  const [customFilter, setCustomFilter] = useState({
-    column: '',
-    operator: 'contains',
-    value: ''
-  });
   // filterRange is now passed as prop
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
