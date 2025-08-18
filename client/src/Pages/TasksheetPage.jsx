@@ -389,7 +389,9 @@ const TasksheetPage = () => {
             </Button>
 
             {/* Show active filter */}
-            {singleFilter.isActive && singleFilter.value && (
+            {singleFilter.isActive && (
+              (singleFilter.column === 'entry_date' ? (singleFilter.fromDate || singleFilter.toDate) : singleFilter.value)
+            ) && (
               <Box
                 sx={{
                   display: 'flex',
@@ -404,7 +406,11 @@ const TasksheetPage = () => {
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 500, color: '#1976d2' }}>
-                  {singleFilter.column} {singleFilter.operator} "{singleFilter.value}"
+                  {singleFilter.column === 'entry_date' ? (
+                    `Date: ${singleFilter.fromDate ? dayjs(singleFilter.fromDate).format('DD MMM') : 'Start'} - ${singleFilter.toDate ? dayjs(singleFilter.toDate).format('DD MMM') : 'End'}`
+                  ) : (
+                    `${singleFilter.column} ${singleFilter.operator} "${singleFilter.value}"`
+                  )}
                 </Typography>
               </Box>
             )}
