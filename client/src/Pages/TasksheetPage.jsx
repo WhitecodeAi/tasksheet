@@ -179,10 +179,10 @@ const TasksheetPage = () => {
             <Tooltip title="Manage Columns">
               <IconButton
                 size="small"
-                onClick={() => setShowColumnMenu(!showColumnMenu)}
+                onClick={(event) => setColumnMenuAnchor(event.currentTarget)}
                 sx={{
-                  color: showColumnMenu ? '#1976d2' : '#9e9e9e',
-                  backgroundColor: showColumnMenu ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
+                  color: columnMenuAnchor ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: columnMenuAnchor ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
                     color: '#1976d2'
@@ -305,6 +305,52 @@ const TasksheetPage = () => {
           </Button>
         </Box>
       </Drawer>
+
+      {/* Column Management Menu */}
+      <Menu
+        anchorEl={columnMenuAnchor}
+        open={Boolean(columnMenuAnchor)}
+        onClose={() => setColumnMenuAnchor(null)}
+        PaperProps={{
+          sx: { width: 200, maxHeight: 300 }
+        }}
+      >
+        <MenuItem disabled>
+          <Typography variant="subtitle2" fontWeight={600}>
+            Show/Hide Columns
+          </Typography>
+        </MenuItem>
+        <Divider />
+        {[
+          { field: 'entry_date', label: 'Date' },
+          { field: 'project_name', label: 'Project Name' },
+          { field: 'category_name', label: 'Task Category' },
+          { field: 'task_name', label: 'Task Details' },
+          { field: 'total_time', label: 'Total Efforts' },
+          { field: 'comments', label: 'Comments' },
+          { field: 'actions', label: 'Actions' },
+        ].map(({ field, label }) => (
+          <MenuItem
+            key={field}
+            onClick={() => {
+              if (taskListRef.current?.toggleColumnVisibility) {
+                taskListRef.current.toggleColumnVisibility(field);
+              }
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={taskListRef.current?.columnVisibility?.[field] ?? true}
+                  size="small"
+                />
+              }
+              label={label}
+              sx={{ margin: 0, width: '100%' }}
+            />
+          </MenuItem>
+        ))}
+      </Menu>
 
       {/* Snackbar for Add/Edit operations */}
       <Snackbar
