@@ -174,7 +174,8 @@ const TasksheetPage = () => {
                 size="small"
                 onClick={() => setShowColumnMenu(!showColumnMenu)}
                 sx={{
-                  color: '#9e9e9e',
+                  color: showColumnMenu ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: showColumnMenu ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
                     color: '#1976d2'
@@ -189,8 +190,9 @@ const TasksheetPage = () => {
               <IconButton
                 size="small"
                 onClick={() => {
-                  // Export functionality will be implemented
-                  console.log('Export clicked');
+                  if (taskListRef.current?.exportToCSV) {
+                    taskListRef.current.exportToCSV();
+                  }
                 }}
                 sx={{
                   color: '#9e9e9e',
