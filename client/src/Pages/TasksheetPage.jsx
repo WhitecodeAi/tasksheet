@@ -16,9 +16,10 @@ import {
   Stack,
   Paper,
   Fab,
-  Tooltip
+  Tooltip,
+  IconButton
 } from '@mui/material';
-import { Search, Add } from '@mui/icons-material';
+import { Search, Add, FilterList, ViewColumn, FileDownload, Settings } from '@mui/icons-material';
 import { api } from '../utils/api';
 
 const TasksheetPage = () => {
@@ -30,6 +31,8 @@ const TasksheetPage = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRange, setFilterRange] = useState('TODAY');
+  const [showFilters, setShowFilters] = useState(false);
+  const [showColumnMenu, setShowColumnMenu] = useState(false);
 
   const taskListRef = useRef();
   const formRef = useRef(); // 👈 Ref to trigger form submit
@@ -146,6 +149,60 @@ const TasksheetPage = () => {
                 {label}
               </Button>
             ))}
+          </Stack>
+
+          {/* Center-Right: DataGrid Actions */}
+          <Stack direction="row" spacing={1}>
+            <Tooltip title="Filter & Sort">
+              <IconButton
+                size="small"
+                onClick={() => setShowFilters(!showFilters)}
+                sx={{
+                  color: showFilters ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: showFilters ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.08)'
+                  }
+                }}
+              >
+                <FilterList fontSize="small" />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Manage Columns">
+              <IconButton
+                size="small"
+                onClick={() => setShowColumnMenu(!showColumnMenu)}
+                sx={{
+                  color: '#9e9e9e',
+                  '&:hover': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                    color: '#1976d2'
+                  }
+                }}
+              >
+                <ViewColumn fontSize="small" />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Export Data">
+              <IconButton
+                size="small"
+                onClick={() => {
+                  // Export functionality will be implemented
+                  console.log('Export clicked');
+                }}
+                sx={{
+                  color: '#9e9e9e',
+                  '&:hover': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                    color: '#1976d2'
+                  }
+                }}
+              >
+                <FileDownload fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </Stack>
 
           {/* Right: Add Button */}
