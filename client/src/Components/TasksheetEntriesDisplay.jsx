@@ -16,22 +16,7 @@ import {
   Box,
   Tooltip
 } from "@mui/material";
-import { DataGrid, GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarExport, GridToolbarQuickFilter } from '@mui/x-data-grid';
-
-// Custom toolbar component
-function CustomToolbar({ showFilters, showColumnMenu }) {
-  if (!showFilters && !showColumnMenu) return null;
-
-  return (
-    <GridToolbarContainer sx={{ p: 1, backgroundColor: '#f8fafc', borderBottom: '1px solid #f0f0f0' }}>
-      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-        {showFilters && <GridToolbarFilterButton />}
-        {showColumnMenu && <GridToolbarColumnsButton />}
-        <GridToolbarExport />
-      </Box>
-    </GridToolbarContainer>
-  );
-}
+import { DataGrid } from '@mui/x-data-grid';
 import dayjs from "dayjs";
 import { api } from "../utils/api";
 
