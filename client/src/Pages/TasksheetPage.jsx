@@ -248,6 +248,7 @@ const TasksheetPage = () => {
             onDeleteSuccess={handleDeleteSuccess}
             searchQuery={searchQuery}
             filterRange={filterRange}
+            activeFilters={activeFilters}
             showFilters={showFilters}
             showColumnMenu={showColumnMenu}
             onFiltersChange={setShowFilters}
