@@ -379,7 +379,6 @@ const [showToast, setShowToast] = useState(false);
       valueGetter: (value, row) => `${Math.floor(row.hours)}:${row.minutes.toString().padStart(2, '0')}`,
       sortable: true,
       filterable: true,
-      hide: !columnVisibility.total_time,
     },
     {
       field: 'comments',
