@@ -23,7 +23,10 @@ import {
   FormControlLabel,
   Checkbox,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  FormControl,
+  InputLabel,
+  Select
 } from '@mui/material';
 import { Search, Add, FilterList, ViewColumn, FileDownload, Settings } from '@mui/icons-material';
 import { api } from '../utils/api';
