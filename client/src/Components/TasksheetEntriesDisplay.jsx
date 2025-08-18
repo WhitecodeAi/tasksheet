@@ -143,6 +143,87 @@ const [showToast, setShowToast] = useState(false);
     );
   };
 
+  // Define DataGrid columns
+  const columns = [
+    {
+      field: 'entry_date',
+      headerName: 'Date',
+      width: 120,
+      valueFormatter: (value) => dayjs(value).format('DD MMM YYYY'),
+      sortable: true,
+    },
+    {
+      field: 'project_name',
+      headerName: 'Project Name',
+      width: 200,
+      valueGetter: (value, row) => getProjectName(row.project_id),
+      sortable: true,
+    },
+    {
+      field: 'category_name',
+      headerName: 'Task Category',
+      width: 150,
+      valueGetter: (value, row) => getCategoryName(row.task_category_id),
+      sortable: true,
+    },
+    {
+      field: 'task_name',
+      headerName: 'Task Details',
+      width: 300,
+      sortable: true,
+      renderCell: (params) => (
+        <Tooltip title={params.value}>
+          <Box sx={{ whiteSpace: 'pre-line', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </Box>
+        </Tooltip>
+      ),
+    },
+    {
+      field: 'total_time',
+      headerName: 'Total Efforts',
+      width: 120,
+      valueGetter: (value, row) => `${Math.floor(row.hours)}:${row.minutes.toString().padStart(2, '0')}`,
+      sortable: true,
+    },
+    {
+      field: 'comments',
+      headerName: 'Comments',
+      width: 200,
+      sortable: true,
+      renderCell: (params) => (
+        <Tooltip title={params.value || ''}>
+          <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value || ''}
+          </Box>
+        </Tooltip>
+      ),
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 140,
+      sortable: false,
+      renderCell: (params) => (
+        <ButtonGroup variant="text" size="small">
+          <Button
+            onClick={() => handleEdit(params.row)}
+            sx={{ px: 2, py: 1, minHeight: '32px' }}
+          >
+            Edit
+          </Button>
+          <Button
+            color="error"
+            onClick={() => handleDelete(params.row)}
+            sx={{ px: 2, py: 1, minHeight: '32px' }}
+          >
+            Delete
+          </Button>
+        </ButtonGroup>
+      ),
+    },
+  ];
+
   const handleEdit = (entry) => {
   if (onEdit) {
     onEdit(entry); // delegate to parent
