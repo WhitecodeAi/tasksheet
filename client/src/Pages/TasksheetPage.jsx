@@ -45,7 +45,12 @@ const TasksheetPage = () => {
   const [columnMenuAnchor, setColumnMenuAnchor] = useState(null);
   const [filterMenuAnchor, setFilterMenuAnchor] = useState(null);
   const [showHorizontalFilters, setShowHorizontalFilters] = useState(false);
-  const [dataGridFilters, setDataGridFilters] = useState([]);
+  const [singleFilter, setSingleFilter] = useState({
+    column: 'project_name',
+    operator: 'contains',
+    value: '',
+    isActive: false
+  });
   const [activeFilters, setActiveFilters] = useState({
     projects: [],
     categories: [],
