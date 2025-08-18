@@ -251,7 +251,6 @@ const TasksheetPage = () => {
             activeFilters={activeFilters}
             showFilters={showFilters}
             showColumnMenu={showColumnMenu}
-            showDataGridFilters={showDataGridFilters}
             onFiltersChange={setShowFilters}
             onColumnMenuChange={setShowColumnMenu}
           />
