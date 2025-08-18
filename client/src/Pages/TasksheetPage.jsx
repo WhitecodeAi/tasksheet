@@ -170,9 +170,9 @@ const TasksheetPage = () => {
             <Tooltip title="Filter & Sort">
               <IconButton
                 size="small"
-                onClick={() => {
+                onClick={(event) => {
                   if (taskListRef.current?.triggerFilterPanel) {
-                    taskListRef.current.triggerFilterPanel();
+                    taskListRef.current.triggerFilterPanel(event.currentTarget);
                   }
                 }}
                 sx={{
