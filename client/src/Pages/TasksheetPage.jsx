@@ -171,10 +171,10 @@ const TasksheetPage = () => {
             <Tooltip title="Filter & Sort">
               <IconButton
                 size="small"
-                onClick={() => setShowDataGridFilters(!showDataGridFilters)}
+                onClick={(event) => setFilterMenuAnchor(event.currentTarget)}
                 sx={{
-                  color: (showDataGridFilters || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? '#1976d2' : '#9e9e9e',
-                  backgroundColor: (showDataGridFilters || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
+                  color: (filterMenuAnchor || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: (filterMenuAnchor || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)'
                   }
