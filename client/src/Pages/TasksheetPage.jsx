@@ -640,15 +640,16 @@ const TasksheetPage = () => {
           <MenuItem
             key={field}
             onClick={() => {
-              if (taskListRef.current?.toggleColumnVisibility) {
-                taskListRef.current.toggleColumnVisibility(field);
-              }
+              setColumnVisibility(prev => ({
+                ...prev,
+                [field]: !prev[field]
+              }));
             }}
           >
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={taskListRef.current?.columnVisibility?.[field] ?? true}
+                  checked={columnVisibility[field]}
                   size="small"
                 />
               }
