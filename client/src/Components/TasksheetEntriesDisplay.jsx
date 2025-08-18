@@ -332,7 +332,6 @@ const [showToast, setShowToast] = useState(false);
       valueFormatter: (value) => dayjs(value).format('DD MMM'),
       sortable: true,
       filterable: true,
-      hide: !columnVisibility.entry_date,
     },
     {
       field: 'project_name',
