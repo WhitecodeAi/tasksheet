@@ -29,6 +29,7 @@ const TasksheetEntriesDisplay = forwardRef(({
   activeFilters = {},
   showFilters = false,
   showColumnMenu = false,
+  showDataGridFilters = false,
   onFiltersChange,
   onColumnMenuChange
 }, ref) => {
@@ -253,31 +254,39 @@ const [showToast, setShowToast] = useState(false);
       field: 'entry_date',
       headerName: 'Date',
       width: 120,
+      type: 'date',
       valueFormatter: (value) => dayjs(value).format('DD MMM YYYY'),
       sortable: true,
+      filterable: true,
       hide: !columnVisibility.entry_date,
     },
     {
       field: 'project_name',
       headerName: 'Project Name',
       width: 200,
+      type: 'string',
       valueGetter: (value, row) => getProjectName(row.project_id),
       sortable: true,
+      filterable: true,
       hide: !columnVisibility.project_name,
     },
     {
       field: 'category_name',
       headerName: 'Task Category',
       width: 150,
+      type: 'string',
       valueGetter: (value, row) => getCategoryName(row.task_category_id),
       sortable: true,
+      filterable: true,
       hide: !columnVisibility.category_name,
     },
     {
       field: 'task_name',
       headerName: 'Task Details',
       width: 300,
+      type: 'string',
       sortable: true,
+      filterable: true,
       hide: !columnVisibility.task_name,
       renderCell: (params) => (
         <Tooltip title={params.value}>
@@ -291,15 +300,19 @@ const [showToast, setShowToast] = useState(false);
       field: 'total_time',
       headerName: 'Total Efforts',
       width: 120,
+      type: 'string',
       valueGetter: (value, row) => `${Math.floor(row.hours)}:${row.minutes.toString().padStart(2, '0')}`,
       sortable: true,
+      filterable: true,
       hide: !columnVisibility.total_time,
     },
     {
       field: 'comments',
       headerName: 'Comments',
       width: 200,
+      type: 'string',
       sortable: true,
+      filterable: true,
       hide: !columnVisibility.comments,
       renderCell: (params) => (
         <Tooltip title={params.value || ''}>
@@ -392,6 +405,25 @@ const [showToast, setShowToast] = useState(false);
             pageSizeOptions={[10, 25, 50, 100]}
             sortModel={sortModel}
             onSortModelChange={setSortModel}
+            componentsProps={{
+              panel: {
+                sx: {
+                  '& .MuiDataGrid-filterForm': {
+                    padding: 2,
+                  },
+                },
+              },
+            }}
+            slotProps={{
+              filterPanel: {
+                sx: {
+                  width: 400,
+                },
+              },
+            }}
+            slots={{
+              filterPanel: showDataGridFilters ? undefined : () => null,
+            }}
             initialState={{
               pagination: {
                 paginationModel: {
@@ -400,6 +432,11 @@ const [showToast, setShowToast] = useState(false);
               },
               sorting: {
                 sortModel: [{ field: 'entry_date', sort: 'desc' }],
+              },
+              filter: {
+                filterModel: {
+                  items: [],
+                },
               },
             }}
             sx={{
