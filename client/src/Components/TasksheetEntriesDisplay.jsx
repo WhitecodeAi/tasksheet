@@ -35,6 +35,8 @@ const TasksheetEntriesDisplay = forwardRef(({
   filterRange = 'TODAY',
   activeFilters = {},
   singleFilter = {},
+  columnVisibility = {},
+  onColumnVisibilityChange,
   showFilters = false,
   showColumnMenu = false,
   onFiltersChange,
