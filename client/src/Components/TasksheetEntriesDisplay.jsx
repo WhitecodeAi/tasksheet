@@ -214,6 +214,70 @@ const [showToast, setShowToast] = useState(false);
       }
     }
 
+    // Apply DataGrid filters
+    if (dataGridFilters?.length > 0) {
+      filtered = filtered.filter((entry) => {
+        return dataGridFilters.every((filter) => {
+          if (filter.isEditing || !filter.value) return true;
+
+          let fieldValue = '';
+          switch (filter.column) {
+            case 'entry_date':
+              fieldValue = dayjs(entry.entry_date).format('YYYY-MM-DD');
+              break;
+            case 'project_name':
+              fieldValue = getProjectName(entry.project_id);
+              break;
+            case 'category_name':
+              fieldValue = getCategoryName(entry.task_category_id);
+              break;
+            case 'task_name':
+              fieldValue = entry.task_name || '';
+              break;
+            case 'total_time':
+              fieldValue = `${Math.floor(entry.hours)}:${entry.minutes.toString().padStart(2, '0')}`;
+              break;
+            case 'comments':
+              fieldValue = entry.comments || '';
+              break;
+            default:
+              return true;
+          }
+
+          const filterValue = filter.value.toLowerCase();
+          const cellValue = fieldValue.toLowerCase();
+
+          switch (filter.operator) {
+            case 'contains':
+              return cellValue.includes(filterValue);
+            case 'equals':
+              return cellValue === filterValue;
+            case 'startsWith':
+              return cellValue.startsWith(filterValue);
+            case 'endsWith':
+              return cellValue.endsWith(filterValue);
+            case 'is':
+              if (filter.column === 'entry_date') {
+                return dayjs(entry.entry_date).format('YYYY-MM-DD') === filter.value;
+              }
+              return cellValue === filterValue;
+            case 'after':
+              if (filter.column === 'entry_date') {
+                return dayjs(entry.entry_date).isAfter(dayjs(filter.value));
+              }
+              return false;
+            case 'before':
+              if (filter.column === 'entry_date') {
+                return dayjs(entry.entry_date).isBefore(dayjs(filter.value));
+              }
+              return false;
+            default:
+              return true;
+          }
+        });
+      });
+    }
+
     return filtered.sort(
       (a, b) => dayjs(b.entry_date).valueOf() - dayjs(a.entry_date).valueOf()
     );
