@@ -350,7 +350,6 @@ const [showToast, setShowToast] = useState(false);
       valueGetter: (value, row) => getCategoryName(row.task_category_id),
       sortable: true,
       filterable: true,
-      hide: !columnVisibility.category_name,
     },
     {
       field: 'task_name',
