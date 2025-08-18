@@ -484,6 +484,11 @@ const [showToast, setShowToast] = useState(false);
             onSortModelChange={setSortModel}
             getRowHeight={() => 'auto'}
             columnVisibilityModel={columnVisibility}
+            onColumnVisibilityModelChange={(newModel) => {
+              if (onColumnVisibilityChange) {
+                onColumnVisibilityChange(newModel);
+              }
+            }}
             initialState={{
               pagination: {
                 paginationModel: {
@@ -492,6 +497,9 @@ const [showToast, setShowToast] = useState(false);
               },
               sorting: {
                 sortModel: [{ field: 'entry_date', sort: 'desc' }],
+              },
+              columns: {
+                columnVisibilityModel: columnVisibility,
               },
             }}
             sx={{
