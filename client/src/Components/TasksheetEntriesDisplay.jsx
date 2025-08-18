@@ -213,6 +213,7 @@ const [showToast, setShowToast] = useState(false);
       width: 120,
       valueFormatter: (value) => dayjs(value).format('DD MMM YYYY'),
       sortable: true,
+      hide: !columnVisibility.entry_date,
     },
     {
       field: 'project_name',
@@ -220,6 +221,7 @@ const [showToast, setShowToast] = useState(false);
       width: 200,
       valueGetter: (value, row) => getProjectName(row.project_id),
       sortable: true,
+      hide: !columnVisibility.project_name,
     },
     {
       field: 'category_name',
@@ -227,12 +229,14 @@ const [showToast, setShowToast] = useState(false);
       width: 150,
       valueGetter: (value, row) => getCategoryName(row.task_category_id),
       sortable: true,
+      hide: !columnVisibility.category_name,
     },
     {
       field: 'task_name',
       headerName: 'Task Details',
       width: 300,
       sortable: true,
+      hide: !columnVisibility.task_name,
       renderCell: (params) => (
         <Tooltip title={params.value}>
           <Box sx={{ whiteSpace: 'pre-line', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -247,12 +251,14 @@ const [showToast, setShowToast] = useState(false);
       width: 120,
       valueGetter: (value, row) => `${Math.floor(row.hours)}:${row.minutes.toString().padStart(2, '0')}`,
       sortable: true,
+      hide: !columnVisibility.total_time,
     },
     {
       field: 'comments',
       headerName: 'Comments',
       width: 200,
       sortable: true,
+      hide: !columnVisibility.comments,
       renderCell: (params) => (
         <Tooltip title={params.value || ''}>
           <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -267,6 +273,7 @@ const [showToast, setShowToast] = useState(false);
       width: 140,
       sortable: false,
       disableColumnMenu: true,
+      hide: !columnVisibility.actions,
       renderCell: (params) => (
         <ButtonGroup variant="text" size="small">
           <Button
