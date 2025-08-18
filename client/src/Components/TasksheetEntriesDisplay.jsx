@@ -34,6 +34,7 @@ const TasksheetEntriesDisplay = forwardRef(({
   searchQuery = '',
   filterRange = 'TODAY',
   activeFilters = {},
+  dataGridFilters = [],
   showFilters = false,
   showColumnMenu = false,
   onFiltersChange,
