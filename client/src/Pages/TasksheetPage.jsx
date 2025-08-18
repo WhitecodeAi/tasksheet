@@ -40,6 +40,13 @@ const TasksheetPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [columnMenuAnchor, setColumnMenuAnchor] = useState(null);
+  const [filterMenuAnchor, setFilterMenuAnchor] = useState(null);
+  const [activeFilters, setActiveFilters] = useState({
+    projects: [],
+    categories: [],
+    dateRange: null,
+    hoursRange: { min: '', max: '' }
+  });
 
   const taskListRef = useRef();
   const formRef = useRef(); // 👈 Ref to trigger form submit
@@ -163,10 +170,10 @@ const TasksheetPage = () => {
             <Tooltip title="Filter & Sort">
               <IconButton
                 size="small"
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={(event) => setFilterMenuAnchor(event.currentTarget)}
                 sx={{
-                  color: showFilters ? '#1976d2' : '#9e9e9e',
-                  backgroundColor: showFilters ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
+                  color: (filterMenuAnchor || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: (filterMenuAnchor || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)'
                   }
