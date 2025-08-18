@@ -405,6 +405,8 @@ const [showToast, setShowToast] = useState(false);
             pageSizeOptions={[10, 25, 50, 100]}
             sortModel={sortModel}
             onSortModelChange={setSortModel}
+            filterMode="client"
+            filterModel={showDataGridFilters ? undefined : { items: [] }}
             componentsProps={{
               panel: {
                 sx: {
@@ -418,11 +420,17 @@ const [showToast, setShowToast] = useState(false);
               filterPanel: {
                 sx: {
                   width: 400,
+                  '& .MuiDataGrid-filterForm': {
+                    padding: 2,
+                  },
+                  '& .MuiDataGrid-filterFormDeleteIcon': {
+                    color: '#d32f2f',
+                  },
+                  '& .MuiDataGrid-filterFormAddIcon': {
+                    color: '#1976d2',
+                  },
                 },
               },
-            }}
-            slots={{
-              filterPanel: showDataGridFilters ? undefined : () => null,
             }}
             initialState={{
               pagination: {
