@@ -311,18 +311,12 @@ const [showToast, setShowToast] = useState(false);
     }));
   };
 
-  // Function to trigger the filter panel
-  const triggerFilterPanel = (anchorEl) => {
-    setFilterPanelAnchor(anchorEl);
-  };
-
   // Expose functions to parent
   React.useImperativeHandle(ref, () => ({
     refreshEntries: fetchEntries,
     exportToCSV,
     toggleColumnVisibility,
     columnVisibility,
-    triggerFilterPanel,
   }), [fetchEntries, columnVisibility]);
 
   // Define DataGrid columns
