@@ -126,22 +126,22 @@ const [showToast, setShowToast] = useState(false);
         break;
       case "WEEK":
         filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isAfter(now.subtract(7, "day"))
+          dayjs(e.entry_date).isSame(now, "week")
         );
         break;
       case "MONTH":
         filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isAfter(now.subtract(1, "month"))
+          dayjs(e.entry_date).isSame(now, "month")
         );
         break;
       case "3MONTH":
         filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isAfter(now.subtract(3, "month"))
+          dayjs(e.entry_date).isAfter(now.subtract(3, "month").startOf("month"))
         );
         break;
       case "6MONTH":
         filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isAfter(now.subtract(6, "month"))
+          dayjs(e.entry_date).isAfter(now.subtract(6, "month").startOf("month"))
         );
         break;
       default:
