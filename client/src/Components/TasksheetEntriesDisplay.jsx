@@ -423,13 +423,6 @@ const [showToast, setShowToast] = useState(false);
             pageSizeOptions={[10, 25, 50, 100]}
             sortModel={sortModel}
             onSortModelChange={setSortModel}
-            slots={{
-              toolbar: () => (
-                <Box sx={{ display: 'none' }}>
-                  <GridToolbarFilterButton ref={filterButtonRef} />
-                </Box>
-              ),
-            }}
             initialState={{
               pagination: {
                 paginationModel: {
