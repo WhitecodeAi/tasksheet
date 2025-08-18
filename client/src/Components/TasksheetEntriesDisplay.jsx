@@ -387,7 +387,6 @@ const [showToast, setShowToast] = useState(false);
       type: 'string',
       sortable: true,
       filterable: true,
-      hide: !columnVisibility.comments,
       renderCell: (params) => (
         <Tooltip title={params.value || ''}>
           <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
