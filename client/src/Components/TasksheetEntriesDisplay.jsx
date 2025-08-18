@@ -299,21 +299,11 @@ const [showToast, setShowToast] = useState(false);
     window.URL.revokeObjectURL(url);
   };
 
-  // Column management
-  const toggleColumnVisibility = (field) => {
-    setColumnVisibility(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
-  };
-
   // Expose functions to parent
   React.useImperativeHandle(ref, () => ({
     refreshEntries: fetchEntries,
     exportToCSV,
-    toggleColumnVisibility,
-    columnVisibility,
-  }), [fetchEntries, columnVisibility]);
+  }), [fetchEntries]);
 
   // Define DataGrid columns
   const columns = [
