@@ -643,7 +643,7 @@ const TasksheetPage = () => {
         <Divider sx={{ my: 0.5 }} />
 
         {/* Search Field */}
-        <Box sx={{ p: 1 }}>
+        <Box sx={{ p: 1 }} onClick={(e) => e.stopPropagation()}>
           <TextField
             size="small"
             placeholder="Search columns..."
