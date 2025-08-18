@@ -49,6 +49,8 @@ const TasksheetPage = () => {
     column: 'project_name',
     operator: 'contains',
     value: '',
+    fromDate: '',
+    toDate: '',
     isActive: false
   });
   const [activeFilters, setActiveFilters] = useState({
