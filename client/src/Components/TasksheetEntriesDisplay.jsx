@@ -341,7 +341,6 @@ const [showToast, setShowToast] = useState(false);
       valueGetter: (value, row) => getProjectName(row.project_id),
       sortable: true,
       filterable: true,
-      hide: !columnVisibility.project_name,
     },
     {
       field: 'category_name',
