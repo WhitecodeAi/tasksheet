@@ -217,14 +217,18 @@ const [showToast, setShowToast] = useState(false);
 
           if (singleFilter.fromDate && singleFilter.toDate) {
             // Both dates provided - filter between dates (inclusive)
-            return entryDate.isSameOrAfter(dayjs(singleFilter.fromDate), 'day') &&
-                   entryDate.isSameOrBefore(dayjs(singleFilter.toDate), 'day');
+            const fromDate = dayjs(singleFilter.fromDate);
+            const toDate = dayjs(singleFilter.toDate);
+            return (entryDate.isAfter(fromDate) || entryDate.isSame(fromDate, 'day')) &&
+                   (entryDate.isBefore(toDate) || entryDate.isSame(toDate, 'day'));
           } else if (singleFilter.fromDate) {
             // Only from date - filter from this date onwards
-            return entryDate.isSameOrAfter(dayjs(singleFilter.fromDate), 'day');
+            const fromDate = dayjs(singleFilter.fromDate);
+            return entryDate.isAfter(fromDate) || entryDate.isSame(fromDate, 'day');
           } else if (singleFilter.toDate) {
             // Only to date - filter up to this date
-            return entryDate.isSameOrBefore(dayjs(singleFilter.toDate), 'day');
+            const toDate = dayjs(singleFilter.toDate);
+            return entryDate.isBefore(toDate) || entryDate.isSame(toDate, 'day');
           }
           return true;
         }
