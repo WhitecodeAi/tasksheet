@@ -623,9 +623,12 @@ const TasksheetPage = () => {
       <Menu
         anchorEl={columnMenuAnchor}
         open={Boolean(columnMenuAnchor)}
-        onClose={() => setColumnMenuAnchor(null)}
+        onClose={() => {
+          setColumnMenuAnchor(null);
+          setColumnSearchQuery('');
+        }}
         PaperProps={{
-          sx: { width: 200, maxHeight: 300 }
+          sx: { width: 280, maxHeight: 400 }
         }}
       >
         <MenuItem disabled>
@@ -633,7 +636,105 @@ const TasksheetPage = () => {
             Show/Hide Columns
           </Typography>
         </MenuItem>
-        <Divider />
+        <Divider sx={{ my: 0.5 }} />
+
+        {/* Search Field */}
+        <Box sx={{ p: 1 }}>
+          <TextField
+            size="small"
+            placeholder="Search columns..."
+            value={columnSearchQuery}
+            onChange={(e) => setColumnSearchQuery(e.target.value)}
+            fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ fontSize: '1rem', color: '#9e9e9e' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiInputBase-root': {
+                minHeight: '32px',
+                fontSize: '0.875rem'
+              }
+            }}
+          />
+        </Box>
+
+        {/* Select/Unselect All */}
+        <MenuItem
+          onClick={() => {
+            const allColumns = ['entry_date', 'project_name', 'category_name', 'task_name', 'total_time', 'comments', 'actions'];
+            const filteredColumns = allColumns.filter(field => {
+              const columnData = [
+                { field: 'entry_date', label: 'Date' },
+                { field: 'project_name', label: 'Project Name' },
+                { field: 'category_name', label: 'Task Category' },
+                { field: 'task_name', label: 'Task Details' },
+                { field: 'total_time', label: 'Total Efforts' },
+                { field: 'comments', label: 'Comments' },
+                { field: 'actions', label: 'Actions' },
+              ].find(col => col.field === field);
+              return columnData?.label.toLowerCase().includes(columnSearchQuery.toLowerCase());
+            });
+
+            const allVisible = filteredColumns.every(field => columnVisibility[field]);
+            const newVisibility = { ...columnVisibility };
+            filteredColumns.forEach(field => {
+              newVisibility[field] = !allVisible;
+            });
+            setColumnVisibility(newVisibility);
+          }}
+          sx={{ py: 0.5 }}
+        >
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={(() => {
+                  const allColumns = ['entry_date', 'project_name', 'category_name', 'task_name', 'total_time', 'comments', 'actions'];
+                  const filteredColumns = allColumns.filter(field => {
+                    const columnData = [
+                      { field: 'entry_date', label: 'Date' },
+                      { field: 'project_name', label: 'Project Name' },
+                      { field: 'category_name', label: 'Task Category' },
+                      { field: 'task_name', label: 'Task Details' },
+                      { field: 'total_time', label: 'Total Efforts' },
+                      { field: 'comments', label: 'Comments' },
+                      { field: 'actions', label: 'Actions' },
+                    ].find(col => col.field === field);
+                    return columnData?.label.toLowerCase().includes(columnSearchQuery.toLowerCase());
+                  });
+                  return filteredColumns.length > 0 && filteredColumns.every(field => columnVisibility[field]);
+                })()}
+                indeterminate={(() => {
+                  const allColumns = ['entry_date', 'project_name', 'category_name', 'task_name', 'total_time', 'comments', 'actions'];
+                  const filteredColumns = allColumns.filter(field => {
+                    const columnData = [
+                      { field: 'entry_date', label: 'Date' },
+                      { field: 'project_name', label: 'Project Name' },
+                      { field: 'category_name', label: 'Task Category' },
+                      { field: 'task_name', label: 'Task Details' },
+                      { field: 'total_time', label: 'Total Efforts' },
+                      { field: 'comments', label: 'Comments' },
+                      { field: 'actions', label: 'Actions' },
+                    ].find(col => col.field === field);
+                    return columnData?.label.toLowerCase().includes(columnSearchQuery.toLowerCase());
+                  });
+                  const visibleCount = filteredColumns.filter(field => columnVisibility[field]).length;
+                  return visibleCount > 0 && visibleCount < filteredColumns.length;
+                })()}
+                size="small"
+              />
+            }
+            label={<Typography variant="body2" sx={{ fontWeight: 500 }}>Select All</Typography>}
+            sx={{ margin: 0, width: '100%' }}
+          />
+        </MenuItem>
+
+        <Divider sx={{ my: 0.5 }} />
+
+        {/* Column List */}
         {[
           { field: 'entry_date', label: 'Date' },
           { field: 'project_name', label: 'Project Name' },
@@ -642,7 +743,9 @@ const TasksheetPage = () => {
           { field: 'total_time', label: 'Total Efforts' },
           { field: 'comments', label: 'Comments' },
           { field: 'actions', label: 'Actions' },
-        ].map(({ field, label }) => (
+        ]
+        .filter(({ label }) => label.toLowerCase().includes(columnSearchQuery.toLowerCase()))
+        .map(({ field, label }) => (
           <MenuItem
             key={field}
             onClick={() => {
@@ -651,6 +754,7 @@ const TasksheetPage = () => {
                 [field]: !prev[field]
               }));
             }}
+            sx={{ py: 0.5 }}
           >
             <FormControlLabel
               control={
@@ -659,11 +763,28 @@ const TasksheetPage = () => {
                   size="small"
                 />
               }
-              label={label}
+              label={<Typography variant="body2">{label}</Typography>}
               sx={{ margin: 0, width: '100%' }}
             />
           </MenuItem>
         ))}
+
+        {/* No results message */}
+        {columnSearchQuery && [
+          { field: 'entry_date', label: 'Date' },
+          { field: 'project_name', label: 'Project Name' },
+          { field: 'category_name', label: 'Task Category' },
+          { field: 'task_name', label: 'Task Details' },
+          { field: 'total_time', label: 'Total Efforts' },
+          { field: 'comments', label: 'Comments' },
+          { field: 'actions', label: 'Actions' },
+        ].filter(({ label }) => label.toLowerCase().includes(columnSearchQuery.toLowerCase())).length === 0 && (
+          <MenuItem disabled>
+            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+              No columns found
+            </Typography>
+          </MenuItem>
+        )}
       </Menu>
 
       {/* Snackbar for Add/Edit operations */}
