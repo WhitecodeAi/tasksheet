@@ -273,7 +273,11 @@ const TasksheetPage = () => {
               <Select
                 value={singleFilter.column}
                 label="Column"
-                onChange={(e) => setSingleFilter(prev => ({ ...prev, column: e.target.value }))}
+                onChange={(e) => setSingleFilter(prev => ({
+                  ...prev,
+                  column: e.target.value,
+                  isActive: prev.value.trim() !== ''
+                }))}
               >
                 <MenuItem value="entry_date">Date</MenuItem>
                 <MenuItem value="project_name">Project Name</MenuItem>
@@ -290,7 +294,11 @@ const TasksheetPage = () => {
               <Select
                 value={singleFilter.operator}
                 label="Operator"
-                onChange={(e) => setSingleFilter(prev => ({ ...prev, operator: e.target.value }))}
+                onChange={(e) => setSingleFilter(prev => ({
+                  ...prev,
+                  operator: e.target.value,
+                  isActive: prev.value.trim() !== ''
+                }))}
               >
                 <MenuItem value="contains">contains</MenuItem>
                 <MenuItem value="equals">equals</MenuItem>
