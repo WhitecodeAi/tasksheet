@@ -536,6 +536,10 @@ const [showToast, setShowToast] = useState(false);
               },
               '& .MuiDataGrid-row': {
                 minHeight: 'auto !important',
+                backgroundColor: '#ffffff',
+              },
+              '& .MuiDataGrid-row:hover': {
+                backgroundColor: '#f5f5f5',
               },
               '& .MuiDataGrid-columnHeader': {
                 backgroundColor: '#f8fafc',
@@ -543,12 +547,6 @@ const [showToast, setShowToast] = useState(false);
                 fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
-              },
-              '& .MuiDataGrid-row': {
-                backgroundColor: '#ffffff',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: '#f5f5f5',
               },
               '& .MuiDataGrid-footer': {
                 borderTop: '1px solid #f0f0f0',
