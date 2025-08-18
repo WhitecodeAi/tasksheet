@@ -447,6 +447,7 @@ const TasksheetPage = () => {
             searchQuery={searchQuery}
             filterRange={filterRange}
             activeFilters={activeFilters}
+            dataGridFilters={dataGridFilters}
             showFilters={showFilters}
             showColumnMenu={showColumnMenu}
             onFiltersChange={setShowFilters}
