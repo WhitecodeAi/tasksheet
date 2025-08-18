@@ -264,180 +264,98 @@ const TasksheetPage = () => {
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-              Filters:
+              Filter:
             </Typography>
 
-            {/* Display active filters */}
-            {dataGridFilters.map((filter, index) => (
+            {/* Column Selection */}
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel>Column</InputLabel>
+              <Select
+                value={singleFilter.column}
+                label="Column"
+                onChange={(e) => setSingleFilter(prev => ({ ...prev, column: e.target.value }))}
+              >
+                <MenuItem value="entry_date">Date</MenuItem>
+                <MenuItem value="project_name">Project Name</MenuItem>
+                <MenuItem value="category_name">Task Category</MenuItem>
+                <MenuItem value="task_name">Task Details</MenuItem>
+                <MenuItem value="total_time">Total Efforts</MenuItem>
+                <MenuItem value="comments">Comments</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Operator Selection */}
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Operator</InputLabel>
+              <Select
+                value={singleFilter.operator}
+                label="Operator"
+                onChange={(e) => setSingleFilter(prev => ({ ...prev, operator: e.target.value }))}
+              >
+                <MenuItem value="contains">contains</MenuItem>
+                <MenuItem value="equals">equals</MenuItem>
+                <MenuItem value="startsWith">starts with</MenuItem>
+                <MenuItem value="endsWith">ends with</MenuItem>
+                {singleFilter.column === 'entry_date' && [
+                  <MenuItem key="is" value="is">is</MenuItem>,
+                  <MenuItem key="after" value="after">is after</MenuItem>,
+                  <MenuItem key="before" value="before">is before</MenuItem>
+                ]}
+              </Select>
+            </FormControl>
+
+            {/* Value Input */}
+            <TextField
+              size="small"
+              label="Value"
+              type={singleFilter.column === 'entry_date' ? 'date' : 'text'}
+              value={singleFilter.value}
+              onChange={(e) => setSingleFilter(prev => ({ ...prev, value: e.target.value }))}
+              InputLabelProps={singleFilter.column === 'entry_date' ? { shrink: true } : {}}
+              sx={{ minWidth: 150 }}
+            />
+
+            {/* Action Buttons */}
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => setSingleFilter(prev => ({ ...prev, isActive: true }))}
+              disabled={!singleFilter.value}
+              sx={{ px: 3, py: 1, minHeight: '32px' }}
+            >
+              Apply
+            </Button>
+
+            <Button
+              size="small"
+              color="error"
+              onClick={() => setSingleFilter(prev => ({ ...prev, value: '', isActive: false }))}
+              sx={{ px: 3, py: 1, minHeight: '32px' }}
+            >
+              Clear
+            </Button>
+
+            {/* Show active filter */}
+            {singleFilter.isActive && singleFilter.value && (
               <Box
-                key={index}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
                   p: 1,
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e0e0e0',
+                  backgroundColor: '#e3f2fd',
+                  border: '1px solid #1976d2',
                   borderRadius: '6px',
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
+                  ml: 'auto'
                 }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  {filter.column}
+                <Typography variant="body2" sx={{ fontWeight: 500, color: '#1976d2' }}>
+                  {singleFilter.column} {singleFilter.operator} "{singleFilter.value}"
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {filter.operator}
-                </Typography>
-                <Typography variant="body2">
-                  "{filter.value}"
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => {
-                    const newFilters = dataGridFilters.filter((_, i) => i !== index);
-                    setDataGridFilters(newFilters);
-                  }}
-                  sx={{ ml: 1, p: 0.5 }}
-                >
-                  <Typography sx={{ fontSize: '1rem', color: '#d32f2f' }}>×</Typography>
-                </IconButton>
               </Box>
-            ))}
-
-            {/* Add new filter */}
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<Add />}
-              onClick={() => {
-                const newFilter = {
-                  id: Date.now(),
-                  column: 'project_name',
-                  operator: 'contains',
-                  value: '',
-                  isEditing: true
-                };
-                setDataGridFilters([...dataGridFilters, newFilter]);
-              }}
-              sx={{
-                textTransform: 'none',
-                borderColor: '#e0e0e0',
-                color: '#666',
-                '&:hover': {
-                  borderColor: '#1976d2',
-                  color: '#1976d2'
-                }
-              }}
-            >
-              Add Filter
-            </Button>
-
-            {/* Show current filter count */}
-            {dataGridFilters.length > 0 && (
-              <Typography variant="caption" color="primary" sx={{ ml: 'auto' }}>
-                {dataGridFilters.length} filter{dataGridFilters.length > 1 ? 's' : ''} active
-              </Typography>
             )}
           </Box>
-
-          {/* Edit mode for new/editing filters */}
-          {dataGridFilters.some(f => f.isEditing) && (
-            <Box sx={{ mt: 2, p: 2, backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-              {dataGridFilters.filter(f => f.isEditing).map((filter, index) => (
-                <Box key={filter.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: index < dataGridFilters.filter(f => f.isEditing).length - 1 ? 2 : 0 }}>
-                  {/* Column Selection */}
-                  <FormControl size="small" sx={{ minWidth: 150 }}>
-                    <InputLabel>Column</InputLabel>
-                    <Select
-                      value={filter.column}
-                      label="Column"
-                      onChange={(e) => {
-                        const newFilters = dataGridFilters.map(f =>
-                          f.id === filter.id ? { ...f, column: e.target.value } : f
-                        );
-                        setDataGridFilters(newFilters);
-                      }}
-                    >
-                      <MenuItem value="entry_date">Date</MenuItem>
-                      <MenuItem value="project_name">Project Name</MenuItem>
-                      <MenuItem value="category_name">Task Category</MenuItem>
-                      <MenuItem value="task_name">Task Details</MenuItem>
-                      <MenuItem value="total_time">Total Efforts</MenuItem>
-                      <MenuItem value="comments">Comments</MenuItem>
-                    </Select>
-                  </FormControl>
-
-                  {/* Operator Selection */}
-                  <FormControl size="small" sx={{ minWidth: 120 }}>
-                    <InputLabel>Operator</InputLabel>
-                    <Select
-                      value={filter.operator}
-                      label="Operator"
-                      onChange={(e) => {
-                        const newFilters = dataGridFilters.map(f =>
-                          f.id === filter.id ? { ...f, operator: e.target.value } : f
-                        );
-                        setDataGridFilters(newFilters);
-                      }}
-                    >
-                      <MenuItem value="contains">contains</MenuItem>
-                      <MenuItem value="equals">equals</MenuItem>
-                      <MenuItem value="startsWith">starts with</MenuItem>
-                      <MenuItem value="endsWith">ends with</MenuItem>
-                      {filter.column === 'entry_date' && [
-                        <MenuItem key="is" value="is">is</MenuItem>,
-                        <MenuItem key="after" value="after">is after</MenuItem>,
-                        <MenuItem key="before" value="before">is before</MenuItem>
-                      ]}
-                    </Select>
-                  </FormControl>
-
-                  {/* Value Input */}
-                  <TextField
-                    size="small"
-                    label="Value"
-                    type={filter.column === 'entry_date' ? 'date' : 'text'}
-                    value={filter.value}
-                    onChange={(e) => {
-                      const newFilters = dataGridFilters.map(f =>
-                        f.id === filter.id ? { ...f, value: e.target.value } : f
-                      );
-                      setDataGridFilters(newFilters);
-                    }}
-                    InputLabelProps={filter.column === 'entry_date' ? { shrink: true } : {}}
-                    sx={{ minWidth: 150 }}
-                  />
-
-                  {/* Action Buttons */}
-                  <Stack direction="row" spacing={1}>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      onClick={() => {
-                        const newFilters = dataGridFilters.map(f =>
-                          f.id === filter.id ? { ...f, isEditing: false } : f
-                        );
-                        setDataGridFilters(newFilters);
-                      }}
-                      disabled={!filter.value}
-                    >
-                      Apply
-                    </Button>
-                    <Button
-                      size="small"
-                      color="error"
-                      onClick={() => {
-                        const newFilters = dataGridFilters.filter(f => f.id !== filter.id);
-                        setDataGridFilters(newFilters);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </Stack>
-                </Box>
-              ))}
-            </Box>
-          )}
         </Paper>
       )}
 
