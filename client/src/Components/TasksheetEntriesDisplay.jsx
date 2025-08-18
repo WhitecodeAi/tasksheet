@@ -397,7 +397,6 @@ const [showToast, setShowToast] = useState(false);
           }}
         >
           <DataGrid
-            ref={apiRef}
             rows={getFilteredEntries()}
             columns={columns}
             autoHeight
@@ -406,23 +405,6 @@ const [showToast, setShowToast] = useState(false);
             pageSizeOptions={[10, 25, 50, 100]}
             sortModel={sortModel}
             onSortModelChange={setSortModel}
-            filterMode="client"
-            slotProps={{
-              filterPanel: {
-                sx: {
-                  width: 400,
-                  '& .MuiDataGrid-filterForm': {
-                    padding: 2,
-                  },
-                  '& .MuiDataGrid-filterFormDeleteIcon': {
-                    color: '#d32f2f',
-                  },
-                  '& .MuiDataGrid-filterFormAddIcon': {
-                    color: '#1976d2',
-                  },
-                },
-              },
-            }}
             initialState={{
               pagination: {
                 paginationModel: {
@@ -431,11 +413,6 @@ const [showToast, setShowToast] = useState(false);
               },
               sorting: {
                 sortModel: [{ field: 'entry_date', sort: 'desc' }],
-              },
-              filter: {
-                filterModel: {
-                  items: [],
-                },
               },
             }}
             sx={{
