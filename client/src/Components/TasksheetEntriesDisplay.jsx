@@ -204,6 +204,7 @@ const [showToast, setShowToast] = useState(false);
       headerName: 'Actions',
       width: 140,
       sortable: false,
+      pinned: 'right',
       renderCell: (params) => (
         <ButtonGroup variant="text" size="small">
           <Button
@@ -298,11 +299,15 @@ const [showToast, setShowToast] = useState(false);
                 fontSize: '0.875rem',
                 py: 1,
                 backgroundColor: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
               },
               '& .MuiDataGrid-columnHeader': {
                 backgroundColor: '#f8fafc',
                 fontSize: '0.875rem',
                 fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
               },
               '& .MuiDataGrid-row': {
                 backgroundColor: '#ffffff',
