@@ -500,6 +500,7 @@ const [showToast, setShowToast] = useState(false);
             sortModel={sortModel}
             onSortModelChange={setSortModel}
             getRowHeight={() => 'auto'}
+            columnVisibilityModel={columnVisibility}
             initialState={{
               pagination: {
                 paginationModel: {
