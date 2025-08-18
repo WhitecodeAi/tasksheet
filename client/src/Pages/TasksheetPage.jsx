@@ -648,7 +648,11 @@ const TasksheetPage = () => {
             size="small"
             placeholder="Search columns..."
             value={columnSearchQuery}
-            onChange={(e) => setColumnSearchQuery(e.target.value)}
+            onChange={(e) => {
+              console.log('Search query changed:', e.target.value);
+              setColumnSearchQuery(e.target.value);
+            }}
+            onClick={(e) => e.stopPropagation()}
             fullWidth
             InputProps={{
               startAdornment: (
