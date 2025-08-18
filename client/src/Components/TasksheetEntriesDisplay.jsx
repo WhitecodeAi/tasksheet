@@ -402,21 +402,43 @@ const [showToast, setShowToast] = useState(false);
       disableColumnMenu: true,
       hide: !columnVisibility.actions,
       renderCell: (params) => (
-        <ButtonGroup variant="text" size="small">
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
           <Button
+            variant="text"
+            size="small"
             onClick={() => handleEdit(params.row)}
-            sx={{ px: 2, py: 1, minHeight: '32px' }}
+            sx={{
+              px: 2,
+              py: 1,
+              minHeight: '32px',
+              boxShadow: 'none',
+              '&:hover': {
+                boxShadow: 'none',
+                backgroundColor: 'rgba(0, 0, 0, 0.04)'
+              }
+            }}
           >
             Edit
           </Button>
           <Button
+            variant="text"
+            size="small"
             color="error"
             onClick={() => handleDelete(params.row)}
-            sx={{ px: 2, py: 1, minHeight: '32px' }}
+            sx={{
+              px: 2,
+              py: 1,
+              minHeight: '32px',
+              boxShadow: 'none',
+              '&:hover': {
+                boxShadow: 'none',
+                backgroundColor: 'rgba(211, 47, 47, 0.04)'
+              }
+            }}
           >
             Delete
           </Button>
-        </ButtonGroup>
+        </Box>
       ),
     },
   ];
