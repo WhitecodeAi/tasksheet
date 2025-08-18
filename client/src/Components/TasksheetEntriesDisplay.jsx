@@ -240,12 +240,20 @@ const [showToast, setShowToast] = useState(false);
     }));
   };
 
+  // Function to trigger the filter panel
+  const triggerFilterPanel = () => {
+    if (filterButtonRef.current) {
+      filterButtonRef.current.click();
+    }
+  };
+
   // Expose functions to parent
   React.useImperativeHandle(ref, () => ({
     refreshEntries: fetchEntries,
     exportToCSV,
     toggleColumnVisibility,
     columnVisibility,
+    triggerFilterPanel,
   }), [fetchEntries, columnVisibility]);
 
   // Define DataGrid columns
