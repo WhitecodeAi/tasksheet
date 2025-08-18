@@ -55,6 +55,7 @@ const TasksheetPage = () => {
     comments: true,
     actions: true,
   });
+  const [columnSearchQuery, setColumnSearchQuery] = useState('');
   const [singleFilter, setSingleFilter] = useState({
     column: 'project_name',
     operator: 'contains',
