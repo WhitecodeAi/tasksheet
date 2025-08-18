@@ -73,6 +73,11 @@ const [showToast, setShowToast] = useState(false);
     fetchReferenceData();
   }, []);
 
+  // Debug columnVisibility
+  useEffect(() => {
+    console.log('TasksheetEntriesDisplay columnVisibility:', columnVisibility);
+  }, [columnVisibility]);
+
   useImperativeHandle(ref, () => ({
     refreshEntries: fetchEntries,
   }));
