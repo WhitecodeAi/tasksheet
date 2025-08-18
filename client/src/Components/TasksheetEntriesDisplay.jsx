@@ -320,9 +320,9 @@ const [showToast, setShowToast] = useState(false);
     {
       field: 'entry_date',
       headerName: 'Date',
-      width: 120,
+      width: 80,
       type: 'date',
-      valueFormatter: (value) => dayjs(value).format('DD MMM YYYY'),
+      valueFormatter: (value) => dayjs(value).format('DD MMM'),
       sortable: true,
       filterable: true,
       hide: !columnVisibility.entry_date,
