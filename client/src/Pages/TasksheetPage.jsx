@@ -310,26 +310,21 @@ const TasksheetPage = () => {
               label="Value"
               type={singleFilter.column === 'entry_date' ? 'date' : 'text'}
               value={singleFilter.value}
-              onChange={(e) => setSingleFilter(prev => ({ ...prev, value: e.target.value }))}
+              onChange={(e) => setSingleFilter(prev => ({
+                ...prev,
+                value: e.target.value,
+                isActive: e.target.value.trim() !== ''
+              }))}
               InputLabelProps={singleFilter.column === 'entry_date' ? { shrink: true } : {}}
               sx={{ minWidth: 150 }}
             />
 
-            {/* Action Buttons */}
-            <Button
-              size="small"
-              variant="contained"
-              onClick={() => setSingleFilter(prev => ({ ...prev, isActive: true }))}
-              disabled={!singleFilter.value}
-              sx={{ px: 3, py: 1, minHeight: '32px' }}
-            >
-              Apply
-            </Button>
-
+            {/* Clear Button */}
             <Button
               size="small"
               color="error"
               onClick={() => setSingleFilter(prev => ({ ...prev, value: '', isActive: false }))}
+              disabled={!singleFilter.value}
               sx={{ px: 3, py: 1, minHeight: '32px' }}
             >
               Clear
