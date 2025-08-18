@@ -204,7 +204,7 @@ const [showToast, setShowToast] = useState(false);
       headerName: 'Actions',
       width: 140,
       sortable: false,
-      pinned: 'right',
+      disableColumnMenu: true,
       renderCell: (params) => (
         <ButtonGroup variant="text" size="small">
           <Button
@@ -318,6 +318,24 @@ const [showToast, setShowToast] = useState(false);
               '& .MuiDataGrid-footer': {
                 borderTop: '1px solid #f0f0f0',
                 backgroundColor: '#ffffff',
+              },
+              // Sticky Actions column
+              '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+                position: 'sticky',
+                right: 0,
+                backgroundColor: '#f8fafc',
+                zIndex: 1,
+                borderLeft: '1px solid #f0f0f0',
+              },
+              '& .MuiDataGrid-cell[data-field="actions"]': {
+                position: 'sticky',
+                right: 0,
+                backgroundColor: '#ffffff',
+                zIndex: 1,
+                borderLeft: '1px solid #f0f0f0',
+              },
+              '& .MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
+                backgroundColor: '#f5f5f5',
               },
             }}
             slots={{
