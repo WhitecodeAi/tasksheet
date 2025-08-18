@@ -252,78 +252,72 @@ const [showToast, setShowToast] = useState(false);
 
   return (
     <>
-
       {isLoading ? (
-        <Typography variant="body1" sx={{ textAlign: "center" }}>
-          <CircularProgress /> Loading entries...
-        </Typography>
-      ) : entries.length === 0 ? (
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          No entries found for this period.
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+          <CircularProgress />
+          <Typography variant="body1" sx={{ ml: 2 }}>
+            Loading entries...
+          </Typography>
+        </Box>
       ) : (
-        <TableContainer
-          component={Paper}
+        <Paper
           sx={{
             mt: 0,
             borderRadius: '0 0 12px 12px',
             border: '1px solid #f0f0f0',
             borderTop: 'none',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden'
           }}
         >
-          <Table size="small" sx={{ '& .MuiTableCell-root': { py: 1 } }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Project Name</TableCell>
-                <TableCell>Task Category</TableCell>
-                <TableCell>Task Details</TableCell>
-                <TableCell>Total Efforts</TableCell>
-                <TableCell>Comments</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {getFilteredEntries().map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell>
-                    {dayjs(entry.entry_date).format("DD MMM YYYY")}
-                  </TableCell>
-                  <TableCell>{getProjectName(entry.project_id)}</TableCell>
-                  <TableCell>{getCategoryName(entry.task_category_id)}</TableCell>
-                  <TableCell style={{ whiteSpace: "pre-line" }}>
-                    {entry.task_name}
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body1">
-                      {Math.floor(entry.hours)}:
-                      {entry.minutes.toString().padStart(2, "0")}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{entry.comments}</TableCell>
-                  <TableCell align="center">
-                    <ButtonGroup variant="text" size="small">
-                      <Button
-                        onClick={() => handleEdit(entry)}
-                        sx={{ px: 2, py: 1, minHeight: '32px' }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        color="error"
-                        onClick={() => handleDelete(entry)}
-                        sx={{ px: 2, py: 1, minHeight: '32px' }}
-                      >
-                        Delete
-                      </Button>
-                    </ButtonGroup>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+          <DataGrid
+            rows={getFilteredEntries()}
+            columns={columns}
+            autoHeight
+            disableRowSelectionOnClick
+            hideFooterSelectedRowCount
+            pageSizeOptions={[10, 25, 50, 100]}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 25,
+                },
+              },
+            }}
+            sx={{
+              border: 'none',
+              '& .MuiDataGrid-cell': {
+                fontSize: '0.875rem',
+                py: 1,
+              },
+              '& .MuiDataGrid-columnHeader': {
+                backgroundColor: '#f8fafc',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+              },
+              '& .MuiDataGrid-row:hover': {
+                backgroundColor: '#f5f5f5',
+              },
+              '& .MuiDataGrid-footer': {
+                borderTop: '1px solid #f0f0f0',
+              },
+            }}
+            slots={{
+              noRowsOverlay: () => (
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '200px'
+                }}>
+                  <Typography variant="body1">
+                    No entries found for this period.
+                  </Typography>
+                </Box>
+              ),
+            }}
+          />
+        </Paper>
       )}
       <Snackbar
   open={showToast}
