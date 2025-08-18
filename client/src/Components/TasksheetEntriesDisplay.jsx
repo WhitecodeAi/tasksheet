@@ -503,6 +503,14 @@ const [showToast, setShowToast] = useState(false);
                 display: 'flex',
                 alignItems: 'center',
               },
+              '& .MuiDataGrid-cell[data-field="task_name"]': {
+                alignItems: 'flex-start',
+                whiteSpace: 'normal',
+                lineHeight: 'normal',
+              },
+              '& .MuiDataGrid-row': {
+                minHeight: 'auto !important',
+              },
               '& .MuiDataGrid-columnHeader': {
                 backgroundColor: '#f8fafc',
                 fontSize: '0.875rem',
