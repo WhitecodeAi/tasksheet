@@ -163,6 +163,48 @@ const [showToast, setShowToast] = useState(false);
     );
   };
 
+  // Export to CSV functionality
+  const exportToCSV = () => {
+    const filteredData = getFilteredEntries();
+    const csvHeaders = ['Date', 'Project Name', 'Task Category', 'Task Details', 'Total Efforts', 'Comments'];
+    const csvData = filteredData.map(entry => [
+      dayjs(entry.entry_date).format('DD MMM YYYY'),
+      getProjectName(entry.project_id),
+      getCategoryName(entry.task_category_id),
+      entry.task_name?.replace(/\n/g, ' ') || '',
+      `${Math.floor(entry.hours)}:${entry.minutes.toString().padStart(2, '0')}`,
+      entry.comments?.replace(/\n/g, ' ') || ''
+    ]);
+
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `tasksheet-entries-${dayjs().format('YYYY-MM-DD')}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Column management
+  const toggleColumnVisibility = (field) => {
+    setColumnVisibility(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
+
+  // Expose functions to parent
+  React.useImperativeHandle(ref, () => ({
+    refreshEntries: fetchEntries,
+    exportToCSV,
+    toggleColumnVisibility,
+    columnVisibility,
+  }), [fetchEntries, columnVisibility]);
+
   // Define DataGrid columns
   const columns = [
     {
