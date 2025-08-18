@@ -41,6 +41,7 @@ const TasksheetPage = () => {
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [columnMenuAnchor, setColumnMenuAnchor] = useState(null);
   const [filterMenuAnchor, setFilterMenuAnchor] = useState(null);
+  const [showDataGridFilters, setShowDataGridFilters] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     projects: [],
     categories: [],
@@ -170,10 +171,10 @@ const TasksheetPage = () => {
             <Tooltip title="Filter & Sort">
               <IconButton
                 size="small"
-                onClick={(event) => setFilterMenuAnchor(event.currentTarget)}
+                onClick={() => setShowDataGridFilters(!showDataGridFilters)}
                 sx={{
-                  color: (filterMenuAnchor || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? '#1976d2' : '#9e9e9e',
-                  backgroundColor: (filterMenuAnchor || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
+                  color: (showDataGridFilters || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? '#1976d2' : '#9e9e9e',
+                  backgroundColor: (showDataGridFilters || Object.values(activeFilters).some(f => Array.isArray(f) ? f.length > 0 : f)) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)'
                   }
@@ -251,6 +252,7 @@ const TasksheetPage = () => {
             activeFilters={activeFilters}
             showFilters={showFilters}
             showColumnMenu={showColumnMenu}
+            showDataGridFilters={showDataGridFilters}
             onFiltersChange={setShowFilters}
             onColumnMenuChange={setShowColumnMenu}
           />
