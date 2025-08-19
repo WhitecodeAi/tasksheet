@@ -26,12 +26,14 @@ import {
   ListItemText,
   FormControl,
   InputLabel,
-  Select
+    Select
 } from '@mui/material';
-import { Search, Add, FilterList, ViewColumn, FileDownload, Settings } from '@mui/icons-material';
+ import GetAppTwoToneIcon from '@mui/icons-material/GetAppTwoTone';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { Search, Add, FilterList, ViewColumn, FileDownload, Settings, GetAppTwoTone } from '@mui/icons-material';
 import { api } from '../utils/api';
 import dayjs from 'dayjs';
-
+import ViewColumnTwoToneIcon from '@mui/icons-material/ViewColumnTwoTone';
 const TasksheetPage = () => {
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
@@ -179,7 +181,7 @@ const TasksheetPage = () => {
                 onClick={() => setFilterRange(value)}
                 variant={filterRange === value ? "contained" : "outlined"}
                 color={filterRange === value ? "primary" : "inherit"}
-                size="small"
+                size="medium"
                 sx={{
                   textTransform: 'none',
                   borderRadius: '8px',
@@ -200,7 +202,7 @@ const TasksheetPage = () => {
                 size="small"
                 onClick={() => setShowHorizontalFilters(!showHorizontalFilters)}
                 sx={{
-                  color: (showHorizontalFilters || singleFilter.isActive) ? '#1976d2' : '#9e9e9e',
+                  color: (showHorizontalFilters || singleFilter.isActive) ? '#1976d2' : '#757575',
                   backgroundColor: (showHorizontalFilters || singleFilter.isActive) ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
@@ -208,7 +210,7 @@ const TasksheetPage = () => {
                   }
                 }}
               >
-                <FilterList fontSize="small" />
+                <FilterAltIcon  fontSize="medium" />
               </IconButton>
             </Tooltip>
 
@@ -217,7 +219,7 @@ const TasksheetPage = () => {
                 size="small"
                 onClick={(event) => setColumnMenuAnchor(event.currentTarget)}
                 sx={{
-                  color: columnMenuAnchor ? '#1976d2' : '#9e9e9e',
+                  color: columnMenuAnchor ? '#1976d2' : '#757575',
                   backgroundColor: columnMenuAnchor ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
@@ -225,7 +227,7 @@ const TasksheetPage = () => {
                   }
                 }}
               >
-                <ViewColumn fontSize="small" />
+                            <ViewColumnTwoToneIcon fontSize="medium" />
               </IconButton>
             </Tooltip>
 
@@ -238,14 +240,14 @@ const TasksheetPage = () => {
                   }
                 }}
                 sx={{
-                  color: '#9e9e9e',
+                  color: '#757575',
                   '&:hover': {
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
                     color: '#1976d2'
                   }
                 }}
               >
-                <FileDownload fontSize="small" />
+                <GetAppTwoToneIcon fontSize="medium" />
               </IconButton>
             </Tooltip>
           </Stack>
