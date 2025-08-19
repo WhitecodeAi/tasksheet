@@ -23,9 +23,22 @@ import {
   TextField,
   Divider
 } from "@mui/material";
-import { DataGrid } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  Toolbar,
+  ToolbarButton,
+  ColumnsPanelTrigger,
+  FilterPanelTrigger,
+  ExportCsv,
+  ExportPrint,
+  QuickFilter,
+  QuickFilterControl,
+  QuickFilterClear,
+  QuickFilterTrigger,
+} from '@mui/x-data-grid'
 import dayjs from "dayjs";
 import { api } from "../utils/api";
+import { styled } from '@mui/material/styles';
 
 const TasksheetEntriesDisplay = forwardRef(({
   userId,
@@ -277,6 +290,150 @@ const [showToast, setShowToast] = useState(false);
       (a, b) => dayjs(b.entry_date).valueOf() - dayjs(a.entry_date).valueOf()
     );
   };
+const StyledQuickFilter = styled(QuickFilter)({
+  display: 'grid',
+  alignItems: 'center',
+});
+
+const StyledToolbarButton = styled(ToolbarButton)(({ theme, ownerState }) => ({
+  gridArea: '1 / 1',
+  width: 'min-content',
+  height: 'min-content',
+  zIndex: 1,
+  opacity: ownerState.expanded ? 0 : 1,
+  pointerEvents: ownerState.expanded ? 'none' : 'auto',
+  transition: theme.transitions.create(['opacity']),
+}));
+
+const StyledTextField = styled(TextField)(({ theme, ownerState }) => ({
+  gridArea: '1 / 1',
+  overflowX: 'clip',
+  width: ownerState.expanded ? 260 : 'var(--trigger-width)',
+  opacity: ownerState.expanded ? 1 : 0,
+  transition: theme.transitions.create(['width', 'opacity']),
+}));
+
+function CustomToolbar() {
+  const [exportMenuOpen, setExportMenuOpen] = React.useState(false);
+  const exportMenuTriggerRef = React.useRef(null);
+
+  return (
+    <Toolbar>
+      <Typography fontWeight="medium" sx={{ flex: 1, mx: 0.5 }}>
+        Toolbar
+      </Typography>
+
+      <Tooltip title="Columns">
+        <ColumnsPanelTrigger render={<ToolbarButton />}>
+          <ViewColumnIcon fontSize="small" />
+        </ColumnsPanelTrigger>
+      </Tooltip>
+
+      <Tooltip title="Filters">
+        <FilterPanelTrigger
+          render={(props, state) => (
+            <ToolbarButton {...props} color="default">
+              <Badge badgeContent={state.filterCount} color="primary" variant="dot">
+                <FilterListIcon fontSize="small" />
+              </Badge>
+            </ToolbarButton>
+          )}
+        />
+      </Tooltip>
+ 
+      <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 0.5 }} />
+      <Tooltip title="Export">
+        <ToolbarButton
+          ref={exportMenuTriggerRef}
+          id="export-menu-trigger"
+          aria-controls="export-menu"
+          aria-haspopup="true"
+          aria-expanded={exportMenuOpen ? 'true' : undefined}
+          onClick={() => setExportMenuOpen(true)}
+        >
+          <FileDownloadIcon fontSize="small" />
+        </ToolbarButton>
+      </Tooltip>
+
+      <Menu
+        id="export-menu"
+        anchorEl={exportMenuTriggerRef.current}
+        open={exportMenuOpen}
+        onClose={() => setExportMenuOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          list: {
+            'aria-labelledby': 'export-menu-trigger',
+          },
+        }}
+      >
+        <ExportPrint render={<MenuItem />} onClick={() => setExportMenuOpen(false)}>
+          Print
+        </ExportPrint>
+        <ExportCsv render={<MenuItem />} onClick={() => setExportMenuOpen(false)}>
+          Download as CSV
+        </ExportCsv>
+        {/* Available to MUI X Premium users */}
+        {/* <ExportExcel render={<MenuItem />}>
+           Download as Excel
+          </ExportExcel> */}
+      </Menu>
+
+      <StyledQuickFilter>
+        <QuickFilterTrigger
+          render={(triggerProps, state) => (
+            <Tooltip title="Search" enterDelay={0}>
+              <StyledToolbarButton
+                {...triggerProps}
+                ownerState={{ expanded: state.expanded }}
+                color="default"
+                aria-disabled={state.expanded}
+              >
+                <SearchIcon fontSize="small" />
+              </StyledToolbarButton>
+            </Tooltip>
+          )}
+        />
+        <QuickFilterControl
+          render={({ ref, ...controlProps }, state) => (
+            <StyledTextField
+              {...controlProps}
+              ownerState={{ expanded: state.expanded }}
+              inputRef={ref}
+              aria-label="Search"
+              placeholder="Search..."
+              size="small"
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: state.value ? (
+                    <InputAdornment position="end">
+                      <QuickFilterClear
+                        edge="end"
+                        size="small"
+                        aria-label="Clear search"
+                        material={{ sx: { marginRight: -0.75 } }}
+                      >
+                        <CancelIcon fontSize="small" />
+                      </QuickFilterClear>
+                    </InputAdornment>
+                  ) : null,
+                  ...controlProps.slotProps?.input,
+                },
+                ...controlProps.slotProps,
+              }}
+            />
+          )}
+        />
+      </StyledQuickFilter>
+    </Toolbar>
+  );
+}
 
   // Export to CSV functionality
   const exportToCSV = () => {
@@ -304,6 +461,25 @@ const [showToast, setShowToast] = useState(false);
     window.URL.revokeObjectURL(url);
   };
 
+  const StyledGridOverlay = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  '& .no-rows-primary': {
+    fill: '#3D4751',
+    ...theme.applyStyles('light', {
+      fill: '#AEB8C2',
+    }),
+  },
+  '& .no-rows-secondary': {
+    fill: '#1D2126',
+    ...theme.applyStyles('light', {
+      fill: '#E8EAED',
+    }),
+  },
+}));
   // Expose functions to parent
   React.useImperativeHandle(ref, () => ({
     refreshEntries: fetchEntries,
@@ -343,6 +519,8 @@ const [showToast, setShowToast] = useState(false);
       field: 'task_name',
       headerName: 'Task Details',
       width: 300,
+ 
+    flex: 1, 
       type: 'string',
       sortable: true,
       filterable: true,
@@ -352,8 +530,10 @@ const [showToast, setShowToast] = useState(false);
           wordWrap: 'break-word',
           overflow: 'visible',
           width: '100%',
-          padding: '8px 0',
-          lineHeight: 1.4
+           height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+         
         }}>
           {params.value}
         </Box>
@@ -387,6 +567,7 @@ const [showToast, setShowToast] = useState(false);
       field: 'actions',
       headerName: '',
       width: 140,
+        flex: 0,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
@@ -475,19 +656,22 @@ const [showToast, setShowToast] = useState(false);
             borderTop: 'none',
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             overflow: 'hidden',
-            backgroundColor: '#ffffff'
-          }}
+            backgroundColor: '#ffffff',
+                  }}
         >
           <DataGrid
             rows={getFilteredEntries()}
             columns={columns}
             autoHeight
+            //showToolbar
+            
             disableRowSelectionOnClick
             hideFooterSelectedRowCount
             pageSizeOptions={[10, 25, 50, 100]}
             sortModel={sortModel}
             onSortModelChange={setSortModel}
             getRowHeight={() => 'auto'}
+             rowHeight={32}
             columnVisibilityModel={columnVisibility}
             onColumnVisibilityModelChange={(newModel) => {
               if (onColumnVisibilityChange) {
@@ -508,6 +692,8 @@ const [showToast, setShowToast] = useState(false);
               },
             }}
             sx={{
+              m:0,
+              minHeight: '400px',
               border: 'none',
               backgroundColor: '#ffffff',
               '& .MuiDataGrid-main': {
@@ -517,12 +703,32 @@ const [showToast, setShowToast] = useState(false);
                 backgroundColor: '#ffffff',
               },
               '& .MuiDataGrid-cell': {
-                fontSize: '0.875rem',
-                py: 1,
+                 
                 backgroundColor: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
+                  padding: '4px 6px',   
               },
+'& .MuiDataGrid-columnHeaders': {
+    minHeight: '45px !important', // Shrinks the whole header row
+    maxHeight: '45px !important',
+  },
+  '& .MuiDataGrid-columnHeader': {
+    minHeight: '42px !important', // Shrinks each column header cell
+    maxHeight: '42px !important',
+  
+    display: 'flex',
+    alignItems: 'center',
+  },
+  '& .MuiDataGrid-columnHeaderTitle': {
+ 
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+  },
+  
+
+
               '& .MuiDataGrid-cell[data-field="task_name"]': {
                 alignItems: 'flex-start',
                 whiteSpace: 'normal',
@@ -565,6 +771,7 @@ const [showToast, setShowToast] = useState(false);
                   zIndex: -1,
                 },
               },
+     
               '& .MuiDataGrid-cell[data-field="actions"]': {
                 position: 'sticky',
                 right: 0,
@@ -583,7 +790,7 @@ const [showToast, setShowToast] = useState(false);
                   zIndex: -1,
                 },
               },
-              '& .MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
+              '& .MuiDataGrid-row:hover .MuiDataGrid-cell': {
                 backgroundColor: '#f5f5f5 !important',
                 '&::before': {
                   backgroundColor: '#f5f5f5',
@@ -591,19 +798,52 @@ const [showToast, setShowToast] = useState(false);
               },
             }}
             slots={{
+          
               noRowsOverlay: () => (
                 <Box sx={{
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  height: '200px'
+                  height: '300px',
+                
                 }}>
-                  <Typography variant="body1">
-                    No entries found for this period.
-                  </Typography>
+                <StyledGridOverlay>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        width={96}
+        viewBox="0 0 452 257"
+        aria-hidden
+        focusable="false"
+      >
+        <path
+          className="no-rows-primary"
+          d="M348 69c-46.392 0-84 37.608-84 84s37.608 84 84 84 84-37.608 84-84-37.608-84-84-84Zm-104 84c0-57.438 46.562-104 104-104s104 46.562 104 104-46.562 104-104 104-104-46.562-104-104Z"
+        />
+        <path
+          className="no-rows-primary"
+          d="M308.929 113.929c3.905-3.905 10.237-3.905 14.142 0l63.64 63.64c3.905 3.905 3.905 10.236 0 14.142-3.906 3.905-10.237 3.905-14.142 0l-63.64-63.64c-3.905-3.905-3.905-10.237 0-14.142Z"
+        />
+        <path
+          className="no-rows-primary"
+          d="M308.929 191.711c-3.905-3.906-3.905-10.237 0-14.142l63.64-63.64c3.905-3.905 10.236-3.905 14.142 0 3.905 3.905 3.905 10.237 0 14.142l-63.64 63.64c-3.905 3.905-10.237 3.905-14.142 0Z"
+        />
+        <path
+          className="no-rows-secondary"
+          d="M0 10C0 4.477 4.477 0 10 0h380c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 20 0 15.523 0 10ZM0 59c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 69 0 64.523 0 59ZM0 106c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 153c0-5.523 4.477-10 10-10h195.5c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 200c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 247c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10Z"
+        />
+      </svg>
+      <Box sx={{ mt: 2 }}>No rows</Box>
+    </StyledGridOverlay>
                 </Box>
               ),
             }}
+             slotProps={{
+    loadingOverlay: {
+      variant: 'linear-progress',
+      noRowsVariant: 'skeleton',
+    },
+  }}
           />
         </Paper>
       )}
