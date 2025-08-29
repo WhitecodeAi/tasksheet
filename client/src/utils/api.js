@@ -2,7 +2,9 @@ import axios from 'axios';
 
 //const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-const apiUrl = 'https://tasksheet-backend-vite-production.up.railway.app';
+const apiUrl =
+  import.meta?.env?.VITE_API_URL || // Vite
+   'http://localhost:3001';          // Fallback for local dev
 
 console.log('🔗 API URL:', apiUrl);
 
