@@ -1,4 +1,3 @@
- 
 //const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 //require('dotenv').config({ path: envFile });
 
@@ -21,7 +20,7 @@ const db = require('./db'); // using pool directly
 
 app.get("/health", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT 1");
+    const [rows] = await db.query("SELECT 1");
     res.status(200).json({ db: "Connected ✅", timestamp: new Date() });
   } catch (err) {
     console.error("DB connection error ❌", err);
