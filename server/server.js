@@ -7,15 +7,13 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
- 
-
 app.use(cors());
 app.use(express.json());
 
 const authRoutes = require('./routes/auth');
 const taskCategoriesRoutes = require('./routes/taskCategories');
 const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
-const userRoutes = require('./routes/users'); 
+const userRoutes = require('./routes/users');
 const db = require('./db'); // using pool directly
 
 // Initialize database schema if not present
@@ -66,7 +64,6 @@ const db = require('./db'); // using pool directly
   }
 })();
 
-
 app.get("/health", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1");
@@ -76,7 +73,6 @@ app.get("/health", async (req, res) => {
     res.status(500).json({ error: "DB connection failed", details: err.message });
   }
 });
-
 
 // Middleware to attach DB to every request
 app.use((req, res, next) => {
@@ -139,21 +135,22 @@ app.put("/api/projects/:id", (req, res) => {
     });
 });
 
-// Fallback to index.html for SPA routes (exclude /api)
-app.get(/^(?!\/api).*/, (req, res) => {
+// ✅ Fallback to index.html for all non-API routes (important for React Router)
+app.get("*", (req, res) => {
   res.sendFile(path.join(clientBuildPath, "index.html"));
+});
+
+// Healthcheck routes
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Backend is live 🔥" });
+});
+
+app.get('/api/ping', (req, res) => {
+  res.json({ message: 'pong' });
 });
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`✅ Backend running on http://localhost:${PORT}`);
 });
-
-app.get("/api/health", (req, res) => {
-  res.json({ status: "Backend is live 🔥" });
-});
 console.log(`✅ Backend live at ${process.env.PORT} in ${process.env.NODE_ENV} mode`);
-
-app.get('/api/ping', (req, res) => {
-  res.json({ message: 'pong' });
-});
