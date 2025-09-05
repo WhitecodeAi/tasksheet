@@ -1,4 +1,3 @@
- 
 //const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 //require('dotenv').config({ path: envFile });
 
@@ -18,10 +17,58 @@ const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
 const userRoutes = require('./routes/users'); 
 const db = require('./db'); // using pool directly
 
+// Initialize database schema if not present
+(async function initSchema() {
+  try {
+    await db.query(`CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      role VARCHAR(20) NOT NULL DEFAULT 'employee',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    await db.query(`CREATE TABLE IF NOT EXISTS projects (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    await db.query(`CREATE TABLE IF NOT EXISTS task_categories (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL UNIQUE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    await db.query(`CREATE TABLE IF NOT EXISTS tasksheet_entries (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      project_id INT NOT NULL,
+      task_category_id INT NOT NULL,
+      entry_date DATE NOT NULL,
+      hours INT DEFAULT 0,
+      minutes INT DEFAULT 0,
+      total_hours DECIMAL(5,2) DEFAULT 0,
+      comments TEXT,
+      task_name TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_user_id (user_id),
+      INDEX idx_project_id (project_id),
+      INDEX idx_category_id (task_category_id),
+      INDEX idx_entry_date (entry_date)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    console.log('✅ Database schema ensured.');
+  } catch (e) {
+    console.error('❌ Schema initialization error:', e);
+  }
+})();
+
 
 app.get("/health", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT 1");
+    const [rows] = await db.query("SELECT 1");
     res.status(200).json({ db: "Connected ✅", timestamp: new Date() });
   } catch (err) {
     console.error("DB connection error ❌", err);

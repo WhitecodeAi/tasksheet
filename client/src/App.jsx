@@ -89,7 +89,6 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    localStorage.setItem('token', userData.token);
     localStorage.setItem('user', JSON.stringify(userData));
   };
 

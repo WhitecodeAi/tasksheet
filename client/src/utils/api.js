@@ -1,15 +1,32 @@
 import axios from 'axios';
 
-//const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-
-const apiUrl =
-  import.meta?.env?.VITE_API_URL || // Vite
-   'http://localhost:3001';          // Fallback for local dev
-
-console.log('🔗 API URL:', apiUrl);
-
-export const api = axios.create({
-  baseURL: apiUrl,
-  // Add headers or interceptors here if needed later
-
+// Centralized Axios instance
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || '',
 });
+
+// Attach JWT token if present
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Basic response handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export { api };
