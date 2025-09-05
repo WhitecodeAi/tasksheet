@@ -139,9 +139,8 @@ app.put("/api/projects/:id", (req, res) => {
     });
 });
 
-// Fallback to index.html for SPA routes (Express 5)
-app.get("/*", (req, res, next) => {
-  if (req.path.startsWith("/api")) return next();
+// Fallback to index.html for SPA routes (exclude /api)
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(clientBuildPath, "index.html"));
 });
 
