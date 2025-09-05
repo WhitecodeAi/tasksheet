@@ -3,6 +3,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -88,9 +89,10 @@ app.use('/api/taskCategories', taskCategoriesRoutes);
 app.use('/api', authRoutes);
 app.use('/api/tasksheetEntries', tasksheetEntriesRoutes);
 app.use('/api/users', userRoutes);
- 
 
-
+// Static files (client build) for production
+const clientBuildPath = path.join(__dirname, "../client/dist");
+app.use(express.static(clientBuildPath));
 
 // API to get all projects
 app.get("/api/projects", (req, res) => {
@@ -135,6 +137,12 @@ app.put("/api/projects/:id", (req, res) => {
       console.error("Error updating project:", err);
       res.status(500).json({ error: err });
     });
+});
+
+// Fallback to index.html for SPA routes
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  res.sendFile(path.join(clientBuildPath, "index.html"));
 });
 
 // Start the server
