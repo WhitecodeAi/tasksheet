@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  "dev": "concurrently \"npm --prefix ./client run dev\" \"npm --prefix ./server start\"",
-  "postinstall": "npm install --prefix ./client && npm install --prefix ./server"
-},
-
+    "dev": "concurrently \"npm --prefix ./client run dev\" \"npm --prefix ./server start\"",
+    "build": "npm --prefix ./client run build",
+    "start": "node server/server.js",
+    "postinstall": "npm install --prefix ./client && npm install --prefix ./server"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
