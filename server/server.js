@@ -152,10 +152,9 @@ app.get('/api/ping', (req, res) => {
   res.json({ message: 'pong' });
 });
 
-const staticDir = path.join(__dirname, "../dist");
+const staticDir = path.join(__dirname, "../client/dist");
 app.use(express.static(staticDir));
 
-// ✅ SPA Fallback (all non-API routes -> index.html)
 app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(staticDir, "index.html"));
-})
+});
