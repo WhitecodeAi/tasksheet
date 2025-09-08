@@ -2,14 +2,11 @@
   "name": "tasksheet-orchestrator",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-  "dev": "vite",
+"scripts": {
   "build": "vite build",
-  "preview": "vite preview",
-  "postinstall": "npm install --prefix server",
   "start": "npm --prefix ./server start"
 },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  }
+"devDependencies": {
+  "vite": "^5.0.0"
+}
 }
