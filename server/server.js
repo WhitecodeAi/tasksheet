@@ -156,8 +156,9 @@ app.get('/api/ping', (req, res) => {
 const staticDir = path.join(__dirname, 'public');
 app.use(express.static(staticDir));
 
-// SPA fallback for non-API routes
-app.get('*', (req, res, next) => {
+// SPA fallback for non-API routes (Express 5 safe)
+app.use((req, res, next) => {
+  if (req.method !== 'GET') return next();
   if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(staticDir, 'index.html'));
 });
