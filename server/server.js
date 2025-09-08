@@ -3,6 +3,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -149,4 +150,14 @@ console.log(`✅ Backend live at ${process.env.PORT} in ${process.env.NODE_ENV} 
 
 app.get('/api/ping', (req, res) => {
   res.json({ message: 'pong' });
+});
+
+// Serve static frontend
+const staticDir = path.join(__dirname, 'public');
+app.use(express.static(staticDir));
+
+// SPA fallback for non-API routes
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(staticDir, 'index.html'));
 });
