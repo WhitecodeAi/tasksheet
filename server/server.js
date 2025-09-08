@@ -157,7 +157,6 @@ const staticDir = path.join(__dirname, 'public');
 app.use(express.static(staticDir));
 
 // SPA fallback for non-API routes
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(staticDir, 'index.html'));
 });
