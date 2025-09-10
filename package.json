@@ -2,13 +2,13 @@
   "name": "tasksheet-orchestrator",
   "version": "1.0.0",
   "private": true,
-"scripts": {
-  "build": "vite build",
-  "start": "npm --prefix ./server start",
-  "postinstall": "npm install --prefix server && npm install --prefix client"
-}
-},
-"devDependencies": {
-  "vite": "^5.0.0"
-}
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "postinstall": "npm install --prefix server && npm install --prefix client"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
 }
