@@ -718,9 +718,11 @@ function CustomToolbar() {
   '& .MuiDataGrid-columnHeader': {
     minHeight: '42px !important', // Shrinks each column header cell
     maxHeight: '42px !important',
-  
     display: 'flex',
     alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    fontSize: '0.875rem',
+    fontWeight: 600
   },
   '& .MuiDataGrid-columnHeaderTitle': {
  
@@ -742,13 +744,6 @@ function CustomToolbar() {
               },
               '& .MuiDataGrid-row:hover': {
                 backgroundColor: '#f5f5f5',
-              },
-              '& .MuiDataGrid-columnHeader': {
-                backgroundColor: '#f8fafc',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
               },
               '& .MuiDataGrid-footer': {
                 borderTop: '1px solid #f0f0f0',
