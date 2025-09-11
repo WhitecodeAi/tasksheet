@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-// Centralized Axios instance
+// Use current origin; requests use explicit "/api/..." paths across the app
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '',
+  baseURL: window.location.origin,
 });
 
-// Attach JWT token if present
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -14,19 +13,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Basic response handling
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
-    }
-    return Promise.reject(error);
-  }
+  (res) => res,
+  (error) => Promise.reject(error)
 );
 
 export { api };
