@@ -202,34 +202,6 @@ const TasksheetPage = () => {
 
           {/* Center-Right: DataGrid Actions */}
           <Stack direction="row" spacing={1}>
-            <TextField
-              placeholder="Google Sheet URL"
-              value={sheetUrl}
-              onChange={(e) => setSheetUrl(e.target.value)}
-              size="small"
-              sx={{ minWidth: 260, '& .MuiOutlinedInput-root': { backgroundColor: '#f8fafc' } }}
-            />
-            <Button
-              variant="contained"
-              size="small"
-              sx={{ textTransform: 'none', borderRadius: '8px' }}
-              onClick={async () => {
-                if (!sheetUrl.trim()) {
-                  setSnackbar({ open: true, message: 'Please enter the Google Sheet URL', severity: 'warning' });
-                  return;
-                }
-                try {
-                  await api.post('/api/import/googleSheet', { url: sheetUrl.trim() });
-                  await Promise.all([fetchProjects(), fetchTaskCategories()]);
-                  setSnackbar({ open: true, message: 'Imported successfully', severity: 'success' });
-                } catch (e) {
-                  console.error('Import failed', e);
-                  setSnackbar({ open: true, message: 'Import failed', severity: 'error' });
-                }
-              }}
-            >
-              Import
-            </Button>
             <Tooltip title="Filter & Sort">
               <IconButton
                 size="small"
