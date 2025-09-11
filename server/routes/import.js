@@ -19,7 +19,8 @@ function buildCsvExportUrl(inputUrl) {
 
 // Simple CSV parser that handles quoted fields
 function parseCsv(text) {
-  const lines = text\n    .replace(/\r\n/g, '\n')
+  const lines = text
+    .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
     .split('\n')
     .filter((l) => l.trim().length > 0);
