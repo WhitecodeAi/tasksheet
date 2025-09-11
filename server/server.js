@@ -90,11 +90,7 @@ async function importProjectsAndCategoriesFromSheet(sheetUrl) {
     console.warn('Invalid Google Sheet URL, skipping import');
     return { projects: 0, categories: 0 };
   }
-  const res = await fetch(exportUrl);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch sheet: ${res.status}`);
-  }
-  const csvText = await res.text();
+  const csvText = await getText(exportUrl);
   const rows = parseCsv(csvText);
   if (!rows.length) return { projects: 0, categories: 0 };
 
