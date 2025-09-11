@@ -16,7 +16,6 @@ const authRoutes = require('./routes/auth');
 const taskCategoriesRoutes = require('./routes/taskCategories');
 const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
 const userRoutes = require('./routes/users');
-const importRoutes = require('./routes/import');
 const db = require('./db'); // using pool directly
 
 // Initialize database schema if not present
