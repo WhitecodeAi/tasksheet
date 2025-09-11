@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-// Use current origin; requests use explicit "/api/..." paths across the app
+// Prefer explicit backend URL when provided (e.g. on Vercel), fallback to same-origin
+const baseURL = import.meta.env.VITE_API_BASE_URL || window.location.origin;
+
 const api = axios.create({
-  baseURL: window.location.origin,
+  baseURL,
 });
 
 api.interceptors.request.use((config) => {
