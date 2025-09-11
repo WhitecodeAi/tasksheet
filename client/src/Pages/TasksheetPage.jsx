@@ -77,16 +77,21 @@ const TasksheetPage = () => {
   const formRef = useRef(); // 👈 Ref to trigger form submit
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
 
-  useEffect(() => {
-    api.get('/api/projects')
+  const fetchProjects = () => {
+    return api.get('/api/projects')
       .then((res) => setProjects(res.data))
       .catch((err) => console.error('Error fetching projects:', err));
-  }, []);
+  };
 
-  useEffect(() => {
-    api.get('/api/taskCategories')
+  const fetchTaskCategories = () => {
+    return api.get('/api/taskCategories')
       .then((res) => setTaskCategories(res.data))
       .catch((err) => console.error('Failed to fetch task categories', err));
+  };
+
+  useEffect(() => {
+    fetchProjects();
+    fetchTaskCategories();
   }, []);
 
   // Debug columnVisibility changes

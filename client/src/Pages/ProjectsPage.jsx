@@ -23,8 +23,8 @@ const ProjectForm = ({ onSubmit, initialData, buttonText = "Add Project", onCanc
 
   useEffect(() => {
     if (initialData) {
-      setName(initialData.name);
-      setDescription(initialData.description);
+      setName(initialData.name ?? "");
+      setDescription(initialData.description ?? "");
     }
   }, [initialData]);
 
@@ -100,8 +100,8 @@ const [showAddForm, setShowAddForm] = useState(false);
 const [isPinned, setIsPinned] = useState(false);
 
 const filtered = projects.filter(p =>
-  p.name.toLowerCase().includes(searchText.toLowerCase()) ||
-  p.description.toLowerCase().includes(searchText.toLowerCase())
+  (p.name ? p.name.toLowerCase() : "").includes(searchText.toLowerCase()) ||
+  (p.description ? p.description.toLowerCase() : "").includes(searchText.toLowerCase())
 );
 
  
@@ -330,7 +330,7 @@ const handleDeleteProject = (id) => {
                 }}
               >
                 <TableCell>{project.name}</TableCell>
-                <TableCell>{project.description}</TableCell>
+                <TableCell>{project.description || ''}</TableCell>
                 <TableCell align="right">
                   <IconButton
                     onClick={() => setEditingProject(project)}
