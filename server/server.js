@@ -277,6 +277,15 @@ app.get('/api/admin/import-embedded', async (req, res) => {
     } catch (e2) {
       console.error('❌ Sheet import failed:', e2);
     }
+    try {
+      const filePath = path.join(__dirname, 'data', 'projects_categories.csv');
+      if (fs.existsSync(filePath)) {
+        const csv = fs.readFileSync(filePath, 'utf8');
+        await importProjectsAndCategoriesFromCsvText(csv);
+      }
+    } catch (e3) {
+      console.error('❌ Embedded CSV import failed:', e3);
+    }
   } catch (e) {
     console.error('❌ Schema initialization error:', e);
   }
