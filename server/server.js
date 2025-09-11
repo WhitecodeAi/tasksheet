@@ -18,6 +18,111 @@ const tasksheetEntriesRoutes = require('./routes/tasksheetEntries');
 const userRoutes = require('./routes/users');
 const db = require('./db'); // using pool directly
 
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/10e92Q_HncJq-KJBrfzJfuWq6GRlz6JVsDZdRWf-VmsM/edit?gid=0#gid=0';
+
+function buildCsvExportUrl(inputUrl) {
+  try {
+    const url = new URL(inputUrl);
+    const parts = url.pathname.split('/');
+    const idIndex = parts.findIndex((p) => p === 'd');
+    const sheetId = idIndex !== -1 && parts[idIndex + 1] ? parts[idIndex + 1] : null;
+    const gid = url.searchParams.get('gid') || '0';
+    if (!sheetId) return null;
+    return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+  } catch (e) {
+    return null;
+  }
+}
+
+function parseCsv(text) {
+  const lines = text
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .split('\n')
+    .filter((l) => l.trim().length > 0);
+
+  const rows = lines.map((line) => {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    result.push(current);
+    return result.map((c) => c.trim());
+  });
+  return rows;
+}
+
+async function importProjectsAndCategoriesFromSheet(sheetUrl) {
+  const exportUrl = buildCsvExportUrl(sheetUrl);
+  if (!exportUrl) {
+    console.warn('Invalid Google Sheet URL, skipping import');
+    return;
+  }
+  const res = await fetch(exportUrl);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch sheet: ${res.status}`);
+  }
+  const csvText = await res.text();
+  const rows = parseCsv(csvText);
+  if (!rows.length) return;
+
+  let startIndex = 0;
+  const c0 = String(rows[0][0] || '').toLowerCase();
+  const c1 = String(rows[0][1] || '').toLowerCase();
+  if (c0.includes('project') || c1.includes('categor')) startIndex = 1;
+
+  const projects = new Set();
+  const categories = new Set();
+  for (let i = startIndex; i < rows.length; i++) {
+    const r = rows[i];
+    const projectName = String(r[0] || '').trim();
+    const categoryName = String(r[1] || '').trim();
+    if (projectName) projects.add(projectName);
+    if (categoryName) categories.add(categoryName);
+  }
+
+  if (projects.size === 0 && categories.size === 0) return;
+
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+    for (const name of projects) {
+      const [ex] = await conn.query('SELECT id FROM projects WHERE name = ? LIMIT 1', [name]);
+      if (ex.length === 0) {
+        await conn.query('INSERT INTO projects (name, description) VALUES (?, ?)', [name, null]);
+      }
+    }
+    for (const name of categories) {
+      const [ex] = await conn.query('SELECT id FROM task_categories WHERE name = ? LIMIT 1', [name]);
+      if (ex.length === 0) {
+        await conn.query('INSERT INTO task_categories (name) VALUES (?)', [name]);
+      }
+    }
+    await conn.commit();
+  } catch (e) {
+    await conn.rollback();
+    throw e;
+  } finally {
+    conn.release();
+  }
+  console.log(`📥 Imported ${projects.size} projects, ${categories.size} categories from sheet.`);
+}
+
 // Initialize database schema if not present
 (async function initSchema() {
   try {
