@@ -68,6 +68,22 @@ function parseCsv(text) {
   return rows;
 }
 
+function getText(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        if (res.statusCode && res.statusCode >= 400) {
+          reject(new Error(`Request failed: ${res.statusCode}`));
+          return;
+        }
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => resolve(data));
+      })
+      .on('error', reject);
+  });
+}
+
 async function importProjectsAndCategoriesFromSheet(sheetUrl) {
   const exportUrl = buildCsvExportUrl(sheetUrl);
   if (!exportUrl) {
