@@ -62,21 +62,22 @@ const db = require('./db'); // using pool directly
 
     console.log('✅ Database schema ensured.');
 
-    // Seed default admin user if none exists
-    const [admins] = await db.query('SELECT id FROM users WHERE role = "admin" LIMIT 1');
-    if (admins.length === 0) {
-      const bcrypt = require('bcryptjs');
-      const adminName = process.env.DEFAULT_ADMIN_NAME || 'Administrator';
-      const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@tasksheet.local';
-      const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'ChangeMeNow!123';
-      const hashed = await bcrypt.hash(adminPassword, 10);
-      await db.query(
-        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-        [adminName, adminEmail, hashed, 'admin']
-      );
-      console.log(`🛡️ Default admin created: ${adminEmail}`);
+    // Ensure a default admin user based on configured email
+    const bcrypt = require('bcryptjs');
+    const adminName = process.env.DEFAULT_ADMIN_NAME || 'Administrator';
+    const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@tasksheet.local';
+    const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'ChangeMeNow!123';
+
+    const [existingAdminByEmail] = await db.query('SELECT id FROM users WHERE email = ? LIMIT 1', [adminEmail]);
+    const hashed = await bcrypt.hash(adminPassword, 10);
+
+    if (existingAdminByEmail.length === 0) {
+      await db.query('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', [adminName, adminEmail, hashed, 'admin']);
+      console.log(`🛡️ Default admin ensured: ${adminEmail}`);
     } else {
-      console.log('🛡️ Admin user exists.');
+      // Keep email stable; ensure role and password are set to the configured values
+      await db.query('UPDATE users SET role = ?, password = ? WHERE email = ?', ['admin', hashed, adminEmail]);
+      console.log(`🛡️ Default admin updated: ${adminEmail}`);
     }
   } catch (e) {
     console.error('❌ Schema initialization error:', e);
