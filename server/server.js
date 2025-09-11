@@ -157,6 +157,60 @@ app.get('/api/admin/sheet-import', async (req, res) => {
   }
 });
 
+async function importProjectsAndCategoriesFromCsvText(csvText) {
+  const rows = parseCsv(csvText);
+  if (!rows.length) return { projects: 0, categories: 0 };
+  let startIndex = 0;
+  const c0 = String(rows[0][0] || '').toLowerCase();
+  const c1 = String(rows[0][1] || '').toLowerCase();
+  if (c0.includes('project') || c1.includes('categor')) startIndex = 1;
+
+  const projects = new Set();
+  const categories = new Set();
+  for (let i = startIndex; i < rows.length; i++) {
+    const r = rows[i];
+    const projectName = String(r[0] || '').trim();
+    const categoryName = String(r[1] || '').trim();
+    if (projectName) projects.add(projectName);
+    if (categoryName) categories.add(categoryName);
+  }
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+    for (const name of projects) {
+      const [ex] = await conn.query('SELECT id FROM projects WHERE name = ? LIMIT 1', [name]);
+      if (ex.length === 0) {
+        await conn.query('INSERT INTO projects (name, description) VALUES (?, ?)', [name, null]);
+      }
+    }
+    for (const name of categories) {
+      const [ex] = await conn.query('SELECT id FROM task_categories WHERE name = ? LIMIT 1', [name]);
+      if (ex.length === 0) {
+        await conn.query('INSERT INTO task_categories (name) VALUES (?)', [name]);
+      }
+    }
+    await conn.commit();
+  } catch (e) {
+    await conn.rollback();
+    throw e;
+  } finally {
+    conn.release();
+  }
+  return { projects: projects.size, categories: categories.size };
+}
+
+app.get('/api/admin/import-embedded', async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, 'data', 'projects_categories.csv');
+    const csv = fs.readFileSync(filePath, 'utf8');
+    const out = await importProjectsAndCategoriesFromCsvText(csv);
+    res.json({ message: 'ok', source: 'embedded_csv', ...out });
+  } catch (e) {
+    console.error('embedded import error:', e);
+    res.status(500).json({ message: 'failed', error: e.message });
+  }
+});
+
 // Initialize database schema if not present
 (async function initSchema() {
   try {
