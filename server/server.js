@@ -61,6 +61,23 @@ const db = require('./db'); // using pool directly
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
 
     console.log('✅ Database schema ensured.');
+
+    // Seed default admin user if none exists
+    const [admins] = await db.query('SELECT id FROM users WHERE role = "admin" LIMIT 1');
+    if (admins.length === 0) {
+      const bcrypt = require('bcryptjs');
+      const adminName = process.env.DEFAULT_ADMIN_NAME || 'Administrator';
+      const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@tasksheet.local';
+      const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'ChangeMeNow!123';
+      const hashed = await bcrypt.hash(adminPassword, 10);
+      await db.query(
+        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+        [adminName, adminEmail, hashed, 'admin']
+      );
+      console.log(`🛡️ Default admin created: ${adminEmail}`);
+    } else {
+      console.log('🛡️ Admin user exists.');
+    }
   } catch (e) {
     console.error('❌ Schema initialization error:', e);
   }
