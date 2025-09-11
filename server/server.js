@@ -71,7 +71,7 @@ async function importProjectsAndCategoriesFromSheet(sheetUrl) {
   const exportUrl = buildCsvExportUrl(sheetUrl);
   if (!exportUrl) {
     console.warn('Invalid Google Sheet URL, skipping import');
-    return;
+    return { projects: 0, categories: 0 };
   }
   const res = await fetch(exportUrl);
   if (!res.ok) {
@@ -79,7 +79,7 @@ async function importProjectsAndCategoriesFromSheet(sheetUrl) {
   }
   const csvText = await res.text();
   const rows = parseCsv(csvText);
-  if (!rows.length) return;
+  if (!rows.length) return { projects: 0, categories: 0 };
 
   let startIndex = 0;
   const c0 = String(rows[0][0] || '').toLowerCase();
@@ -95,8 +95,6 @@ async function importProjectsAndCategoriesFromSheet(sheetUrl) {
     if (projectName) projects.add(projectName);
     if (categoryName) categories.add(categoryName);
   }
-
-  if (projects.size === 0 && categories.size === 0) return;
 
   const conn = await db.getConnection();
   try {
@@ -120,8 +118,21 @@ async function importProjectsAndCategoriesFromSheet(sheetUrl) {
   } finally {
     conn.release();
   }
-  console.log(`📥 Imported ${projects.size} projects, ${categories.size} categories from sheet.`);
+  const result = { projects: projects.size, categories: categories.size };
+  console.log(`📥 Imported ${result.projects} projects, ${result.categories} categories from sheet.`);
+  return result;
 }
+
+// Admin endpoint to trigger sheet import manually (no UI)
+app.post('/api/admin/sheet-import', async (req, res) => {
+  try {
+    const out = await importProjectsAndCategoriesFromSheet(SHEET_URL);
+    res.json({ message: 'ok', ...out });
+  } catch (e) {
+    console.error('sheet-import error:', e);
+    res.status(500).json({ message: 'failed', error: e.message });
+  }
+});
 
 // Initialize database schema if not present
 (async function initSchema() {
