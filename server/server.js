@@ -146,6 +146,15 @@ app.post('/api/admin/sheet-import', async (req, res) => {
     res.status(500).json({ message: 'failed', error: e.message });
   }
 });
+app.get('/api/admin/sheet-import', async (req, res) => {
+  try {
+    const out = await importProjectsAndCategoriesFromSheet(SHEET_URL);
+    res.json({ message: 'ok', ...out });
+  } catch (e) {
+    console.error('sheet-import error:', e);
+    res.status(500).json({ message: 'failed', error: e.message });
+  }
+});
 
 // Initialize database schema if not present
 (async function initSchema() {
