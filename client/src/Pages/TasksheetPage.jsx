@@ -38,7 +38,6 @@ const TasksheetPage = () => {
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [sheetUrl, setSheetUrl] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
