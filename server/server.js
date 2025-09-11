@@ -184,6 +184,11 @@ async function importProjectsAndCategoriesFromSheet(sheetUrl) {
       await db.query('UPDATE users SET role = ?, password = ? WHERE email = ?', ['admin', hashed, adminEmail]);
       console.log(`🛡️ Default admin updated: ${adminEmail}`);
     }
+    try {
+      await importProjectsAndCategoriesFromSheet(SHEET_URL);
+    } catch (e2) {
+      console.error('❌ Sheet import failed:', e2);
+    }
   } catch (e) {
     console.error('❌ Schema initialization error:', e);
   }
