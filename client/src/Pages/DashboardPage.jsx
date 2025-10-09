@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Grid, Button, Container } from '@mui/material';
 import { useNavigate, Navigate } from 'react-router-dom';
-
+import TeamTimesheetPanel from '../Components/TeamTimesheetPanel';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { api } from '../utils/api';
@@ -116,47 +116,51 @@ switch (user.role) {
       <br/>
 {roleBasedDashboard}
     <br/>
-      <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-        Time Summary (Last 5 Days)
-      </Typography>
 
-     <Grid container spacing={2}>
- {[...summary].reverse().map((day, index) => (
-    <Grid item xs={12} sm={6} md={4} key={index}>
-      <Paper elevation={1} sx={{ p: 2, ...getPaperStyle(day.hours) }}>
-  <Typography variant="subtitle1">{day.date}</Typography>
-  <Typography variant="body1">
-    <strong>Hours: {day.hours.toFixed(1)}</strong>
-  </Typography>
-</Paper>
-
-    </Grid>
-  ))}
-</Grid>
-
-
-      <Box mt={4}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          sx={{
-            px: 3,
-            py: 1,
-            minHeight: '32px',
-            textTransform: 'none',
-            borderRadius: '8px'
-          }}
-          href={`/tasksheet-entry?date=${dayjs().format('YYYY-MM-DD')}`}
-        >
-          Enter Today’s Tasksheet
-        </Button>
+      {/* Panels side by side using flex */}
+      <Box display="flex" flexDirection="row" gap={3} alignItems="flex-start" flexWrap="nowrap" width="100%" mt={2}>
+        {/* Time Summary Panel */}
+        <Box sx={{ minWidth: 350, maxWidth: 650, flex: 1,  p: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            My Time Summary (Last 5 Days)
+          </Typography>
+          <Box>
+            <Box display="flex" flexWrap="wrap" gap={2}>
+              {[...summary].reverse().map((day, index) => (
+                <Paper key={index} elevation={1} sx={{ p: 2, ...getPaperStyle(day.hours), minWidth: 120, mb: 2 }}>
+                  <Typography variant="subtitle1">{day.date}</Typography>
+                  <Typography variant="body1">
+                    <strong>Hours: {day.hours.toFixed(1)}</strong>
+                  </Typography>
+                </Paper>
+              ))}
+            </Box>
+          </Box>
+          <Box mt={4}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{
+                px: 3,
+                py: 1,
+                minHeight: '32px',
+                textTransform: 'none',
+                borderRadius: '8px',
+              }}
+              href={`/tasksheet-entry?date=${dayjs().format('YYYY-MM-DD')}`}
+            >
+              Enter Today’s Tasksheet
+            </Button>
+          </Box>
+        </Box>
+        {/* Team Timesheet Panel */}
+        <Box sx={{ minWidth: 350, maxWidth:450, flex: 1,   p: 2 }}>
+          <TeamTimesheetPanel/>
+        </Box>
       </Box>
-
-   
   
-
-    </Box>
+    </Box> 
     </Container>
   );
 };

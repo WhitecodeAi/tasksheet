@@ -1,25 +1,32 @@
 import React from 'react';
-import { Box, Grid, Paper } from '@mui/material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
+import TeamTimesheetPanel from '../../Components/TeamTimesheetPanel';
+// Dummy data and fetch function for demo
+const teamMembers = [
+  { id: 1, name: 'Alice' },
+  { id: 2, name: 'Bob' },
+  // ...add more members
+];
 
-const ManagerDashboard = () => (
+const fetchTimesheet = async (date) => {
+  // Replace with API call
+  return [
+    { userId: 1, totalTime: '5h' },
+    { userId: 2, totalTime: '3h' },
+    // ...
+  ];
+};
+const ManagerDashboard = ({ showTeamPanel=true  }) => (
   <Box >
-    {/* <Typography variant="h4" gutterBottom>Welcome, Manager</Typography> */}
+    
+    
 
     <Grid container spacing={2}>
       <Grid item xs={6}><Paper sx={{ p: 2 }}>🕒 My Weekly Hours</Paper></Grid>
       <Grid item xs={6}><Paper sx={{ p: 2 }}>📊 Project Breakdown</Paper></Grid>
       <Grid item xs={6}><Paper sx={{ p: 2 }}>📊 Team's Timesheet</Paper></Grid>
     </Grid>
-
-    {/* <Box mt={4}>
-      <Typography variant="h6">Team Timesheet</Typography>
-      <Paper sx={{ p: 2, mt: 2 }}>
-        <ul>
-          <li>Amit - Project A - 14h</li>
-          <li>Simran - Project B - 9h</li>
-        </ul>
-      </Paper>
-    </Box> */}
+ 
   </Box>
 );
 
