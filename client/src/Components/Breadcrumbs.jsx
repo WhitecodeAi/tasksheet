@@ -1,8 +1,9 @@
 import React from 'react';
-import { Breadcrumbs as MUIBreadcrumbs, Link, Typography, Box } from '@mui/material';
+import { Breadcrumbs as MUIBreadcrumbs, IconButton, Link, Typography, Box, Stack } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 const Breadcrumbs = ({ pageTitle, userName }) => {
   const location = useLocation();
@@ -42,6 +43,12 @@ const Breadcrumbs = ({ pageTitle, userName }) => {
         alignItems: 'center'
       }}
     >
+      <Stack
+ 
+  direction="row" sx={{  alignItems: "center",}}>
+    <IconButton aria-label="Back"  onClick={() => navigate('/dashboard')}>
+  <KeyboardBackspaceIcon />
+</IconButton>
       {/* Left side - Page Title */}
       <Typography
         variant="h6"
@@ -57,7 +64,7 @@ const Breadcrumbs = ({ pageTitle, userName }) => {
       >
         {getPageTitle()}
       </Typography>
-
+</Stack>
       {/* Right side - Navigation Path */}
       <MUIBreadcrumbs
         aria-label="breadcrumb"
