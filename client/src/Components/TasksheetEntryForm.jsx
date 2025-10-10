@@ -1,4 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import confetti from 'canvas-confetti';
 import {
   Box, Paper, Grid, TextField, Button,
   Typography, Container, Autocomplete
@@ -92,13 +93,21 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
     };
 
     try {
+      let isFirstEntryToday = false;
+      if (!editMode) {
+        // Check if this is the first entry for today
+        const res = await api.get(`/api/tasksheetEntries/user/${user.id}?date=${form.date}`);
+        if (Array.isArray(res.data) && res.data.length === 0) {
+          isFirstEntryToday = true;
+        }
+      }
       if (editMode && selectedEntry?.id) {
         await api.put(`/api/tasksheetEntries/${selectedEntry.id}`, payload);
       } else {
         await api.post('/api/tasksheetEntries', payload);
       }
 
-      if (onSuccess) onSuccess();
+  if (onSuccess) onSuccess(isFirstEntryToday);
 
       setForm({
         date: dayjs().format('YYYY-MM-DD'),
@@ -111,6 +120,19 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
         totalEffort: '0.00',
         developerName: user?.email || ''
       });
+
+      // Fire confetti if first entry of the day
+      if (isFirstEntryToday) {
+        setTimeout(() => {
+          confetti({
+            particleCount: 120,
+            spread: 70,
+            origin: { y: 0.6 },
+            resize: true,
+            useWorker: true
+          });
+        }, 300);
+      }
 
     } catch (error) {
       console.error('❌ Submission error:', error);

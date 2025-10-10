@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 // ...existing code...
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -114,7 +115,9 @@ const TasksheetPage = (props) => {
     console.log('TasksheetPage columnVisibility changed:', columnVisibility);
   }, [columnVisibility]);
 
-  const handleSuccessfulSubmit = (isEdit = false) => {
+  // Track if first entry of the day was just added
+  const [showConfetti, setShowConfetti] = useState(false);
+  const handleSuccessfulSubmit = (isEdit = false, isFirstEntryToday = false) => {
     setDrawerOpen(false); // 👈 Close drawer on success
     setEditMode(false);
     setSelectedEntry(null);
@@ -126,7 +129,26 @@ const TasksheetPage = (props) => {
     if (taskListRef.current?.refreshEntries) {
       taskListRef.current.refreshEntries(); // 🔄 Refresh grid
     }
+    if (isFirstEntryToday) {
+      setShowConfetti(true);
+    }
   };
+
+  useEffect(() => {
+    if (showConfetti) {
+      setTimeout(() => {
+        console.log('Triggering confetti!');
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.6 },
+          resize: true,
+          useWorker: true
+        });
+        setShowConfetti(false);
+      }, 400);
+    }
+  }, [showConfetti]);
 
   const handleEditClick = (entry) => {
     setSelectedEntry(entry);
@@ -535,7 +557,7 @@ const TasksheetPage = (props) => {
             projects={projects}
             user={loggedInUser}
             taskCategories={taskCategories}
-            onSuccess={() => handleSuccessfulSubmit(editMode)}
+            onSuccess={(isFirstEntryToday) => handleSuccessfulSubmit(editMode, isFirstEntryToday)}
             initialValues={selectedEntry}
             editMode={editMode}
             selectedEntry={selectedEntry}
