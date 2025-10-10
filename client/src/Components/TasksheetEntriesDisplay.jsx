@@ -572,45 +572,52 @@ function CustomToolbar() {
         flex: 0,
       sortable: false,
       disableColumnMenu: true,
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex',}}>
-          <Button
-            variant="text"
-            size="small"
-            onClick={() => handleEdit(params.row)}
-            sx={{
-              px: 1,
-              py: 1,
-              minHeight: '32px',
-              boxShadow: 'none',
-              '&:hover': {
+      renderCell: (params) => {
+        // Disable edit/delete if not own timesheet
+        const loggedInUser = JSON.parse(localStorage.getItem('user'));
+        const isOwnTimesheet = !userId || String(userId) === String(loggedInUser?.id);
+        return (
+          <Box sx={{ display: 'flex',}}>
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => isOwnTimesheet ? handleEdit(params.row) : null}
+              disabled={!isOwnTimesheet}
+              sx={{
+                px: 1,
+                py: 1,
+                minHeight: '32px',
                 boxShadow: 'none',
-                backgroundColor: 'rgba(0, 0, 0, 0.04)'
-              }
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="text"
-            size="small"
-            color="error"
-            onClick={() => handleDelete(params.row)}
-            sx={{
-              px: 2,
-              py: 1,
-              minHeight: '32px',
-              boxShadow: 'none',
-              '&:hover': {
+                '&:hover': {
+                  boxShadow: 'none',
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                }
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="text"
+              size="small"
+              color="error"
+              onClick={() => isOwnTimesheet ? handleDelete(params.row) : null}
+              disabled={!isOwnTimesheet}
+              sx={{
+                px: 2,
+                py: 1,
+                minHeight: '32px',
                 boxShadow: 'none',
-                backgroundColor: 'rgba(211, 47, 47, 0.04)'
-              }
-            }}
-          >
-            Delete
-          </Button>
-        </Box>
-      ),
+                '&:hover': {
+                  boxShadow: 'none',
+                  backgroundColor: 'rgba(211, 47, 47, 0.04)'
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </Box>
+        );
+      },
     },
   ];
 

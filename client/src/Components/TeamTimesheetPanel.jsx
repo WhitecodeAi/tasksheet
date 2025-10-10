@@ -58,8 +58,22 @@ const TeamTimesheetPanel = () => {
 
   return (
     <Box mt={9}>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} gap={2}>
         <Typography variant="h6">Team Timesheet</Typography>
+        <FormControl size="small" sx={{ minWidth: 180 }}>
+          <InputLabel id="user-select-label">Select User</InputLabel>
+          <Select
+            labelId="user-select-label"
+            value={''}
+            label="Select User"
+            onChange={e => navigate(`/user-timesheet/${e.target.value}`)}
+          >
+            <MenuItem value="" disabled>Select User</MenuItem>
+            {users.map(user => (
+              <MenuItem key={user.user_id} value={user.user_id}>{user.name}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <FormControl size="small" sx={{ minWidth: 160 }}>
           <InputLabel id="day-select-label">Day</InputLabel>
           <Select

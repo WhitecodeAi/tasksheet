@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+// ...existing code...
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import TasksheetEntryForm from '../Components/TasksheetEntryForm';
@@ -81,6 +82,7 @@ const TasksheetPage = (props) => {
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const { userId } = useParams();
   const [viewUser, setViewUser] = useState(null);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     fetchProjects();
@@ -90,6 +92,9 @@ const TasksheetPage = (props) => {
         .then(res => setViewUser(res.data))
         .catch(() => setViewUser(null));
     }
+    api.get('/api/users')
+      .then(res => setUsers(res.data))
+      .catch(() => setUsers([]));
   }, [userId]);
 
   const fetchProjects = () => {
@@ -171,26 +176,44 @@ const TasksheetPage = (props) => {
             gap: 2
           }}
         >
-          {/* Left: Search Field */}
-          <TextField
-            placeholder="Search entries..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            size="small"
-            sx={{
-              minWidth: 250,
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: '#f8fafc'
-              }
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
+          {/* Left: Search Field and User Dropdown */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* User selection dropdown for managers */}
+            {users.length > 0 && (
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <InputLabel id="user-select-label">Select User</InputLabel>
+                <Select
+                  labelId="user-select-label"
+                  value={userId || ''}
+                  label="Select User"
+                  onChange={e => window.location.assign(`/user-timesheet/${e.target.value}`)}
+                >
+                  {users.map(user => (
+                    <MenuItem key={user.user_id} value={user.user_id}>{user.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            <TextField
+              placeholder="Search entries..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              size="small"
+              sx={{
+                minWidth: 250,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: '#f8fafc'
+                }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
 
           {/* Center: Filter Buttons */}
           <Stack direction="row" spacing={1}>
@@ -469,8 +492,8 @@ const TasksheetPage = (props) => {
           <TasksheetEntriesDisplay
             userId={effectiveUserId}
             ref={taskListRef}
-            onEdit={handleEditClick}
-            onDeleteSuccess={handleDeleteSuccess}
+            onEdit={userId && (!loggedInUser || String(userId) !== String(loggedInUser.id)) ? undefined : handleEditClick}
+            onDeleteSuccess={userId && (!loggedInUser || String(userId) !== String(loggedInUser.id)) ? undefined : handleDeleteSuccess}
             searchQuery={searchQuery}
             filterRange={filterRange}
             activeFilters={activeFilters}
