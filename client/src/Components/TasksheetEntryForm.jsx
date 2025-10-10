@@ -1,11 +1,33 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import confetti from 'canvas-confetti';
 import {
   Box, Paper, Grid, TextField, Button,
   Typography, Container, Autocomplete
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { api } from '../utils/api';
+import Popper from '@mui/material/Popper';
+import { styled } from '@mui/material/styles';
 
+const CustomPopper = styled(Popper)(({ theme }) => ({
+  // This sets the dropdown container width
+  [`& .MuiAutocomplete-paper`]: {
+    width: '400px', // ✅ Wider than input
+  },
+}));
+
+const CustomPopperT = styled(Popper)(({ theme }) => ({
+  '& .MuiAutocomplete-paper': {
+    width: '400px',
+    transform: 'translateX(-200px)', // ✅ Shift dropdown 300px to the left
+    zIndex: 1300, // Ensure it's above other elements
+  },
+}));
+
+ 
+
+
+ 
 const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMode, selectedEntry, onSuccess }, ref) => {
   const [form, setForm] = useState({
     date: dayjs().format('YYYY-MM-DD'),
@@ -92,13 +114,21 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
     };
 
     try {
+      let isFirstEntryToday = false;
+      if (!editMode) {
+        // Check if this is the first entry for today
+        const res = await api.get(`/api/tasksheetEntries/user/${user.id}?date=${form.date}`);
+        if (Array.isArray(res.data) && res.data.length === 0) {
+          isFirstEntryToday = true;
+        }
+      }
       if (editMode && selectedEntry?.id) {
         await api.put(`/api/tasksheetEntries/${selectedEntry.id}`, payload);
       } else {
         await api.post('/api/tasksheetEntries', payload);
       }
 
-      if (onSuccess) onSuccess();
+  if (onSuccess) onSuccess(isFirstEntryToday);
 
       setForm({
         date: dayjs().format('YYYY-MM-DD'),
@@ -111,6 +141,19 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
         totalEffort: '0.00',
         developerName: user?.email || ''
       });
+
+      // Fire confetti if first entry of the day
+      if (isFirstEntryToday) {
+        setTimeout(() => {
+          confetti({
+            particleCount: 120,
+            spread: 70,
+            origin: { y: 0.6 },
+            resize: true,
+            useWorker: true
+          });
+        }, 300);
+      }
 
     } catch (error) {
       console.error('❌ Submission error:', error);
@@ -145,12 +188,15 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
                 getOptionLabel={(option) => option.name}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={projects.find(p => p.id === form.projectName) || null}
+              slots={{ popper: CustomPopper }}
                 onChange={(e, value) => {
                   setForm(prev => ({ ...prev, projectName: value?.id || '' }));
                 }}
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    {option.name}
+               
+      {option.name}
+    
                   </li>
                 )}
                 renderInput={(params) => (
@@ -169,6 +215,11 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
               <Autocomplete
                 options={taskCategories}
                 getOptionLabel={(option) => option.name}
+                
+                  slots={{ popper: CustomPopperT }}
+   PopperProps={{
+    disablePortal: true, // ✅ Keeps dropdown inside parent container
+  }}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={taskCategories.find(tc => tc.id === form.category) || null}
                 onChange={(e, value) => {

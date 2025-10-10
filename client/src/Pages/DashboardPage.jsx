@@ -109,19 +109,23 @@ switch (user.role) {
 
   return (<Container>  
     
-    <Box  >
-      <Typography variant="h4" gutterBottom>
+    <>
+
+
+<Grid container spacing={2}>
+  <Grid size={7}  >
+   <Typography variant="h4" sx={{mt:2}} gutterBottom>
         Welcome, {user.name || 'User'}! <span style={{fontSize:'23px'}}>({user.role})</span>
       </Typography>
       <br/>
 {roleBasedDashboard}
-    <br/>
+ 
 
       {/* Panels side by side using flex */}
-      <Box display="flex" flexDirection="row" gap={3} alignItems="flex-start" flexWrap="nowrap" width="100%" mt={2}>
+      <Box display="flex" flexDirection="row" gap={1} alignItems="flex-start" flexWrap="nowrap" width="100%" mt={2}>
         {/* Time Summary Panel */}
         <Box sx={{ minWidth: 350, maxWidth: 650, flex: 1,  p: 2 }}>
-          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 3, mb: 2 }}>
             My Time Summary (Last 5 Days)
           </Typography>
           <Box>
@@ -154,13 +158,21 @@ switch (user.role) {
             </Button>
           </Box>
         </Box>
-        {/* Team Timesheet Panel */}
-        <Box sx={{ minWidth: 350, maxWidth:450, flex: 1,   p: 2 }}>
+       
+      </Box> 
+  </Grid>
+  <Grid size={5} >
+    {/* Team Timesheet Panel */}
+      {user.role=='employee' ? null :  
           <TeamTimesheetPanel/>
-        </Box>
-      </Box>
+        }
+  </Grid>
   
-    </Box> 
+</Grid>
+
+   
+  
+    </> 
     </Container>
   );
 };

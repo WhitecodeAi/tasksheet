@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
+// ...existing code...
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import TasksheetEntryForm from '../Components/TasksheetEntryForm';
 import TasksheetEntriesDisplay from '../Components/TasksheetEntriesDisplay';
@@ -26,15 +29,17 @@ import {
   ListItemText,
   FormControl,
   InputLabel,
-    Select
+  Select
 } from '@mui/material';
- import GetAppTwoToneIcon from '@mui/icons-material/GetAppTwoTone';
+import GetAppTwoToneIcon from '@mui/icons-material/GetAppTwoTone';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Search, Add, FilterList, ViewColumn, FileDownload, Settings, GetAppTwoTone } from '@mui/icons-material';
 import { api } from '../utils/api';
 import dayjs from 'dayjs';
 import ViewColumnTwoToneIcon from '@mui/icons-material/ViewColumnTwoTone';
-const TasksheetPage = () => {
+import Breadcrumbs from '../Components/Breadcrumbs';
+
+const TasksheetPage = (props) => {
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -74,8 +79,24 @@ const TasksheetPage = () => {
   });
 
   const taskListRef = useRef();
-  const formRef = useRef(); // 👈 Ref to trigger form submit
+  const formRef = useRef();
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
+  const { userId } = useParams();
+  const [viewUser, setViewUser] = useState(null);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetchProjects();
+    fetchTaskCategories();
+    if (userId) {
+      api.get(`/api/users/${userId}`)
+        .then(res => setViewUser(res.data))
+        .catch(() => setViewUser(null));
+    }
+    api.get('/api/users')
+      .then(res => setUsers(res.data))
+      .catch(() => setUsers([]));
+  }, [userId]);
 
   const fetchProjects = () => {
     return api.get('/api/projects')
@@ -89,17 +110,14 @@ const TasksheetPage = () => {
       .catch((err) => console.error('Failed to fetch task categories', err));
   };
 
-  useEffect(() => {
-    fetchProjects();
-    fetchTaskCategories();
-  }, []);
-
   // Debug columnVisibility changes
   useEffect(() => {
     console.log('TasksheetPage columnVisibility changed:', columnVisibility);
   }, [columnVisibility]);
 
-  const handleSuccessfulSubmit = (isEdit = false) => {
+  // Track if first entry of the day was just added
+  const [showConfetti, setShowConfetti] = useState(false);
+  const handleSuccessfulSubmit = (isEdit = false, isFirstEntryToday = false) => {
     setDrawerOpen(false); // 👈 Close drawer on success
     setEditMode(false);
     setSelectedEntry(null);
@@ -111,7 +129,26 @@ const TasksheetPage = () => {
     if (taskListRef.current?.refreshEntries) {
       taskListRef.current.refreshEntries(); // 🔄 Refresh grid
     }
+    if (isFirstEntryToday) {
+      setShowConfetti(true);
+    }
   };
+
+  useEffect(() => {
+    if (showConfetti) {
+      setTimeout(() => {
+        console.log('Triggering confetti!');
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.6 },
+          resize: true,
+          useWorker: true
+        });
+        setShowConfetti(false);
+      }, 400);
+    }
+  }, [showConfetti]);
 
   const handleEditClick = (entry) => {
     setSelectedEntry(entry);
@@ -123,15 +160,24 @@ const TasksheetPage = () => {
     setSnackbar({ open: true, message: 'Deleted Successfully', severity: 'success' });
   };
 
-    const handleDrawerClose = () => {
+  const handleDrawerClose = () => {
     setDrawerOpen(false);
     setEditMode(false);
     setSelectedEntry(null);
   }
 
-  
+  const effectiveUserId = userId || loggedInUser?.id;
+
   return (
-    <>
+    <React.Fragment>
+      {/* Header */}
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h4" gutterBottom sx={{'font-size': '1.6rem'}}> 
+          {viewUser
+            ? `Tasksheet for ${viewUser.name}`
+            : `My Tasksheet`}
+        </Typography>
+      </Box>
       {/* 🔍 Search, Filter & Add Controls - Berry Dashboard Style */}
       <Paper
         sx={{
@@ -152,26 +198,44 @@ const TasksheetPage = () => {
             gap: 2
           }}
         >
-          {/* Left: Search Field */}
-          <TextField
-            placeholder="Search entries..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            size="small"
-            sx={{
-              minWidth: 250,
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: '#f8fafc'
-              }
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
+          {/* Left: Search Field and User Dropdown */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* User selection dropdown for managers */}
+            {users.length > 0 && (
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <InputLabel id="user-select-label">Select User</InputLabel>
+                <Select
+                  labelId="user-select-label"
+                  value={userId || ''}
+                  label="Select User"
+                  onChange={e => window.location.assign(`/user-timesheet/${e.target.value}`)}
+                >
+                  {users.map(user => (
+                    <MenuItem key={user.user_id} value={user.user_id}>{user.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            <TextField
+              placeholder="Search entries..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              size="small"
+              sx={{
+                minWidth: 250,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: '#f8fafc'
+                }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ color: '#9e9e9e', fontSize: '1.2rem' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
 
           {/* Center: Filter Buttons */}
           <Stack direction="row" spacing={1}>
@@ -215,7 +279,7 @@ const TasksheetPage = () => {
                   }
                 }}
               >
-                <FilterAltIcon  fontSize="medium" />
+                <FilterAltIcon fontSize="medium" />
               </IconButton>
             </Tooltip>
 
@@ -232,7 +296,7 @@ const TasksheetPage = () => {
                   }
                 }}
               >
-                            <ViewColumnTwoToneIcon fontSize="medium" />
+                <ViewColumnTwoToneIcon fontSize="medium" />
               </IconButton>
             </Tooltip>
 
@@ -258,19 +322,22 @@ const TasksheetPage = () => {
           </Stack>
 
           {/* Right: Add Button */}
-          <Tooltip title="Add Tasksheet Entry">
-            <Fab
-              color="primary"
-              size="small"
-              onClick={() => {
-                setDrawerOpen(true);
-                setEditMode(false);
-                setSelectedEntry(null);
-              }}
-            >
-              <Add />
-            </Fab>
-          </Tooltip>
+      {/* Right: Add Button */}
+{(!userId || userId === loggedInUser?.id) && (
+  <Tooltip title="Add Tasksheet Entry">
+    <Fab
+      color="primary"
+      size="small"
+      onClick={() => {
+        setDrawerOpen(true);
+        setEditMode(false);
+        setSelectedEntry(null);
+      }}
+    >
+      <Add />
+    </Fab>
+  </Tooltip>
+)}
         </Box>
       </Paper>
 
@@ -445,7 +512,7 @@ const TasksheetPage = () => {
       <Grid container>
         <Grid item size={12}>
           <TasksheetEntriesDisplay
-            userId={loggedInUser?.id}
+            userId={effectiveUserId}
             ref={taskListRef}
             onEdit={handleEditClick}
             onDeleteSuccess={handleDeleteSuccess}
@@ -490,7 +557,7 @@ const TasksheetPage = () => {
             projects={projects}
             user={loggedInUser}
             taskCategories={taskCategories}
-            onSuccess={() => handleSuccessfulSubmit(editMode)}
+            onSuccess={(isFirstEntryToday) => handleSuccessfulSubmit(editMode, isFirstEntryToday)}
             initialValues={selectedEntry}
             editMode={editMode}
             selectedEntry={selectedEntry}
@@ -817,8 +884,9 @@ const TasksheetPage = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </>
+    </React.Fragment>
   );
 };
 
+TasksheetPage.defaultProps = {};
 export default TasksheetPage;
