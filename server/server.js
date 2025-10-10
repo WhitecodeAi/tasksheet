@@ -106,8 +106,23 @@ async function importProjectsAndCategoriesFromSheet(sheetUrl) {
     const r = rows[i];
     const projectName = String(r[0] || '').trim();
     const categoryName = String(r[1] || '').trim();
-    if (projectName) projects.add(projectName);
-    if (categoryName) categories.add(categoryName);
+    // Filter out unwanted HTML lines
+    if (
+      projectName &&
+      !projectName.toLowerCase().includes('document has moved') &&
+      !projectName.toLowerCase().includes('<a href=') &&
+      !projectName.toLowerCase().includes('googleusercontent')
+    ) {
+      projects.add(projectName);
+    }
+    if (
+      categoryName &&
+      !categoryName.toLowerCase().includes('document has moved') &&
+      !categoryName.toLowerCase().includes('<a href=') &&
+      !categoryName.toLowerCase().includes('googleusercontent')
+    ) {
+      categories.add(categoryName);
+    }
   }
 
   const conn = await db.getConnection();

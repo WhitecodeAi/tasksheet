@@ -15,6 +15,19 @@ const CustomPopper = styled(Popper)(({ theme }) => ({
     width: '400px', // ✅ Wider than input
   },
 }));
+
+const CustomPopperT = styled(Popper)(({ theme }) => ({
+  '& .MuiAutocomplete-paper': {
+    width: '400px',
+    transform: 'translateX(-200px)', // ✅ Shift dropdown 300px to the left
+    zIndex: 1300, // Ensure it's above other elements
+  },
+}));
+
+ 
+
+
+ 
 const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMode, selectedEntry, onSuccess }, ref) => {
   const [form, setForm] = useState({
     date: dayjs().format('YYYY-MM-DD'),
@@ -203,7 +216,10 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
                 options={taskCategories}
                 getOptionLabel={(option) => option.name}
                 
-                  slots={{ popper: CustomPopper }}
+                  slots={{ popper: CustomPopperT }}
+   PopperProps={{
+    disablePortal: true, // ✅ Keeps dropdown inside parent container
+  }}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={taskCategories.find(tc => tc.id === form.category) || null}
                 onChange={(e, value) => {
