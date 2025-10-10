@@ -16,7 +16,7 @@ function AdminDashboard() {
     onClick={() => navigate('/users')}
     elevation={2}
   >
-    👥 Total Users <strong>(Add) </strong>
+    👥  Users <strong>(Add) </strong>
   </Paper>
 </Grid>
 
@@ -27,7 +27,7 @@ function AdminDashboard() {
     onClick={() => navigate('/projects')}
     elevation={2}
   >
-   📁 Total Projects <strong>(Add) </strong>
+   📁  Projects <strong>(Add) </strong>
   </Paper>
 </Grid>
   <Grid item xs={4}>
