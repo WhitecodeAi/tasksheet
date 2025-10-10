@@ -4,6 +4,21 @@ const db = require('../db');  // ✅ pool already uses promises
 const bcrypt = require('bcrypt');
 const sendEmailToUser = require('../utils/sendEmail'); // ✅ corrected path
 
+// Get user by ID (for breadcrumb/header)
+router.get('/:id', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const [rows] = await db.query('SELECT id AS user_id, name, email, role FROM users WHERE id = ?', [userId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('❌ Error fetching user by ID:', err);
+    res.status(500).json({ message: 'Database error while fetching user.' });
+  }
+});
+
 // ✨ Optional: Debug endpoint to check env vars
 router.get('/env-check', (req, res) => {
   console.log("🔍 /env-check triggered");

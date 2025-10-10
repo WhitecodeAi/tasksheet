@@ -13,6 +13,7 @@ import ProjectsPage from './Pages/ProjectsPage';
 import DashboardPage from './Pages/DashboardPage';
 import TasksheetPage from './Pages/TasksheetPage';
 import UsersPage from './Pages/UsersPage';
+import UserTimesheetPage from './Pages/UserTimesheetPage';
 
 import Layout from './Layouts/Layout';
 
@@ -77,6 +78,14 @@ const AppContent = ({ handleLogin, handleLogout }) => {
             ) : (
               <Navigate to="/login" />
             )
+          }
+        />
+        <Route
+          path="/user-timesheet/:userId"
+          element={
+            <Layout onLogout={handleLogout} takeFullWidth={true}>
+              <TasksheetPage />
+            </Layout>
           }
         />
       </Routes>

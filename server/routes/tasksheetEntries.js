@@ -176,4 +176,30 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// ⏱️ Get total hours per user for a specific date (for TeamTimesheetPanel)
+router.get('/team-summary', async (req, res) => {
+  const { date } = req.query;
+  if (!date) return res.status(400).json({ error: 'Missing date parameter' });
+
+  try {
+    const [rows] = await req.db.query(
+      `SELECT user_id, SUM(total_hours) AS total_hours
+       FROM tasksheet_entries
+       WHERE entry_date = ?
+       GROUP BY user_id`,
+      [date]
+    );
+
+    const result = rows.map(row => ({
+      user_id: row.user_id,
+      totalTime: row.total_hours ? `${parseFloat(row.total_hours).toFixed(2)}h` : '0h'
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error('❌ Error fetching team summary:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 module.exports = router;

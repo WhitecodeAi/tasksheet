@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 
-const Breadcrumbs = ({ pageTitle }) => {
+const Breadcrumbs = ({ pageTitle, userName }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ const Breadcrumbs = ({ pageTitle }) => {
   // Define page titles for different routes
   const getPageTitle = () => {
     if (pageTitle) return pageTitle;
-
+    if (userName && location.pathname.startsWith('/user-timesheet/')) return userName;
     switch (location.pathname) {
       case '/dashboard':
         return 'Dashboard';
@@ -92,6 +92,23 @@ const Breadcrumbs = ({ pageTitle }) => {
         {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join('/')}`;
           const isLast = index === pathnames.length - 1;
+
+          // If on /user-timesheet/:userId, show userName instead of id
+          if (isLast && userName && location.pathname.startsWith('user-timesheet')) {
+            return (
+              <Typography
+                color="#1a1a1a"
+                key={to}
+                sx={{
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {userName}
+              </Typography>
+            );
+          }
 
           return isLast ? (
             <Typography

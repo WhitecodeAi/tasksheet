@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import TasksheetEntryForm from '../Components/TasksheetEntryForm';
 import TasksheetEntriesDisplay from '../Components/TasksheetEntriesDisplay';
@@ -26,15 +27,17 @@ import {
   ListItemText,
   FormControl,
   InputLabel,
-    Select
+  Select
 } from '@mui/material';
- import GetAppTwoToneIcon from '@mui/icons-material/GetAppTwoTone';
+import GetAppTwoToneIcon from '@mui/icons-material/GetAppTwoTone';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Search, Add, FilterList, ViewColumn, FileDownload, Settings, GetAppTwoTone } from '@mui/icons-material';
 import { api } from '../utils/api';
 import dayjs from 'dayjs';
 import ViewColumnTwoToneIcon from '@mui/icons-material/ViewColumnTwoTone';
-const TasksheetPage = () => {
+import Breadcrumbs from '../Components/Breadcrumbs';
+
+const TasksheetPage = (props) => {
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -74,8 +77,20 @@ const TasksheetPage = () => {
   });
 
   const taskListRef = useRef();
-  const formRef = useRef(); // 👈 Ref to trigger form submit
+  const formRef = useRef();
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
+  const { userId } = useParams();
+  const [viewUser, setViewUser] = useState(null);
+
+  useEffect(() => {
+    fetchProjects();
+    fetchTaskCategories();
+    if (userId) {
+      api.get(`/api/users/${userId}`)
+        .then(res => setViewUser(res.data))
+        .catch(() => setViewUser(null));
+    }
+  }, [userId]);
 
   const fetchProjects = () => {
     return api.get('/api/projects')
@@ -88,11 +103,6 @@ const TasksheetPage = () => {
       .then((res) => setTaskCategories(res.data))
       .catch((err) => console.error('Failed to fetch task categories', err));
   };
-
-  useEffect(() => {
-    fetchProjects();
-    fetchTaskCategories();
-  }, []);
 
   // Debug columnVisibility changes
   useEffect(() => {
@@ -123,15 +133,24 @@ const TasksheetPage = () => {
     setSnackbar({ open: true, message: 'Deleted Successfully', severity: 'success' });
   };
 
-    const handleDrawerClose = () => {
+  const handleDrawerClose = () => {
     setDrawerOpen(false);
     setEditMode(false);
     setSelectedEntry(null);
   }
 
-  
+  const effectiveUserId = userId || loggedInUser?.id;
+
   return (
-    <>
+    <React.Fragment>
+      {/* Header */}
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h4" gutterBottom>
+          {viewUser
+            ? `Tasksheet for ${viewUser.name}`
+            : `My Tasksheet`}
+        </Typography>
+      </Box>
       {/* 🔍 Search, Filter & Add Controls - Berry Dashboard Style */}
       <Paper
         sx={{
@@ -215,7 +234,7 @@ const TasksheetPage = () => {
                   }
                 }}
               >
-                <FilterAltIcon  fontSize="medium" />
+                <FilterAltIcon fontSize="medium" />
               </IconButton>
             </Tooltip>
 
@@ -232,7 +251,7 @@ const TasksheetPage = () => {
                   }
                 }}
               >
-                            <ViewColumnTwoToneIcon fontSize="medium" />
+                <ViewColumnTwoToneIcon fontSize="medium" />
               </IconButton>
             </Tooltip>
 
@@ -445,7 +464,7 @@ const TasksheetPage = () => {
       <Grid container>
         <Grid item size={12}>
           <TasksheetEntriesDisplay
-            userId={loggedInUser?.id}
+            userId={effectiveUserId}
             ref={taskListRef}
             onEdit={handleEditClick}
             onDeleteSuccess={handleDeleteSuccess}
@@ -817,8 +836,9 @@ const TasksheetPage = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </>
+    </React.Fragment>
   );
 };
 
+TasksheetPage.defaultProps = {};
 export default TasksheetPage;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Avatar, Stack, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 // Fetch users from backend API
@@ -33,6 +34,7 @@ const TeamTimesheetPanel = () => {
   const [users, setUsers] = useState([]);
   const [timesheet, setTimesheet] = useState([]);
   const [selectedDayOffset, setSelectedDayOffset] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers().then(setUsers).catch(console.error);
@@ -74,7 +76,12 @@ const TeamTimesheetPanel = () => {
             {users.map(user => {
               const entry = timesheet.find(t => t.user_id === user.user_id);
               return (
-                <TableRow key={user.user_id}>
+                <TableRow
+                  key={user.user_id}
+                  hover
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => navigate(`/user-timesheet/${user.user_id}`)}
+                >
                   <TableCell>
                     <Stack direction="row" alignItems="center" spacing={2}>
                       <Avatar sx={{ bgcolor: 'primary.light', width: 32, height: 32 }}>
