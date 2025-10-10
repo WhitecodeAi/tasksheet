@@ -172,7 +172,7 @@ const TasksheetPage = (props) => {
     <React.Fragment>
       {/* Header */}
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{'font-size': '1.6rem'}}> 
           {viewUser
             ? `Tasksheet for ${viewUser.name}`
             : `My Tasksheet`}

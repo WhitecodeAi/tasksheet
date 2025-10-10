@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import TasksheetEntriesDisplay from '../Components/TasksheetEntriesDisplay';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import dayjs from 'dayjs';
 import { api } from '../utils/api';
-// import Breadcrumbs from '../Components/Breadcrumbs';
+import Breadcrumbs from '../Components/Breadcrumbs';
 
 const filterOptions = [
   { label: 'Today', value: 'today' },
@@ -51,11 +50,8 @@ const UserTimesheetPage = () => {
 
   return (
     <Box>
-      <Typography variant="h5" mb={2}>{userName ? `Tasksheet for ${userName}` :  "User's Tasksheet"}</Typography>
-      {/* Debug info for dropdown visibility */}
-      <Box mb={2}>
-        <Typography variant="body2" color="secondary">Debug: users.length = {users.length}, userId = {userId}</Typography>
-      </Box>
+  <Breadcrumbs pageTitle={userName ? `${userName}'s Tasksheet` : "User's Tasksheet"} />
+  <Typography variant="h5" sx={{'font-size': '1.6rem'}} mb={2}>{userName ? `Tasksheet for ${userName}` :  "User's Tasksheet"}</Typography>
       <Box mb={2} display="flex" gap={2}>
         <FormControl size="small" sx={{ minWidth: 180 }}>
           <InputLabel id="user-select-label">Select User</InputLabel>
@@ -84,14 +80,19 @@ const UserTimesheetPage = () => {
           </Select>
         </FormControl>
       </Box>
-      <Box mt={2}>
-        <TasksheetEntriesDisplay
-          userId={userId}
-          filterRange={filter.toUpperCase()}
-          showFilters={false}
-          showColumnMenu={false}
-        />
-      </Box>
+      {entries.length === 0 ? (
+        <Typography>No entries found.</Typography>
+      ) : (
+        entries.map(entry => (
+          <Paper key={entry.id} sx={{ p: 2, mb: 2 }}>
+            <Typography><strong>Date:</strong> {entry.entry_date}</Typography>
+            <Typography><strong>Hours:</strong> {entry.hours}</Typography>
+            <Typography><strong>Minutes:</strong> {entry.minutes}</Typography>
+            <Typography><strong>Task:</strong> {entry.task_name}</Typography>
+            <Typography><strong>Comments:</strong> {entry.comments}</Typography>
+          </Paper>
+        ))
+      )}
     </Box>
   );
 };
