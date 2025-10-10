@@ -6,7 +6,15 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { api } from '../utils/api';
+import Popper from '@mui/material/Popper';
+import { styled } from '@mui/material/styles';
 
+const CustomPopper = styled(Popper)(({ theme }) => ({
+  // This sets the dropdown container width
+  [`& .MuiAutocomplete-paper`]: {
+    width: '400px', // ✅ Wider than input
+  },
+}));
 const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMode, selectedEntry, onSuccess }, ref) => {
   const [form, setForm] = useState({
     date: dayjs().format('YYYY-MM-DD'),
@@ -167,12 +175,15 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
                 getOptionLabel={(option) => option.name}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={projects.find(p => p.id === form.projectName) || null}
+              slots={{ popper: CustomPopper }}
                 onChange={(e, value) => {
                   setForm(prev => ({ ...prev, projectName: value?.id || '' }));
                 }}
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    {option.name}
+               
+      {option.name}
+    
                   </li>
                 )}
                 renderInput={(params) => (
@@ -191,6 +202,8 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
               <Autocomplete
                 options={taskCategories}
                 getOptionLabel={(option) => option.name}
+                
+                  slots={{ popper: CustomPopper }}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={taskCategories.find(tc => tc.id === form.category) || null}
                 onChange={(e, value) => {
