@@ -277,19 +277,22 @@ const TasksheetPage = (props) => {
           </Stack>
 
           {/* Right: Add Button */}
-          <Tooltip title="Add Tasksheet Entry">
-            <Fab
-              color="primary"
-              size="small"
-              onClick={() => {
-                setDrawerOpen(true);
-                setEditMode(false);
-                setSelectedEntry(null);
-              }}
-            >
-              <Add />
-            </Fab>
-          </Tooltip>
+      {/* Right: Add Button */}
+{(!userId || userId === loggedInUser?.id) && (
+  <Tooltip title="Add Tasksheet Entry">
+    <Fab
+      color="primary"
+      size="small"
+      onClick={() => {
+        setDrawerOpen(true);
+        setEditMode(false);
+        setSelectedEntry(null);
+      }}
+    >
+      <Add />
+    </Fab>
+  </Tooltip>
+)}
         </Box>
       </Paper>
 
