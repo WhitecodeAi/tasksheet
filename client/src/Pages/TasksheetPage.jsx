@@ -492,8 +492,8 @@ const TasksheetPage = (props) => {
           <TasksheetEntriesDisplay
             userId={effectiveUserId}
             ref={taskListRef}
-            onEdit={userId && (!loggedInUser || String(userId) !== String(loggedInUser.id)) ? undefined : handleEditClick}
-            onDeleteSuccess={userId && (!loggedInUser || String(userId) !== String(loggedInUser.id)) ? undefined : handleDeleteSuccess}
+            onEdit={handleEditClick}
+            onDeleteSuccess={handleDeleteSuccess}
             searchQuery={searchQuery}
             filterRange={filterRange}
             activeFilters={activeFilters}
