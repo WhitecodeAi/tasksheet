@@ -82,20 +82,7 @@ const db = require('./db'); // using pool directly
       await db.query('UPDATE users SET role = ?, password = ? WHERE email = ?', ['admin', hashed, adminEmail]);
       console.log(`🛡️ Default admin updated: ${adminEmail}`);
     }
-    try {
-      await importProjectsAndCategoriesFromSheet(SHEET_URL);
-    } catch (e2) {
-      console.error('❌ Sheet import failed:', e2);
-    }
-    try {
-      const filePath = path.join(__dirname, 'data', 'projects_categories.csv');
-      if (fs.existsSync(filePath)) {
-        const csv = fs.readFileSync(filePath, 'utf8');
-        await importProjectsAndCategoriesFromCsvText(csv);
-      }
-    } catch (e3) {
-      console.error('❌ Embedded CSV import failed:', e3);
-    }
+    // Sheet and CSV import removed
   } catch (e) {
     console.error('❌ Schema initialization error:', e);
   }
