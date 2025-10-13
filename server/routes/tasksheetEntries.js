@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const verifyToken = require('../middleware/verifyToken');
 
 
 // ✅ Check DB connection (async-safe for mysql2 promise pool)
@@ -13,6 +14,7 @@ const pool = require('../db');
   }
 })();
 
+router.use(verifyToken);
 // ➕ Add a new tasksheet entry
 router.post('/', async (req, res) => {
   try {
