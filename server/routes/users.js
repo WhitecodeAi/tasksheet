@@ -3,7 +3,9 @@ const router = express.Router();
 const db = require('../db');  // ✅ pool already uses promises
 const bcrypt = require('bcrypt');
 const sendEmailToUser = require('../utils/sendEmail'); // ✅ corrected path
+const verifyToken = require('../middleware/verifyToken');
 
+router.use(verifyToken);
 // Get user by ID (for breadcrumb/header)
 router.get('/:id', async (req, res) => {
   const userId = req.params.id;
