@@ -2,19 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Avatar, Stack, Select, MenuItem, FormControl, InputLabel, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { api } from '../utils/api';
 
-// Fetch users from backend API
+// Fetch users from backend API using axios instance with auth
 const fetchUsers = async () => {
-  const res = await fetch('/api/users');
-  if (!res.ok) throw new Error('Failed to fetch users');
-  return await res.json();
+  const res = await api.get('/api/users');
+  return res.data;
 };
 
-// Fetch timesheet for all users for a specific date
+// Fetch timesheet for all users for a specific date using axios instance with auth
 const fetchUserTimesheet = async (date) => {
-  const res = await fetch(`/api/tasksheetEntries/team-summary?date=${date.format('YYYY-MM-DD')}`);
-  if (!res.ok) throw new Error('Failed to fetch timesheet');
-  return await res.json();
+  const res = await api.get(`/api/tasksheetEntries/team-summary?date=${date.format('YYYY-MM-DD')}`);
+  return res.data;
 };
 
 const getInitials = (name) => {
