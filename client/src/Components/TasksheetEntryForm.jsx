@@ -164,6 +164,9 @@ const TasksheetEntryForm = forwardRef(({ user, projects, taskCategories, editMod
 
   return (
     <Container>
+      <Typography variant="h5" sx={{'font-size': '1.6rem'}} mb={2}>
+        My Timesheet Entries
+      </Typography>
       <Box display="flex" justifyContent="center">
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>

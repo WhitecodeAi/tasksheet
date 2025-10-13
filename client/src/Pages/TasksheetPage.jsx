@@ -84,19 +84,22 @@ const TasksheetPage = (props) => {
   const { userId } = useParams();
   const [viewUser, setViewUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(userId || null);
 
   useEffect(() => {
     fetchProjects();
     fetchTaskCategories();
-    if (userId) {
-      api.get(`/api/users/${userId}`)
-        .then(res => setViewUser(res.data))
-        .catch(() => setViewUser(null));
-    }
     api.get('/api/users')
       .then(res => setUsers(res.data))
       .catch(() => setUsers([]));
-  }, [userId]);
+    if (selectedUserId) {
+      api.get(`/api/users/${selectedUserId}`)
+        .then(res => setViewUser(res.data))
+        .catch(() => setViewUser(null));
+    } else {
+      setViewUser(null);
+    }
+  }, [selectedUserId]);
 
   const fetchProjects = () => {
     return api.get('/api/projects')
@@ -166,15 +169,20 @@ const TasksheetPage = (props) => {
     setSelectedEntry(null);
   }
 
-  const effectiveUserId = userId || loggedInUser?.id;
+  // For user-timesheet, use selectedUserId ('' means loggedInUser), else fallback to loggedInUser
+  const effectiveUserId = userId
+    ? (selectedUserId === '' || selectedUserId == null ? loggedInUser?.id : selectedUserId)
+    : loggedInUser?.id;
 
   return (
     <React.Fragment>
       {/* Header */}
       <Box sx={{ mb: 2 }}>
         <Typography variant="h4" gutterBottom sx={{'font-size': '1.6rem'}}> 
-          {viewUser
-            ? `Tasksheet for ${viewUser.name}`
+          {userId && selectedUserId !== undefined
+            ? `Tasksheet for ${selectedUserId === '' || selectedUserId == null
+                ? loggedInUser?.name
+                : (users.find(u => String(u.id) === String(selectedUserId))?.name || loggedInUser?.name || '')}`
             : `My Tasksheet`}
         </Typography>
       </Box>
@@ -198,23 +206,30 @@ const TasksheetPage = (props) => {
             gap: 2
           }}
         >
-          {/* Left: Search Field and User Dropdown */}
+          {/* Left: User dropdown (user-timesheet only) + Search Field */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {/* User selection dropdown for managers */}
-            {users.length > 0 && (
-              <FormControl size="small" sx={{ minWidth: 180 }}>
-                <InputLabel id="user-select-label">Select User</InputLabel>
-                <Select
-                  labelId="user-select-label"
-                  value={userId || ''}
-                  label="Select User"
-                  onChange={e => window.location.assign(`/user-timesheet/${e.target.value}`)}
-                >
-                  {users.map(user => (
-                    <MenuItem key={user.user_id} value={user.user_id}>{user.name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            {/* User selection dropdown ONLY for user-timesheet view */}
+            {userId && users.length > 0 && (
+              <TextField
+                select
+                label="Select User"
+                value={selectedUserId ?? ''}
+                onChange={e => setSelectedUserId(e.target.value)}
+                size="small"
+                sx={{ minWidth: 180, background: '#f8fafc' }}
+                SelectProps={{
+                  renderValue: (value) => {
+                    if (value === '' || value == null) return loggedInUser?.name || 'Myself';
+                    const user = users.find(u => String(u.id) === String(value));
+                    return user ? user.name : loggedInUser?.name || '';
+                  }
+                }}
+              >
+                <MenuItem value="">{loggedInUser?.name || 'Myself'}</MenuItem>
+                {users.map(u => (
+                  <MenuItem key={u.id} value={u.id}>{u.name}</MenuItem>
+                ))}
+              </TextField>
             )}
             <TextField
               placeholder="Search entries..."
