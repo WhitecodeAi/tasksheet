@@ -6,8 +6,8 @@ const sendEmailToUser = async ({ name, email, password }) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: 'whitecode.dev@gmail.com',
+        pass: 'bmldwegxkvojznud'
       },
        logger: true,
         debug: true
@@ -25,7 +25,7 @@ const sendEmailToUser = async ({ name, email, password }) => {
           <li><strong>Email:</strong> ${email}</li>
           <li><strong>Password:</strong> ${password}</li>
         </ul>
-        <p><a href="${process.env.FRONTEND_URL}/login" style="color: blue;">Click here to log in</a></p>
+        <p><a href="https://tasksheet.whitecodetech.com/login" style="color: blue;">Click here to log in</a></p>
         <br/>
         <p style="font-size: 0.9em;">If you have any issues, reach out to the support team.</p>
       `
