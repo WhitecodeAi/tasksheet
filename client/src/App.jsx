@@ -14,6 +14,7 @@ import DashboardPage from './Pages/DashboardPage';
 import TasksheetPage from './Pages/TasksheetPage';
 import UsersPage from './Pages/UsersPage';
 import UserTimesheetPage from './Pages/UserTimesheetPage';
+import TeamsTasksheetPage from './Pages/TeamsTasksheetPage';
 
 import Layout from './Layouts/Layout';
 
@@ -25,6 +26,18 @@ const AppContent = ({ handleLogin, handleLogout }) => {
     <>
       <CssBaseline />
       <Routes>
+        <Route
+          path="/teams-tasksheet"
+          element={
+            isLoggedIn ? (
+              <Layout onLogout={handleLogout} takeFullWidth={true}>
+                <TeamsTasksheetPage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
         {/* Redirect root to login */}
         <Route path="/" element={<Navigate to="/login" />} />
 

@@ -85,7 +85,7 @@ const TeamTimesheetPanel = () => {
             textDecoration: 'none',
             boxShadow: '0px 2px 4px rgba(25, 118, 210, 0.08)',
           }}
-          onClick={e => { e.preventDefault(); /* TODO: Add navigation or modal logic here */ }}
+          onClick={e => { e.preventDefault(); navigate('/teams-tasksheet'); }}
         >
           View Details
         </a>
