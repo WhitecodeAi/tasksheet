@@ -73,11 +73,11 @@ const DashboardPage = () => {
           const dailyEntries = entries.filter(
             (entry) => dayjs(entry.entry_date).format('YYYY-MM-DD') === date
           );
-          const totalHours = dailyEntries.reduce(
-            (sum, entry) => sum + Number(entry.hours || 0),
-            0
-          );
-          return { date, hours: totalHours };
+          // Sum hours and minutes separately
+          const totalMinutes = dailyEntries.reduce((sum, entry) => sum + Number(entry.hours || 0) * 60 + Number(entry.minutes || 0), 0);
+          const hours = Math.floor(totalMinutes / 60);
+          const minutes = totalMinutes % 60;
+          return { date, hours, minutes };
         });
         setSummary(summaryData);
       })
@@ -134,7 +134,7 @@ switch (user.role) {
                 <Paper key={index} elevation={1} sx={{ p: 2, ...getPaperStyle(day.hours), minWidth: 120, mb: 2 }}>
                   <Typography variant="subtitle1">{day.date}</Typography>
                   <Typography variant="body1">
-                    <strong>Hours: {day.hours.toFixed(1)}</strong>
+                    <strong>Time: {day.hours}:{day.minutes.toString().padStart(2, '0')}</strong>
                   </Typography>
                 </Paper>
               ))}
