@@ -99,23 +99,49 @@ const TeamsTasksheetPage = () => {
   return (
     <>
       <Typography variant="h4" sx={{ mt: 2, mb: 2, display: 'inline-block' }}>Teams Tasksheet</Typography>
-      <Box sx={{ display: 'inline-flex', alignItems: 'center', ml: 2 }}>
-        <Typography variant="h6" sx={{ mr: 1 }}>Week :</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2, mb: 2 }}>
+        <Typography variant="h6" sx={{ mr: 1 }}>Week:</Typography>
         <Select
           value={selectedWeek}
           onChange={e => setSelectedWeek(e.target.value)}
-          sx={{ minWidth: 180, mr: 2 }}
+          sx={{ minWidth: 180 }}
         >
           {weekOptions.map((w, idx) => (
             <MenuItem key={idx} value={idx}>{w.label}</MenuItem>
           ))}
         </Select>
         <TextField
-          placeholder="Search.."
+          placeholder="Search team members..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           sx={{ minWidth: 220 }}
+          size="small"
         />
+        <button
+          type="button"
+          style={{
+            padding: '8px 24px',
+            borderRadius: '8px',
+            background: '#1976d2',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            minHeight: '32px',
+            textTransform: 'none',
+            fontWeight: 400,
+            textDecoration: 'none',
+            border: 'none',
+            boxShadow: '0px 2px 4px rgba(25, 118, 210, 0.08)',
+            marginLeft: 8
+          }}
+          onClick={() => {
+            const filtered = users.filter(u => !search.trim() || u.name.toLowerCase().includes(search.trim().toLowerCase()));
+            const targetUser = filtered.length > 0 ? filtered[0] : users[0];
+            if (targetUser) navigate(`/tasksheet-details/${targetUser.user_id}`);
+          }}
+        >
+          View Detailed Tasksheet
+        </button>
       </Box>
       <Box mt={4}>
         {loading && users.length > 0 && weeklySummary.length === 0 ? (
