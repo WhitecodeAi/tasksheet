@@ -141,21 +141,25 @@ switch (user.role) {
             </Box>
           </Box>
           <Box mt={4}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{
-                px: 3,
-                py: 1,
+            <a
+              href={`/tasksheet-entry?date=${dayjs().format('YYYY-MM-DD')}`}
+              style={{
+                display: 'inline-block',
+                padding: '8px 24px',
+                borderRadius: '8px',
+                background: '#1976d2',
+                color: '#fff',
+                cursor: 'pointer',
+                fontSize: '1rem',
                 minHeight: '32px',
                 textTransform: 'none',
-                borderRadius: '8px',
+                fontWeight: 400,
+                textDecoration: 'none',
+                boxShadow: '0px 2px 4px rgba(25, 118, 210, 0.08)',
               }}
-              href={`/tasksheet-entry?date=${dayjs().format('YYYY-MM-DD')}`}
             >
               Enter Today’s Tasksheet
-            </Button>
+            </a>
           </Box>
         </Box>
        

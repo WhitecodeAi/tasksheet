@@ -31,8 +31,7 @@ const dateOptions = [
 
 const TeamTimesheetPanel = () => {
   const [users, setUsers] = useState([]);
-  const [timesheet, setTimesheet] = useState([]);
-  const [selectedDayOffset, setSelectedDayOffset] = useState(0);
+  const [userEntries, setUserEntries] = useState({}); // { userId: [entries] }
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
@@ -41,9 +40,20 @@ const TeamTimesheetPanel = () => {
   }, []);
 
   useEffect(() => {
-    const date = dayjs().subtract(selectedDayOffset, 'day');
-    fetchUserTimesheet(date).then(setTimesheet).catch(console.error);
-  }, [users, selectedDayOffset]); // Fetch timesheet after users are loaded or day changes
+    if (users.length === 0) return;
+    const today = dayjs().format('YYYY-MM-DD');
+    Promise.all(
+      users.map(u =>
+        api.get(`/api/tasksheetEntries/user/${u.user_id}?date=${today}`)
+          .then(res => ({ userId: u.user_id, entries: res.data }))
+          .catch(() => ({ userId: u.user_id, entries: [] }))
+      )
+    ).then(results => {
+      const entriesMap = {};
+      results.forEach(r => { entriesMap[r.userId] = r.entries; });
+      setUserEntries(entriesMap);
+    });
+  }, [users]);
 
   // Filter users by search query (name or email)
   const filteredUsers = users.filter(user => {
@@ -59,21 +69,26 @@ const TeamTimesheetPanel = () => {
     <Box mt={9}>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} gap={2}>
         <Typography variant="h6">Team's Tasksheet</Typography>
-       
-        <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel id="day-select-label">Day</InputLabel>
-          <Select
-            labelId="day-select-label"
-            id="day-select"
-            value={selectedDayOffset}
-            label="Day"
-            onChange={e => setSelectedDayOffset(e.target.value)}
-          >
-            {dateOptions.map(opt => (
-              <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <a
+          href="#"
+          style={{
+            display: 'inline-block',
+            padding: '8px 24px',
+            borderRadius: '8px',
+            background: '#1976d2',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            minHeight: '32px',
+            textTransform: 'none',
+            fontWeight: 400,
+            textDecoration: 'none',
+            boxShadow: '0px 2px 4px rgba(25, 118, 210, 0.08)',
+          }}
+          onClick={e => { e.preventDefault(); /* TODO: Add navigation or modal logic here */ }}
+        >
+          View Details
+        </a>
       </Box>
       {/* Search box between title and list */}
       <Box mb={2}>
@@ -97,19 +112,17 @@ const TeamTimesheetPanel = () => {
             <TableHead>
               <TableRow sx={{ backgroundColor: 'grey.100' }}>
                 <TableCell>User</TableCell>
-                <TableCell align="center">Total Time</TableCell>
+                <TableCell align="center">Today's Time</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredUsers.map(user => {
-                const entry = timesheet.find(t => t.user_id === user.user_id);
+                const entries = userEntries[user.user_id] || [];
+                const totalMinutes = entries.reduce((sum, entry) => sum + Number(entry.hours || 0) * 60 + Number(entry.minutes || 0), 0);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
                 return (
-                  <TableRow
-                    key={user.user_id}
-                    hover
-                    sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/user-timesheet/${user.user_id}`)}
-                  >
+                  <TableRow key={user.user_id} hover>
                     <TableCell>
                       <Stack direction="row" alignItems="center" spacing={2}>
                         <Avatar sx={{ bgcolor: 'primary.light', width: 32, height: 32 }}>
@@ -122,7 +135,7 @@ const TeamTimesheetPanel = () => {
                       </Stack>
                     </TableCell>
                     <TableCell align="center" sx={{ fontWeight: 600, fontSize: '1rem' }}>
-                      {entry ? entry.totalTime : '0h'}
+                      {hours || minutes ? `${hours}:${minutes.toString().padStart(2, '0')}` : '0h'}
                     </TableCell>
                   </TableRow>
                 );
