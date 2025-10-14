@@ -15,6 +15,7 @@ import TasksheetPage from './Pages/TasksheetPage';
 import UsersPage from './Pages/UsersPage';
 import UserTimesheetPage from './Pages/UserTimesheetPage';
 import TeamsTasksheetPage from './Pages/TeamsTasksheetPage';
+import TasksheetDetailsPage from './Pages/TasksheetDetailsPage';
 
 import Layout from './Layouts/Layout';
 
@@ -32,6 +33,18 @@ const AppContent = ({ handleLogin, handleLogout }) => {
             isLoggedIn ? (
               <Layout onLogout={handleLogout} takeFullWidth={true}>
                 <TeamsTasksheetPage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/tasksheet-details/:userId"
+          element={
+            isLoggedIn ? (
+              <Layout onLogout={handleLogout} takeFullWidth={true}>
+                <TasksheetDetailsPage />
               </Layout>
             ) : (
               <Navigate to="/login" />
