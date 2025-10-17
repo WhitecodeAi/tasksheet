@@ -156,7 +156,7 @@ const TeamsTasksheetPage = () => {
             if (targetUser) navigate(`/tasksheet-details/${targetUser.user_id}`);
           }}
         >
-          View Detailed Tasksheet
+          View All Data
         </button>
       </Box>
       <Box mt={4}>
