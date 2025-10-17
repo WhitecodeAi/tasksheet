@@ -36,6 +36,7 @@ import { useMemo } from 'react';
 
 const TeamsTasksheetPage = () => {
   const [loading, setLoading] = useState(false);
+  const [cache, setCache] = useState({});
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -58,17 +59,31 @@ const TeamsTasksheetPage = () => {
   // Fetch users on mount
   useEffect(() => {
     api.get('/api/users')
-      .then(res => setUsers(res.data))
+      .then(res => {
+        // Only update users if changed
+        setUsers(prev => {
+          const prevIds = prev.map(u => u.user_id).join(',');
+          const newIds = res.data.map(u => u.user_id).join(',');
+          return prevIds === newIds ? prev : res.data;
+        });
+      })
       .catch(() => setUsers([]));
   }, []);
 
   useEffect(() => {
+    if (!users.length) return;
     const week = weekOptions[selectedWeek];
     // Ensure week starts with Monday
     const monday = week.start.day() === 0 ? week.start.add(1, 'day') : week.start.day(1);
     const datesArray = [];
     for (let i = 0; i < 7; i++) {
       datesArray.push(monday.add(i, 'day').format('YYYY-MM-DD'));
+    }
+    const cacheKey = `${selectedWeek}-${users.map(u => u.user_id).join(',')}`;
+    if (cache[cacheKey]) {
+      setWeeklySummary(cache[cacheKey]);
+      setLoading(false);
+      return;
     }
     setLoading(true);
     Promise.all(
@@ -88,13 +103,14 @@ const TeamsTasksheetPage = () => {
           return { user, daily };
         });
         setWeeklySummary(summary);
+        setCache(prev => ({ ...prev, [cacheKey]: summary }));
         setLoading(false);
       })
       .catch(() => {
         setWeeklySummary([]);
         setLoading(false);
       });
-  }, [users, selectedWeek, weekOptions]);
+  }, [users, selectedWeek, weekOptions, cache]);
 
   return (
     <>

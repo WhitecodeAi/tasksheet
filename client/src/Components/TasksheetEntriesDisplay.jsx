@@ -1,118 +1,83 @@
-import React, {
-  useEffect,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
-import {
-  Paper,
-  Typography,
-  Button,
-  ButtonGroup,
-  CircularProgress,
-  Stack,
-  Snackbar,
-  Alert,
-  Box,
-  Tooltip,
-  Menu,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  TextField,
- 
-  Divider
-} from "@mui/material";
-
-import {
-  DataGrid,
-  Toolbar,
-  ToolbarButton,
-  ColumnsPanelTrigger,
-  FilterPanelTrigger,
-  ExportCsv,
-  ExportPrint,
-  QuickFilter,
-  QuickFilterControl,
-  QuickFilterClear,
-  QuickFilterTrigger,
-} from '@mui/x-data-grid'
-import dayjs from "dayjs";
-import { api } from "../utils/api";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+dayjs.extend(isSameOrAfter);
 import { styled } from '@mui/material/styles';
-
+import TextField from '@mui/material/TextField';
+import { DataGrid, QuickFilter, QuickFilterTrigger, QuickFilterControl, QuickFilterClear, ToolbarButton } from '@mui/x-data-grid';
+import { api } from '../utils/api';
+import {Tooltip, Button,  Paper, Snackbar , Alert, Box } from '@mui/material';
 const TasksheetEntriesDisplay = forwardRef(({
-  userId,
-  onEdit,
-  onDeleteSuccess,
-  searchQuery = '',
-  filterRange = 'TODAY',
+  entries: entriesProp = null,
+  users = [],
+  selectedProjects = [],
+  selectedCategories = [],
+  dateFrom,
+  dateTo,
+  search,
+  userId = '',
   activeFilters = {},
   singleFilter = {},
+  onEdit,
+  onDeleteSuccess,
   columnVisibility = {},
   onColumnVisibilityChange,
+  showActions = false,
   showFilters = false,
   showColumnMenu = false,
   onFiltersChange,
   onColumnMenuChange
 }, ref) => {
-
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState(entriesProp || []);
   const [isLoading, setIsLoading] = useState(false);
-  // filterRange is now passed as prop
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
-const [showToast, setShowToast] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [sortModel, setSortModel] = useState([{ field: 'entry_date', sort: 'desc' }]);
-  const fetchEntries = async () => {
-    setIsLoading(true);
-    try {
-      const res = await api.get(`/api/tasksheetEntries/user/${userId}`);
-      const sortedEntries = res.data
-        .map((entry) => ({
-          ...entry,
-          entry_date: dayjs(entry.entry_date).format("YYYY-MM-DDTHH:mm:ss"),
-          created_at: dayjs(entry.created_at),
-        }))
-        .sort((a, b) => b.created_at.valueOf() - a.created_at.valueOf());
-      setEntries(sortedEntries);
-    } catch (err) {
-      console.error("Failed to fetch tasksheet entries", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     fetchReferenceData();
   }, []);
 
+  useEffect(() => {
+    if (entriesProp) {
+      const normalized = entriesProp.map(e => {
+        // Try several shapes, then fall back to the users list by user_id
+        let userName = e.user_name || e.name || e.username || (e.user && (e.user.name || e.user.username));
+        if (!userName && e.user_id) {
+          const match = users.find(u => String(u.user_id) === String(e.user_id) || String(u.id) === String(e.user_id));
+          if (match) userName = match.name || match.username || match.user_name || String(e.user_id);
+        }
+        if (!userName) userName = e.user_id ? String(e.user_id) : '';
+        return { ...e, user_name: userName };
+      });
+      setEntries(normalized);
+    }
+  }, [entriesProp]);
+
   // Debug columnVisibility
   useEffect(() => {
-    console.log('TasksheetEntriesDisplay columnVisibility:', columnVisibility);
+    try {
+      console.debug('TasksheetEntriesDisplay columnVisibility (stringified):', JSON.stringify(columnVisibility));
+      console.debug('TasksheetEntriesDisplay columnVisibility keys:', Object.keys(columnVisibility || {}));
+    } catch (e) {
+      console.debug('TasksheetEntriesDisplay columnVisibility (raw):', columnVisibility);
+    }
   }, [columnVisibility]);
-
-  useImperativeHandle(ref, () => ({
-    refreshEntries: fetchEntries,
-  }));
 
   const fetchReferenceData = async () => {
     try {
       const [projectRes, categoryRes] = await Promise.all([
-        api.get("/api/projects"),
-        api.get("/api/taskCategories"),
+        api.get('/api/projects'),
+        api.get('/api/taskCategories'),
       ]);
       setProjects(projectRes.data);
       setTaskCategories(categoryRes.data);
     } catch (error) {
-      console.error("Error fetching reference data:", error);
+      console.error('Error fetching reference data:', error);
     }
   };
 
-  useEffect(() => {
-    fetchEntries();
-  }, [userId]);
+  // Remove userId-based fetching, now entries come from parent
 
   // applyDateFilter is now handled by parent component
 
@@ -127,50 +92,38 @@ const [showToast, setShowToast] = useState(false);
   };
 
   const getFilteredEntries = () => {
-    const now = dayjs();
-    let filtered = [];
-
-    // First apply date filter
-    switch (filterRange) {
-      case "TODAY":
-        filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isSame(now, "day")
-        );
-        break;
-      case "WEEK":
-        filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isSame(now, "week")
-        );
-        break;
-      case "MONTH":
-        filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isSame(now, "month")
-        );
-        break;
-      case "3MONTH":
-        filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isAfter(now.subtract(3, "month").startOf("month"))
-        );
-        break;
-      case "6MONTH":
-        filtered = entries.filter((e) =>
-          dayjs(e.entry_date).isAfter(now.subtract(6, "month").startOf("month"))
-        );
-        break;
-      default:
-        filtered = [...entries];
-        break;
+    let filtered = [...entries];
+    // DEBUG: log entries to ensure we have expected data
+    console.debug('getFilteredEntries: entries count', entries?.length);
+    if (entries && entries.length > 0) {
+      console.debug('getFilteredEntries: first entry sample', entries[0]);
     }
-
-    // Then apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+    // Multi-select project filter
+    if (selectedProjects && selectedProjects.length > 0) {
+      filtered = filtered.filter(e => {
+        const pid = String(e.project_id ?? e.id);
+        return selectedProjects.includes(pid);
+      });
+    }
+    // Multi-select category filter
+    if (selectedCategories && selectedCategories.length > 0) {
+      filtered = filtered.filter(e => selectedCategories.includes(String(e.task_category_id)));
+    }
+    // Date range filter
+    if (dateFrom) {
+      filtered = filtered.filter(e => dayjs(e.entry_date).isSameOrAfter(dayjs(dateFrom), 'day'));
+    }
+    if (dateTo) {
+      filtered = filtered.filter(e => dayjs(e.entry_date).isSameOrBefore(dayjs(dateTo), 'day'));
+    }
+    // Search filter
+    if (search && search.trim()) {
+      const query = search.toLowerCase();
       filtered = filtered.filter((entry) => {
         const projectName = getProjectName(entry.project_id).toLowerCase();
         const categoryName = getCategoryName(entry.task_category_id).toLowerCase();
         const taskName = (entry.task_name || '').toLowerCase();
         const comments = (entry.comments || '').toLowerCase();
-
         return (
           projectName.includes(query) ||
           categoryName.includes(query) ||
@@ -484,12 +437,37 @@ function CustomToolbar() {
 }));
   // Expose functions to parent
   React.useImperativeHandle(ref, () => ({
-    refreshEntries: fetchEntries,
     exportToCSV,
-  }), [fetchEntries]);
+  }), []);
 
   // Define DataGrid columns
   const columns = [
+    {
+      field: 'resource',
+      headerName: 'Resource',
+      width: 180,
+      type: 'string',
+      valueGetter: (params) => {
+        const row = params && params.row ? params.row : params;
+        if (row?.user_name) return row.user_name;
+        if (row?.name) return row.name;
+        if (row?.username) return row.username;
+        // Try users prop lookup
+        if (row?.user_id) {
+          const match = users.find(u => String(u.user_id) === String(row.user_id) || String(u.id) === String(row.user_id));
+          if (match) return match.name || match.username || String(row.user_id);
+        }
+        // nested user object
+        if (row?.user && (row.user.name || row.user.username)) return row.user.name || row.user.username;
+        return '';
+      },
+      renderCell: (params) => {
+        const value = params.value || params.row?.user_name || '';
+        return <Box sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</Box>;
+      },
+      filterable: true,
+      sortable: true,
+    },
     {
       field: 'entry_date',
       headerName: 'Date',
@@ -649,220 +627,200 @@ function CustomToolbar() {
 
   return (
     <>
-      {isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress />
-          <Typography variant="body1" sx={{ ml: 2 }}>
-            Loading entries...
-          </Typography>
-        </Box>
-      ) : (
-        <Paper
+      <Paper
+        sx={{
+          mt: 0,
+          borderRadius: '0 0 12px 12px',
+          border: '1px solid #f0f0f0',
+          borderTop: 'none',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden',
+          backgroundColor: '#ffffff',
+        }}
+      >
+        <DataGrid
+          rows={getFilteredEntries()}
+          columns={columns.map(col => ({ ...col, filterable: true }))}
+          autoHeight
+          disableRowSelectionOnClick
+          hideFooterSelectedRowCount
+          pageSizeOptions={[10, 25, 50, 100]}
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
+          getRowHeight={() => 'auto'}
+          rowHeight={32}
+          columnVisibilityModel={columnVisibility}
+          onColumnVisibilityModelChange={(newModel) => {
+            if (onColumnVisibilityChange) {
+              onColumnVisibilityChange(newModel);
+            }
+          }}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 25,
+              },
+            },
+            sorting: {
+              sortModel: [{ field: 'entry_date', sort: 'desc' }],
+            },
+            columns: {
+              columnVisibilityModel: columnVisibility,
+            },
+          }}
           sx={{
-            mt: 0,
-            borderRadius: '0 0 12px 12px',
-            border: '1px solid #f0f0f0',
-            borderTop: 'none',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            overflow: 'hidden',
+            m: 0,
+            minHeight: '400px',
+            border: 'none',
             backgroundColor: '#ffffff',
-                  }}
-        >
-          <DataGrid
-            rows={getFilteredEntries()}
-            columns={columns}
-            autoHeight
-            //showToolbar
-            
-            disableRowSelectionOnClick
-            hideFooterSelectedRowCount
-            pageSizeOptions={[10, 25, 50, 100]}
-            sortModel={sortModel}
-            onSortModelChange={setSortModel}
-            getRowHeight={() => 'auto'}
-             rowHeight={32}
-            columnVisibilityModel={columnVisibility}
-            onColumnVisibilityModelChange={(newModel) => {
-              if (onColumnVisibilityChange) {
-                onColumnVisibilityChange(newModel);
-              }
-            }}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 25,
-                },
-              },
-              sorting: {
-                sortModel: [{ field: 'entry_date', sort: 'desc' }],
-              },
-              columns: {
-                columnVisibilityModel: columnVisibility,
-              },
-            }}
-            sx={{
-              m:0,
-              minHeight: '400px',
-              border: 'none',
+            '& .MuiDataGrid-main': {
               backgroundColor: '#ffffff',
-              '& .MuiDataGrid-main': {
+            },
+            '& .MuiDataGrid-virtualScroller': {
+              backgroundColor: '#ffffff',
+            },
+            '& .MuiDataGrid-cell': {
+              backgroundColor: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '4px 6px',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              minHeight: '45px !important',
+              maxHeight: '45px !important',
+            },
+            '& .MuiDataGrid-columnHeader': {
+              minHeight: '42px !important',
+              maxHeight: '42px !important',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#f8fafc',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+            },
+            '& .MuiDataGrid-columnHeaderTitle': {
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+            },
+            '& .MuiDataGrid-cell[data-field="task_name"]': {
+              alignItems: 'flex-start',
+              whiteSpace: 'normal',
+              lineHeight: 'normal',
+            },
+            '& .MuiDataGrid-row': {
+              minHeight: 'auto !important',
+              backgroundColor: '#ffffff',
+            },
+            '& .MuiDataGrid-row:hover': {
+              backgroundColor: '#f5f5f5',
+            },
+            '& .MuiDataGrid-footer': {
+              borderTop: '1px solid #f0f0f0',
+              backgroundColor: '#ffffff',
+            },
+            // Sticky Actions column
+            '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+              position: 'sticky',
+              right: 0,
+              backgroundColor: '#f8fafc !important',
+              zIndex: 100,
+              borderLeft: '1px solid #f0f0f0',
+              boxShadow: '-4px 0 8px -2px rgba(0, 0, 0, 0.1)',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: '#f8fafc',
+                zIndex: -1,
+              },
+            },
+            '& .MuiDataGrid-cell[data-field="actions"]': {
+              position: 'sticky',
+              right: 0,
+              backgroundColor: '#ffffff !important',
+              zIndex: 100,
+              borderLeft: '1px solid #f0f0f0',
+              boxShadow: '-4px 0 8px -2px rgba(0, 0, 0, 0.1)',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
                 backgroundColor: '#ffffff',
+                zIndex: -1,
               },
-              '& .MuiDataGrid-virtualScroller': {
-                backgroundColor: '#ffffff',
-              },
-              '& .MuiDataGrid-cell': {
-                 
-                backgroundColor: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                  padding: '4px 6px',   
-              },
-'& .MuiDataGrid-columnHeaders': {
-    minHeight: '45px !important', // Shrinks the whole header row
-    maxHeight: '45px !important',
-  },
-  '& .MuiDataGrid-columnHeader': {
-    minHeight: '42px !important', // Shrinks each column header cell
-    maxHeight: '42px !important',
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: '#f8fafc',
-    fontSize: '0.875rem',
-    fontWeight: 600
-  },
-  '& .MuiDataGrid-columnHeaderTitle': {
- 
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-  },
-  
-
-
-              '& .MuiDataGrid-cell[data-field="task_name"]': {
-                alignItems: 'flex-start',
-                whiteSpace: 'normal',
-                lineHeight: 'normal',
-              },
-              '& .MuiDataGrid-row': {
-                minHeight: 'auto !important',
-                backgroundColor: '#ffffff',
-              },
-              '& .MuiDataGrid-row:hover': {
+            },
+            '& .MuiDataGrid-row:hover .MuiDataGrid-cell': {
+              backgroundColor: '#f5f5f5 !important',
+              '&::before': {
                 backgroundColor: '#f5f5f5',
               },
-              '& .MuiDataGrid-footer': {
-                borderTop: '1px solid #f0f0f0',
-                backgroundColor: '#ffffff',
-              },
-              // Sticky Actions column
-              '& .MuiDataGrid-columnHeader[data-field="actions"]': {
-                position: 'sticky',
-                right: 0,
-                backgroundColor: '#f8fafc !important',
-                zIndex: 100,
-                borderLeft: '1px solid #f0f0f0',
-                boxShadow: '-4px 0 8px -2px rgba(0, 0, 0, 0.1)',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: '#f8fafc',
-                  zIndex: -1,
-                },
-              },
-     
-              '& .MuiDataGrid-cell[data-field="actions"]': {
-                position: 'sticky',
-                right: 0,
-                backgroundColor: '#ffffff !important',
-                zIndex: 100,
-                borderLeft: '1px solid #f0f0f0',
-                boxShadow: '-4px 0 8px -2px rgba(0, 0, 0, 0.1)',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: '#ffffff',
-                  zIndex: -1,
-                },
-              },
-              '& .MuiDataGrid-row:hover .MuiDataGrid-cell': {
-                backgroundColor: '#f5f5f5 !important',
-                '&::before': {
-                  backgroundColor: '#f5f5f5',
-                },
-              },
-            }}
-            slots={{
-          
-              noRowsOverlay: () => (
-                <Box sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '300px',
-                
-                }}>
+            },
+          }}
+          slots={{
+            toolbar: CustomToolbar,
+            noRowsOverlay: () => (
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '300px',
+              }}>
                 <StyledGridOverlay>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        width={96}
-        viewBox="0 0 452 257"
-        aria-hidden
-        focusable="false"
-      >
-        <path
-          className="no-rows-primary"
-          d="M348 69c-46.392 0-84 37.608-84 84s37.608 84 84 84 84-37.608 84-84-37.608-84-84-84Zm-104 84c0-57.438 46.562-104 104-104s104 46.562 104 104-46.562 104-104 104-104-46.562-104-104Z"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    width={96}
+                    viewBox="0 0 452 257"
+                    aria-hidden
+                    focusable="false"
+                  >
+                    <path
+                      className="no-rows-primary"
+                      d="M348 69c-46.392 0-84 37.608-84 84s37.608 84 84 84 84-37.608 84-84-37.608-84-84-84Zm-104 84c0-57.438 46.562-104 104-104s104 46.562 104 104-46.562 104-104 104-104-46.562-104-104Z"
+                    />
+                    <path
+                      className="no-rows-primary"
+                      d="M308.929 113.929c3.905-3.905 10.237-3.905 14.142 0l63.64 63.64c3.905 3.905 3.905 10.236 0 14.142-3.906 3.905-10.237 3.905-14.142 0l-63.64-63.64c-3.905-3.905-3.905-10.237 0-14.142Z"
+                    />
+                    <path
+                      className="no-rows-primary"
+                      d="M308.929 191.711c-3.905-3.906-3.905-10.237 0-14.142l63.64-63.64c3.905-3.905 10.236-3.905 14.142 0 3.905 3.905 3.905 10.237 0 14.142l-63.64 63.64c-3.905 3.905-10.237 3.905-14.142 0Z"
+                    />
+                    <path
+                      className="no-rows-secondary"
+                      d="M0 10C0 4.477 4.477 0 10 0h380c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 20 0 15.523 0 10ZM0 59c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 69 0 64.523 0 59ZM0 106c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 153c0-5.523 4.477-10 10-10h195.5c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 200c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 247c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10Z"
+                    />
+                  </svg>
+                  <Box sx={{ mt: 2 }}>No rows</Box>
+                </StyledGridOverlay>
+              </Box>
+            ),
+          }}
+          slotProps={{
+            loadingOverlay: {
+              variant: 'linear-progress',
+              noRowsVariant: 'skeleton',
+            },
+          }}
         />
-        <path
-          className="no-rows-primary"
-          d="M308.929 113.929c3.905-3.905 10.237-3.905 14.142 0l63.64 63.64c3.905 3.905 3.905 10.236 0 14.142-3.906 3.905-10.237 3.905-14.142 0l-63.64-63.64c-3.905-3.905-3.905-10.237 0-14.142Z"
-        />
-        <path
-          className="no-rows-primary"
-          d="M308.929 191.711c-3.905-3.906-3.905-10.237 0-14.142l63.64-63.64c3.905-3.905 10.236-3.905 14.142 0 3.905 3.905 3.905 10.237 0 14.142l-63.64 63.64c-3.905 3.905-10.237 3.905-14.142 0Z"
-        />
-        <path
-          className="no-rows-secondary"
-          d="M0 10C0 4.477 4.477 0 10 0h380c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 20 0 15.523 0 10ZM0 59c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 69 0 64.523 0 59ZM0 106c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 153c0-5.523 4.477-10 10-10h195.5c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 200c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 247c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10Z"
-        />
-      </svg>
-      <Box sx={{ mt: 2 }}>No rows</Box>
-    </StyledGridOverlay>
-                </Box>
-              ),
-            }}
-             slotProps={{
-    loadingOverlay: {
-      variant: 'linear-progress',
-      noRowsVariant: 'skeleton',
-    },
-  }}
-          />
-        </Paper>
-      )}
-
-
+      </Paper>
       <Snackbar
-  open={showToast}
-  autoHideDuration={3000}
-  onClose={() => setShowToast(false)}
-  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
->
-  <Alert onClose={() => setShowToast(false)} severity="success" sx={{ width: '100%' }}>
-    Deleted Successfully
-  </Alert>
-</Snackbar>
+        open={showToast}
+        autoHideDuration={3000}
+        onClose={() => setShowToast(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setShowToast(false)} severity="success" sx={{ width: '100%' }}>
+          Deleted Successfully
+        </Alert>
+      </Snackbar>
     </>
   );
 });
