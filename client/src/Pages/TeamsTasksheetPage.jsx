@@ -181,7 +181,7 @@ const TeamsTasksheetPage = () => {
                     onClick={() => navigate(`/tasksheet-details/${user.user_id}`)}>
                     <Stack direction="row" sx={{justifyContent:'space-between', alignItems:'center' }}>
                       <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, fontSize: '1rem' }}>{user.name}</Typography>
-                      <span style={{fontSize:'.8rem', color:'black', textDecoration:'underline', cursor:'pointer'}} onClick={e => {e.stopPropagation(); navigate(`/tasksheet-details/${user.user_id}`);}}>View Details</span>
+                    
                     </Stack>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       {daily.map((day, idx) => (
