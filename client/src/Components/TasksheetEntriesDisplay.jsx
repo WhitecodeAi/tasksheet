@@ -1,7 +1,9 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import { DataGrid, QuickFilter, QuickFilterTrigger, QuickFilterControl, QuickFilterClear, ToolbarButton, useGridApiRef } from '@mui/x-data-grid';

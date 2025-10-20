@@ -78,13 +78,13 @@ const TasksheetDetailsPage = () => {
     const query = params.length ? `?${params.join('&')}` : '';
     // For multi-user, fetch all and flatten
     let allEntries = [];
-    if (selectedUsers.length > 0) {
-      await Promise.all(selectedUsers.map(async (uid) => {
-        const res = await api.get(`/api/tasksheetEntries/user/${uid}${query}`);
-        console.debug(`TasksheetDetailsPage: fetched ${res.data.length} entries for user`, uid, res.data?.[0]);
-        allEntries = allEntries.concat(res.data);
-      }));
-    }
+    // If no users explicitly selected, search across all known users
+    const targets = (selectedUsers.length > 0) ? selectedUsers : users.map(u => u.user_id ?? u.id);
+    await Promise.all(targets.map(async (uid) => {
+      const res = await api.get(`/api/tasksheetEntries/user/${uid}${query}`);
+      console.debug(`TasksheetDetailsPage: fetched ${Array.isArray(res.data) ? res.data.length : 0} entries for user`, uid, res.data?.[0]);
+      if (Array.isArray(res.data)) allEntries = allEntries.concat(res.data);
+    }));
     console.debug('TasksheetDetailsPage: total entries after fetch', allEntries.length);
     setEntries(allEntries);
   };
