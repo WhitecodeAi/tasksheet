@@ -523,7 +523,7 @@ const TasksheetPage = (props) => {
             ref={taskListRef}
             onEdit={handleEditClick}
             onDeleteSuccess={handleDeleteSuccess}
-            searchQuery={searchQuery}
+            search={searchQuery}
             filterRange={filterRange}
             activeFilters={activeFilters}
             singleFilter={singleFilter}

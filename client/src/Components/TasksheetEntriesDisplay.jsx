@@ -229,16 +229,18 @@ const TasksheetEntriesDisplay = forwardRef(({
     if (entries && entries.length > 0) {
       console.debug('getFilteredEntries: first entry sample', entries[0]);
     }
-    // Multi-select project filter
-    if (selectedProjects && selectedProjects.length > 0) {
+    // Multi-select project filter (normalize IDs to strings to avoid number/string mismatches)
+    const selectedProjectIds = new Set((selectedProjects || []).map(id => String(id)));
+    if (selectedProjectIds.size > 0) {
       filtered = filtered.filter(e => {
-        const pid = String(e.project_id ?? e.id);
-        return selectedProjects.includes(pid);
+        const pid = String(e.project_id ?? e.id ?? '');
+        return selectedProjectIds.has(pid);
       });
     }
-    // Multi-select category filter
-    if (selectedCategories && selectedCategories.length > 0) {
-      filtered = filtered.filter(e => selectedCategories.includes(String(e.task_category_id)));
+    // Multi-select category filter (normalize IDs)
+    const selectedCategoryIds = new Set((selectedCategories || []).map(id => String(id)));
+    if (selectedCategoryIds.size > 0) {
+      filtered = filtered.filter(e => selectedCategoryIds.has(String(e.task_category_id ?? e.category_id ?? '')));
     }
     // Date range filter
     if (dateFrom) {
