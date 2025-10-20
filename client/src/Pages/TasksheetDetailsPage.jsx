@@ -73,6 +73,69 @@ const TasksheetDetailsPage = () => {
       .catch(() => setUsers([]));
   }, []);
 
+  // Shared MenuProps to reduce vertical spacing between items in Select menus
+  const compactMenuProps = {
+    PaperProps: {
+      sx: {
+        '& .MuiMenuItem-root': {
+          py: 0.25,
+          minHeight: 26,
+          '& .MuiListItemIcon-root': { minWidth: 32 },
+          '& .MuiMenuItem-root .MuiCheckbox-root': { padding: '2px' }
+        },
+        '& .MuiList-root': {
+          paddingTop: 2,
+          paddingBottom: 2,
+        },
+        '& .MuiMenuItem-root .MuiTypography-root': {
+          fontSize: '0.875rem'
+        }
+      }
+    }
+  };
+
+  // Max width for select closed-display area (truncation)
+  const DISPLAY_MAX = 500;
+
+  // Sentinel value used for the in-menu "All" option
+  const ALL_VALUE = '__ALL__';
+
+  // Precompute id lists and "all selected" flags for each multi-select
+  const allUserIds = users.map(u => u.user_id ?? u.id).filter(Boolean);
+  const usersAllSelected = allUserIds.length > 0 && allUserIds.every(id => selectedUsers.includes(id));
+  const allProjectIds = projects.map(p => p.id ?? p.project_id).filter(Boolean);
+  const projectsAllSelected = allProjectIds.length > 0 && allProjectIds.every(id => selectedProjects.includes(id));
+  const allCategoryIds = categories.map(c => c.id ?? c.category_id).filter(Boolean);
+  const categoriesAllSelected = allCategoryIds.length > 0 && allCategoryIds.every(id => selectedCategories.includes(id));
+
+  const handleUsersChange = (e) => {
+    const val = typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value;
+    if (val.includes(ALL_VALUE)) {
+      // Toggle all
+      setSelectedUsers(usersAllSelected ? [] : allUserIds);
+      return;
+    }
+    setSelectedUsers(val);
+  };
+
+  const handleProjectsChange = (e) => {
+    const val = typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value;
+    if (val.includes(ALL_VALUE)) {
+      setSelectedProjects(projectsAllSelected ? [] : allProjectIds);
+      return;
+    }
+    setSelectedProjects(val);
+  };
+
+  const handleCategoriesChange = (e) => {
+    const val = typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value;
+    if (val.includes(ALL_VALUE)) {
+      setSelectedCategories(categoriesAllSelected ? [] : allCategoryIds);
+      return;
+    }
+    setSelectedCategories(val);
+  };
+
   const handleSearch = async () => {
     setHasSearched(true);
     // Build query params for filters (exclude search)
@@ -131,13 +194,31 @@ const TasksheetDetailsPage = () => {
               <Select
                 multiple
                 value={selectedUsers}
-                onChange={e => setSelectedUsers(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                onChange={handleUsersChange}
                 label="Resource (Users)"
-                renderValue={selected => users.filter(u => selected.includes(u.user_id)).map(u => u.name).join(', ')}
+                renderValue={selected => {
+                  if (usersAllSelected) return 'All';
+                  const names = users.filter(u => selected.includes(u.user_id ?? u.id)).map(u => u.name);
+                  if (names.length === 0) return '';
+                  if (names.length === 1) return (
+                    <Box sx={{ maxWidth: DISPLAY_MAX, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{names[0]}</Box>
+                  );
+                  // show count and provide tooltip for full list
+                  return (
+                    <Tooltip title={names.join(', ')}>
+                      <Box sx={{ maxWidth: DISPLAY_MAX, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{`${names.length} selected`}</Box>
+                    </Tooltip>
+                  );
+                }}
+                MenuProps={compactMenuProps}
               >
+                <MenuItem value={ALL_VALUE}>
+                  <Checkbox size="small" checked={usersAllSelected} />
+                  All
+                </MenuItem>
                 {users.map(u => (
                   <MenuItem key={u.user_id} value={u.user_id}>
-                    <Checkbox checked={selectedUsers.indexOf(u.user_id) > -1} />
+                    <Checkbox size="small" checked={selectedUsers.indexOf(u.user_id) > -1} />
                     {u.name}
                   </MenuItem>
                 ))}
@@ -148,14 +229,40 @@ const TasksheetDetailsPage = () => {
               <Select
                 multiple
                 value={selectedProjects}
-                onChange={e => setSelectedProjects(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                onChange={handleProjectsChange}
                 label="Project Name"
-                renderValue={selected => projects.filter(p => selected.includes(p.id || p.project_id)).map(p => p.name).join(', ')}
+                renderValue={selected => {
+                  if (projectsAllSelected) return 'All';
+                  const names = projects.filter(p => selected.includes(p.id ?? p.project_id)).map(p => p.name);
+                  if (names.length === 0) return '';
+                  if (names.length === 1) return (
+                    <Box sx={{ maxWidth: DISPLAY_MAX, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{names[0]}</Box>
+                  );
+                  return (
+                    <Tooltip title={names.join(', ')}>
+                      <Box sx={{ maxWidth: DISPLAY_MAX, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{`${names.length} selected`}</Box>
+                    </Tooltip>
+                  );
+                }}
+                MenuProps={{
+                  ...compactMenuProps,
+                  PaperProps: {
+                    ...compactMenuProps.PaperProps,
+                    sx: {
+                      ...compactMenuProps.PaperProps.sx,
+                      maxWidth: 500,
+                    }
+                  }
+                }}
               >
+                <MenuItem value={ALL_VALUE}>
+                  <Checkbox size="small" checked={projectsAllSelected} />
+                  All
+                </MenuItem>
                 {projects.map(p => (
                   <MenuItem key={p.id || p.project_id} value={p.id || p.project_id}>
-                    <Checkbox checked={selectedProjects.indexOf(p.id || p.project_id) > -1} />
-                    {p.name}
+                    <Checkbox size="small" checked={selectedProjects.indexOf(p.id || p.project_id) > -1} />
+                    <Box sx={{ maxWidth: 420, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</Box>
                   </MenuItem>
                 ))}
               </Select>
@@ -165,20 +272,37 @@ const TasksheetDetailsPage = () => {
               <Select
                 multiple
                 value={selectedCategories}
-                onChange={e => setSelectedCategories(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                onChange={handleCategoriesChange}
                 label="Category"
-                renderValue={selected => categories.filter(c => selected.includes(c.id || c.category_id)).map(c => c.name).join(', ')}
+                renderValue={selected => {
+                  if (categoriesAllSelected) return 'All';
+                  const names = categories.filter(c => selected.includes(c.id ?? c.category_id)).map(c => c.name);
+                  if (names.length === 0) return '';
+                  if (names.length === 1) return (
+                    <Box sx={{ maxWidth: DISPLAY_MAX, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{names[0]}</Box>
+                  );
+                  return (
+                    <Tooltip title={names.join(', ')}>
+                      <Box sx={{ maxWidth: DISPLAY_MAX, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{`${names.length} selected`}</Box>
+                    </Tooltip>
+                  );
+                }}
+                MenuProps={compactMenuProps}
               >
+                <MenuItem value={ALL_VALUE}>
+                  <Checkbox size="small" checked={categoriesAllSelected} />
+                  All
+                </MenuItem>
                 {categories.map(c => (
                   <MenuItem key={c.id || c.category_id} value={c.id || c.category_id}>
-                    <Checkbox checked={selectedCategories.indexOf(c.id || c.category_id) > -1} />
+                    <Checkbox size="small" checked={selectedCategories.indexOf(c.id || c.category_id) > -1} />
                     {c.name}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
             <Button variant="contained" color="primary" sx={{ minWidth: 120 }} onClick={handleSearch}>
-              Search
+              Get Data
             </Button>
           </Stack>
           </Paper>
