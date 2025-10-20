@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, MenuItem, Button, Stack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Checkbox } from '@mui/material';
+import {Paper, Box, Typography, TextField, MenuItem, Button, Stack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Checkbox } from '@mui/material';
 import Breadcrumbs from '../Components/Breadcrumbs';
 import { api } from '../utils/api';
 import TasksheetEntriesDisplay from '../Components/TasksheetEntriesDisplay';
@@ -96,19 +96,9 @@ const TasksheetDetailsPage = () => {
         <Typography sx={{ mt: 4 }}>Loading data...</Typography>
       ) : (
         <>
-          <Stack direction="row" spacing={2} mb={2} alignItems="center">
-            <TextField
-              select
-              label="Quick Range"
-              value={quickRange}
-              onChange={e => setQuickRange(e.target.value)}
-              size="small"
-              sx={{ minWidth: 160 }}
-            >
-              {quickRanges.map(opt => (
-                <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
-              ))}
-            </TextField>
+        <Paper sx={{ p: 2, mb: 2 }}>
+          <Stack direction="row" spacing={2} alignItems="center">
+           
             <TextField
               label="Date From"
               type="date"
@@ -127,9 +117,7 @@ const TasksheetDetailsPage = () => {
               size="small"
               sx={{ minWidth: 140 }}
             />
-            {/* Remove search bar from here, use DataGrid's built-in search/filter */}
-          </Stack>
-          <Stack direction="row" spacing={2} mb={2} alignItems="center">
+           
             <FormControl sx={{ minWidth: 220 }} size="small">
               <InputLabel>Resource (Users)</InputLabel>
               <Select
@@ -185,9 +173,11 @@ const TasksheetDetailsPage = () => {
               Search
             </Button>
           </Stack>
+          </Paper>
+      
           {/* JSON preview removed */}
           {hasSearched ? (
-            <TasksheetEntriesDisplay
+           <Paper><div></div><TasksheetEntriesDisplay
               entries={entries}
               users={users}
               selectedProjects={selectedProjects}
@@ -198,6 +188,7 @@ const TasksheetDetailsPage = () => {
               userId={selectedUsers.length === 1 ? selectedUsers[0] : ''}
               showActions={false}
             />
+            </Paper> 
           ) : (
             <Typography sx={{ mt: 4, color: 'gray' }}>Select filters and click Search to view results.</Typography>
           )}
