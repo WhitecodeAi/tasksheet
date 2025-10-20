@@ -4,6 +4,7 @@ import {Paper, Box, Typography, TextField, MenuItem, Button, Stack, Dialog, Dial
 import FilterListIcon from '@mui/icons-material/FilterList';
 import Breadcrumbs from '../Components/Breadcrumbs';
 import { api } from '../utils/api';
+import sortByName from '../utils/sortByName';
 import TasksheetEntriesDisplay from '../Components/TasksheetEntriesDisplay';
 
 const TasksheetDetailsPage = () => {
@@ -59,10 +60,16 @@ const TasksheetDetailsPage = () => {
   }, [quickRange]);
 
   useEffect(() => {
-    api.get('/api/projects').then(res => setProjects(res.data)).catch(() => setProjects([]));
-    api.get('/api/taskCategories').then(res => setCategories(res.data)).catch(() => setCategories([]));
+    api.get('/api/projects')
+      .then(res => setProjects(sortByName(res.data)))
+      .catch(() => setProjects([]));
+
+    api.get('/api/taskCategories')
+      .then(res => setCategories(sortByName(res.data)))
+      .catch(() => setCategories([]));
+
     api.get('/api/users')
-      .then(res => setUsers(res.data))
+      .then(res => setUsers(sortByName(res.data)))
       .catch(() => setUsers([]));
   }, []);
 

@@ -37,6 +37,7 @@ import { Search, Add, FilterList, ViewColumn, FileDownload, Settings, GetAppTwoT
 import { api } from '../utils/api';
 import dayjs from 'dayjs';
 import ViewColumnTwoToneIcon from '@mui/icons-material/ViewColumnTwoTone';
+import sortByName from '../utils/sortByName';
 // Breadcrumbs are provided by the Layout; do not render here to avoid duplicates
 
 const TasksheetPage = (props) => {
@@ -90,7 +91,7 @@ const TasksheetPage = (props) => {
     fetchProjects();
     fetchTaskCategories();
     api.get('/api/users')
-      .then(res => setUsers(res.data))
+      .then(res => setUsers(sortByName(res.data)))
       .catch(() => setUsers([]));
     if (selectedUserId) {
       api.get(`/api/users/${selectedUserId}`)
@@ -103,13 +104,13 @@ const TasksheetPage = (props) => {
 
   const fetchProjects = () => {
     return api.get('/api/projects')
-      .then((res) => setProjects(res.data))
+      .then((res) => setProjects(sortByName(res.data)))
       .catch((err) => console.error('Error fetching projects:', err));
   };
 
   const fetchTaskCategories = () => {
     return api.get('/api/taskCategories')
-      .then((res) => setTaskCategories(res.data))
+      .then((res) => setTaskCategories(sortByName(res.data)))
       .catch((err) => console.error('Failed to fetch task categories', err));
   };
 

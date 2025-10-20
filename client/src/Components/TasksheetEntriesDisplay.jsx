@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import { DataGrid, QuickFilter, QuickFilterTrigger, QuickFilterControl, QuickFilterClear, ToolbarButton, useGridApiRef } from '@mui/x-data-grid';
 import { api } from '../utils/api';
 import {Tooltip, Button,  Paper, Snackbar , Alert, Box } from '@mui/material';
+import sortByName from '../utils/sortByName';
 const TasksheetEntriesDisplay = forwardRef(({
   entries: entriesProp = null,
   users = [],
@@ -138,9 +139,9 @@ const TasksheetEntriesDisplay = forwardRef(({
         // users endpoint is optional - used to resolve resource names when parent doesn't provide users
         api.get('/api/users').catch(() => ({ data: [] })),
       ]);
-      setProjects(projectRes.data);
-      setTaskCategories(categoryRes.data);
-      setFetchedUsers(usersRes.data || []);
+  setProjects(sortByName(projectRes.data));
+  setTaskCategories(sortByName(categoryRes.data));
+  setFetchedUsers(sortByName(usersRes.data || []));
     } catch (error) {
       console.error('Error fetching reference data:', error);
     }

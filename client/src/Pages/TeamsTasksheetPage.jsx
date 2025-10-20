@@ -33,6 +33,7 @@ const getPaperStyle = (hours) => {
 
 import { Select, MenuItem } from '@mui/material';
 import { useMemo } from 'react';
+import sortByName from '../utils/sortByName';
 
 const TeamsTasksheetPage = () => {
   const [loading, setLoading] = useState(false);
@@ -60,11 +61,12 @@ const TeamsTasksheetPage = () => {
   useEffect(() => {
     api.get('/api/users')
       .then(res => {
+        const list = sortByName(res.data);
         // Only update users if changed
         setUsers(prev => {
           const prevIds = prev.map(u => u.user_id).join(',');
-          const newIds = res.data.map(u => u.user_id).join(',');
-          return prevIds === newIds ? prev : res.data;
+          const newIds = list.map(u => u.user_id).join(',');
+          return prevIds === newIds ? prev : list;
         });
       })
       .catch(() => setUsers([]));
