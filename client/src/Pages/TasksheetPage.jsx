@@ -541,6 +541,10 @@ const TasksheetPage = (props) => {
             showColumnMenu={showColumnMenu}
             onFiltersChange={setShowFilters}
             onColumnMenuChange={setShowColumnMenu}
+            users={users}
+            projects={projects}
+            taskCategories={taskCategories}
+            showResource={false}
           />
         </Grid>
       </Grid>

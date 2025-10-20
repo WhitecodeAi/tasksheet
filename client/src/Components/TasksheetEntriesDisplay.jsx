@@ -27,16 +27,58 @@ const TasksheetEntriesDisplay = forwardRef(({
   showColumnMenu = false,
   onFiltersChange,
   onColumnMenuChange
+  ,
+  showResource = true,
 }, ref) => {
   const [entries, setEntries] = useState(entriesProp || []);
   const [isLoading, setIsLoading] = useState(false);
   const [projects, setProjects] = useState([]);
   const [taskCategories, setTaskCategories] = useState([]);
+  const [fetchedUsers, setFetchedUsers] = useState([]);
   const [showToast, setShowToast] = useState(false);
   const [sortModel, setSortModel] = useState([{ field: 'entry_date', sort: 'desc' }]);
   useEffect(() => {
     fetchReferenceData();
   }, []);
+
+  // Fetch entries for the given userId when provided (child can refresh itself)
+  const fetchEntries = async () => {
+    if (!userId) return;
+    setIsLoading(true);
+    try {
+      const res = await api.get(`/api/tasksheetEntries/user/${userId}`);
+      let payload = res.data;
+      if (!payload) payload = [];
+      if (payload && payload.rows && Array.isArray(payload.rows)) payload = payload.rows;
+      if (payload && payload.data && Array.isArray(payload.data)) payload = payload.data;
+      if (!Array.isArray(payload)) payload = [];
+      // normalize incoming rows slightly (user_name fallback, ensure hours/minutes)
+      const normalized = payload.map((e) => {
+        // try to resolve the resource name using available user lists (getResourceName will fallback to id if necessary)
+        const userName = e.user_name || e.name || e.username || (e.user && (e.user.name || e.user.username)) || getResourceName(e);
+        const hours = Number(e.hours || e.h || e.total_hours || 0);
+        const minutes = Number(e.minutes || e.m || 0);
+        // if total_hours is present as decimal (e.g. 1.5) convert to hours/minutes
+        if ((!e.hours && !e.minutes) && e.total_hours) {
+          const total = Number(e.total_hours);
+          const h = Math.floor(total);
+          const m = Math.round((total - h) * 60);
+          return { ...e, user_name: userName, hours: h, minutes: m };
+        }
+        return { ...e, user_name: userName, hours, minutes };
+      });
+      setEntries(normalized);
+    } catch (err) {
+      console.error('Failed to fetch entries for user', userId, err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) fetchEntries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   useEffect(() => {
     if (entriesProp) {
@@ -54,6 +96,27 @@ const TasksheetEntriesDisplay = forwardRef(({
     }
   }, [entriesProp]);
 
+  // When we fetch users (or the parent passes users) re-run a quick enrichment to fill missing user_name
+  useEffect(() => {
+    const hasUserData = (Array.isArray(users) && users.length) || (Array.isArray(fetchedUsers) && fetchedUsers.length);
+    if (!hasUserData) return;
+    setEntries(prev => {
+      const updated = prev.map(e => {
+        // if entry already has a non-empty user_name, keep it
+        if (e.user_name && String(e.user_name).trim()) return e;
+        const resolved = getResourceName(e);
+        return { ...e, user_name: resolved };
+      });
+      // Only update if anything changed (avoid re-setting same objects)
+      const changed = updated.length !== prev.length || updated.some((item, idx) => {
+        const p = prev[idx] || {};
+        return String(item.user_name || '') !== String(p.user_name || '') || item.hours !== p.hours || item.minutes !== p.minutes;
+      });
+      return changed ? updated : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchedUsers, users]);
+
   // Debug columnVisibility
   useEffect(() => {
     try {
@@ -66,12 +129,15 @@ const TasksheetEntriesDisplay = forwardRef(({
 
   const fetchReferenceData = async () => {
     try {
-      const [projectRes, categoryRes] = await Promise.all([
+      const [projectRes, categoryRes, usersRes] = await Promise.all([
         api.get('/api/projects'),
         api.get('/api/taskCategories'),
+        // users endpoint is optional - used to resolve resource names when parent doesn't provide users
+        api.get('/api/users').catch(() => ({ data: [] })),
       ]);
       setProjects(projectRes.data);
       setTaskCategories(categoryRes.data);
+      setFetchedUsers(usersRes.data || []);
     } catch (error) {
       console.error('Error fetching reference data:', error);
     }
@@ -89,6 +155,67 @@ const TasksheetEntriesDisplay = forwardRef(({
   const getCategoryName = (id) => {
     const category = taskCategories.find((c) => String(c.id) === String(id));
     return category ? category.name : `Unknown (${id})`;
+  };
+
+  // Resolve resource / user name from a variety of possible API shapes
+  const getResourceName = (rowOrId) => {
+    // If a primitive id was passed, try to resolve from users prop
+    if (rowOrId == null) return '';
+  const combinedUsers = (Array.isArray(users) && users.length) ? users : (Array.isArray(fetchedUsers) ? fetchedUsers : []);
+    if (typeof rowOrId !== 'object') {
+      const id = rowOrId;
+      const match = combinedUsers.find(u => String(u.user_id) === String(id) || String(u.id) === String(id));
+      if (match) return match.name || match.username || match.user_name || `${match.first_name || ''} ${match.last_name || ''}`.trim();
+      return String(id);
+    }
+
+    const row = rowOrId;
+    // Common name fields
+    if (row.user_name) return row.user_name;
+    if (row.resource_name) return row.resource_name;
+    if (row.name) return row.name;
+    if (row.username) return row.username;
+    if (row.full_name) return row.full_name;
+
+    // Nested objects
+    if (row.user && (row.user.name || row.user.username || row.user.full_name)) {
+      return row.user.name || row.user.username || row.user.full_name;
+    }
+    if (row.resource && (row.resource.name || row.resource.full_name)) {
+      return row.resource.name || row.resource.full_name;
+    }
+
+    // First/last name
+    if (row.user && row.user.first_name && row.user.last_name) {
+      return `${row.user.first_name} ${row.user.last_name}`;
+    }
+    if (row.first_name && row.last_name) {
+      return `${row.first_name} ${row.last_name}`;
+    }
+
+    // Try id-based lookup (user_id, resource_id, id) or primitive user/resource field
+    const id = row.user_id ?? row.resource_id ?? row.user?.id ?? row.resource?.id ?? row.id;
+    if (id) {
+      const match = combinedUsers.find(u => String(u.user_id) === String(id) || String(u.id) === String(id));
+      if (match) return match.name || match.username || match.user_name || `${match.first_name || ''} ${match.last_name || ''}`.trim();
+      // Not found - log for debugging
+      console.debug('getResourceName: unresolved id', id, 'row sample', row);
+      return String(id);
+    }
+
+    // If row.user or row.resource is a primitive id (e.g. user: 3)
+    if (row.user && (typeof row.user === 'string' || typeof row.user === 'number')) {
+      const match = combinedUsers.find(u => String(u.user_id) === String(row.user) || String(u.id) === String(row.user));
+      if (match) return match.name || match.username || String(row.user);
+      return String(row.user);
+    }
+    if (row.resource && (typeof row.resource === 'string' || typeof row.resource === 'number')) {
+      const match = combinedUsers.find(u => String(u.user_id) === String(row.resource) || String(u.id) === String(row.resource));
+      if (match) return match.name || match.username || String(row.resource);
+      return String(row.resource);
+    }
+
+    return '';
   };
 
   const getFilteredEntries = () => {
@@ -438,36 +565,33 @@ function CustomToolbar() {
   // Expose functions to parent
   React.useImperativeHandle(ref, () => ({
     exportToCSV,
-  }), []);
+    refreshEntries: fetchEntries,
+  }), [fetchReferenceData]);
 
   // Define DataGrid columns
-  const columns = [
-    {
+  const columns = [];
+
+  // Resource column is optional (showResource prop)
+  if (showResource) {
+    columns.push({
       field: 'resource',
       headerName: 'Resource',
       width: 180,
       type: 'string',
       valueGetter: (params) => {
         const row = params && params.row ? params.row : params;
-        if (row?.user_name) return row.user_name;
-        if (row?.name) return row.name;
-        if (row?.username) return row.username;
-        // Try users prop lookup
-        if (row?.user_id) {
-          const match = users.find(u => String(u.user_id) === String(row.user_id) || String(u.id) === String(row.user_id));
-          if (match) return match.name || match.username || String(row.user_id);
-        }
-        // nested user object
-        if (row?.user && (row.user.name || row.user.username)) return row.user.name || row.user.username;
-        return '';
+        return getResourceName(row);
       },
       renderCell: (params) => {
-        const value = params.value || params.row?.user_name || '';
+        const value = params.value || getResourceName(params.row) || '';
         return <Box sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</Box>;
       },
       filterable: true,
       sortable: true,
-    },
+    });
+  }
+
+  columns.push(
     {
       field: 'entry_date',
       headerName: 'Date',
@@ -499,8 +623,7 @@ function CustomToolbar() {
       field: 'task_name',
       headerName: 'Task Details',
       width: 300,
- 
-    flex: 1, 
+      flex: 1,
       type: 'string',
       sortable: true,
       filterable: true,
@@ -513,7 +636,6 @@ function CustomToolbar() {
            height: '100%',
           display: 'flex',
           alignItems: 'center',
-         
         }}>
           {params.value}
         </Box>
@@ -547,7 +669,7 @@ function CustomToolbar() {
       field: 'actions',
       headerName: '',
       width: 140,
-        flex: 0,
+      flex: 0,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => {
@@ -596,8 +718,8 @@ function CustomToolbar() {
           </Box>
         );
       },
-    },
-  ];
+    }
+  );
 
   const handleEdit = (entry) => {
   if (onEdit) {
