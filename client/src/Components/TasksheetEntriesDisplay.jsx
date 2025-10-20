@@ -4,7 +4,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 dayjs.extend(isSameOrAfter);
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import { DataGrid, QuickFilter, QuickFilterTrigger, QuickFilterControl, QuickFilterClear, ToolbarButton } from '@mui/x-data-grid';
+import { DataGrid, QuickFilter, QuickFilterTrigger, QuickFilterControl, QuickFilterClear, ToolbarButton, useGridApiRef } from '@mui/x-data-grid';
 import { api } from '../utils/api';
 import {Tooltip, Button,  Paper, Snackbar , Alert, Box } from '@mui/material';
 const TasksheetEntriesDisplay = forwardRef(({
@@ -37,6 +37,7 @@ const TasksheetEntriesDisplay = forwardRef(({
   const [fetchedUsers, setFetchedUsers] = useState([]);
   const [showToast, setShowToast] = useState(false);
   const [sortModel, setSortModel] = useState([{ field: 'entry_date', sort: 'desc' }]);
+  const apiRef = useGridApiRef();
   useEffect(() => {
     fetchReferenceData();
   }, []);
@@ -568,6 +569,20 @@ function CustomToolbar() {
     refreshEntries: fetchEntries,
   }), [fetchReferenceData]);
 
+  // Open/hide the DataGrid filter panel when parent toggles showFilters
+  useEffect(() => {
+    if (!apiRef || !apiRef.current) return;
+    try {
+      if (showFilters) {
+        apiRef.current.showFilterPanel?.();
+      } else {
+        apiRef.current.hideFilterPanel?.();
+      }
+    } catch (e) {
+      // ignore if API not available
+    }
+  }, [showFilters, apiRef]);
+
   // Define DataGrid columns
   const columns = [];
 
@@ -761,6 +776,7 @@ function CustomToolbar() {
         }}
       >
         <DataGrid
+          apiRef={apiRef}
           rows={getFilteredEntries()}
           columns={columns.map(col => ({ ...col, filterable: true }))}
           autoHeight

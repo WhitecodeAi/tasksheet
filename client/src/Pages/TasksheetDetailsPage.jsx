@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {Paper, Box, Typography, TextField, MenuItem, Button, Stack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Checkbox } from '@mui/material';
+import {Paper, Box, Typography, TextField, MenuItem, Button, Stack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Checkbox, IconButton, Tooltip } from '@mui/material';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import Breadcrumbs from '../Components/Breadcrumbs';
 import { api } from '../utils/api';
 import TasksheetEntriesDisplay from '../Components/TasksheetEntriesDisplay';
@@ -17,6 +18,7 @@ const TasksheetDetailsPage = () => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const [quickRange, setQuickRange] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -177,18 +179,43 @@ const TasksheetDetailsPage = () => {
       
           {/* JSON preview removed */}
           {hasSearched ? (
-           <Paper><div></div><TasksheetEntriesDisplay
-              entries={entries}
-              users={users}
-              selectedProjects={selectedProjects}
-              selectedCategories={selectedCategories}
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-              search={search}
-              userId={selectedUsers.length === 1 ? selectedUsers[0] : ''}
-              showActions={false}
-            />
-            </Paper> 
+           <>
+            <Paper sx={{ p: 2, borderBottomLeftRadius:0,  borderBottomRightRadius:0,   }}>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <TextField
+                  placeholder="Search entries..."
+                  size="small"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  sx={{ minWidth: 300, backgroundColor: '#fff' }}
+                />
+                <Tooltip title="Filters">
+                  <IconButton
+                    onClick={() => setShowFilters(prev => !prev)}
+                    color={showFilters ? 'primary' : 'default'}
+                    size="small"
+                    aria-label="Toggle filters"
+                  >
+                    <FilterListIcon />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Paper>
+            <Paper>
+              <TasksheetEntriesDisplay
+                entries={entries}
+                users={users}
+                selectedProjects={selectedProjects}
+                selectedCategories={selectedCategories}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                search={search}
+                userId={selectedUsers.length === 1 ? selectedUsers[0] : ''}
+                showActions={false}
+                showFilters={showFilters}
+              />
+            </Paper>
+           </>
           ) : (
             <Typography sx={{ mt: 4, color: 'gray' }}>Select filters and click Search to view results.</Typography>
           )}
