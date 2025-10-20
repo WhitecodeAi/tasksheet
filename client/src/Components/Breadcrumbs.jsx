@@ -11,6 +11,20 @@ const Breadcrumbs = ({ pageTitle, userName }) => {
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
+  // Build visible breadcrumb entries by skipping numeric id segments
+  const visibleEntries = (() => {
+    const segments = pathnames; // already split
+    const entries = [];
+    const acc = [];
+    segments.forEach((seg) => {
+      acc.push(seg);
+      if (!/^\d+$/.test(seg)) {
+        entries.push({ value: seg, to: `/${acc.join('/')}` });
+      }
+    });
+    return entries;
+  })();
+
   // Define page titles for different routes
   const getPageTitle = () => {
     if (pageTitle) return pageTitle;
@@ -96,16 +110,15 @@ const Breadcrumbs = ({ pageTitle, userName }) => {
        <HomeTwoToneIcon/>
         </Link>
 
-        {pathnames.map((value, index) => {
-          const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-          const isLast = index === pathnames.length - 1;
+        {visibleEntries.map((entry, index) => {
+          const isLast = index === visibleEntries.length - 1;
 
-          // If on /user-timesheet/:userId, show userName instead of id
-          if (isLast && userName && location.pathname.startsWith('user-timesheet')) {
+          // If on /user-timesheet/:userId, show userName for the last visible segment
+          if (isLast && userName && entry.value === 'user-timesheet') {
             return (
               <Typography
                 color="#1a1a1a"
-                key={to}
+                key={entry.to}
                 sx={{
                   fontSize: '0.875rem',
                   fontWeight: 500,
@@ -120,21 +133,21 @@ const Breadcrumbs = ({ pageTitle, userName }) => {
           return isLast ? (
             <Typography
               color="#1a1a1a"
-              key={to}
+              key={entry.to}
               sx={{
                 fontSize: '0.875rem',
                 fontWeight: 500,
                 textTransform: 'capitalize'
               }}
             >
-              {value.replace(/-/g, ' ')}
+              {entry.value.replace(/-/g, ' ')}
             </Typography>
           ) : (
             <Link
               underline="hover"
               color="#757575"
-              onClick={() => navigate(to)}
-              key={to}
+              onClick={() => navigate(entry.to)}
+              key={entry.to}
               sx={{
                 cursor: 'pointer',
                 fontSize: '0.875rem',
@@ -147,7 +160,7 @@ const Breadcrumbs = ({ pageTitle, userName }) => {
                 }
               }}
             >
-              {value.replace(/-/g, ' ')}
+              {entry.value.replace(/-/g, ' ')}
             </Link>
           );
         })}

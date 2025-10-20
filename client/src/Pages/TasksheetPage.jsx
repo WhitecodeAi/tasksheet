@@ -37,7 +37,7 @@ import { Search, Add, FilterList, ViewColumn, FileDownload, Settings, GetAppTwoT
 import { api } from '../utils/api';
 import dayjs from 'dayjs';
 import ViewColumnTwoToneIcon from '@mui/icons-material/ViewColumnTwoTone';
-import Breadcrumbs from '../Components/Breadcrumbs';
+// Breadcrumbs are provided by the Layout; do not render here to avoid duplicates
 
 const TasksheetPage = (props) => {
   const [projects, setProjects] = useState([]);
@@ -176,16 +176,7 @@ const TasksheetPage = (props) => {
 
   return (
     <React.Fragment>
-      {/* Header */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h4" gutterBottom sx={{'font-size': '1.6rem'}}> 
-          {userId && selectedUserId !== undefined
-            ? `Tasksheet for ${selectedUserId === '' || selectedUserId == null
-                ? loggedInUser?.name
-                : (users.find(u => String(u.id) === String(selectedUserId))?.name || loggedInUser?.name || '')}`
-            : `My Tasksheet`}
-        </Typography>
-      </Box>
+    {/* Page title displayed via Layout/Breadcrumbs */}
       {/* 🔍 Search, Filter & Add Controls - Berry Dashboard Style */}
       <Paper
         sx={{

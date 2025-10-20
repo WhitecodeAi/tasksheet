@@ -31,7 +31,7 @@ const AppContent = ({ handleLogin, handleLogout }) => {
           path="/teams-tasksheet"
           element={
             isLoggedIn ? (
-              <Layout onLogout={handleLogout} takeFullWidth={true}>
+              <Layout onLogout={handleLogout} takeFullWidth={true} pageTitle={"Teams Tasksheet"}>
                 <TeamsTasksheetPage />
               </Layout>
             ) : (
@@ -43,7 +43,7 @@ const AppContent = ({ handleLogin, handleLogout }) => {
           path="/tasksheet-details/:userId"
           element={
             isLoggedIn ? (
-              <Layout onLogout={handleLogout} takeFullWidth={true}>
+              <Layout onLogout={handleLogout} takeFullWidth={true} pageTitle={"Tasksheet Details"}>
                 <TasksheetDetailsPage />
               </Layout>
             ) : (
@@ -86,7 +86,7 @@ const AppContent = ({ handleLogin, handleLogout }) => {
           path="/tasksheet-entry"
           element={
             isLoggedIn ? (
-              <Layout onLogout={handleLogout} takeFullWidth={true} >
+              <Layout onLogout={handleLogout} takeFullWidth={true} pageTitle={"My Tasksheet"}>
                 <TasksheetPage />
               </Layout>
             ) : (

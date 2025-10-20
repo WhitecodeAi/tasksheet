@@ -93,7 +93,6 @@ const TasksheetDetailsPage = () => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 2 }}>Tasksheet Details</Typography>
       {isLoading ? (
         <Typography sx={{ mt: 4 }}>Loading data...</Typography>
       ) : (

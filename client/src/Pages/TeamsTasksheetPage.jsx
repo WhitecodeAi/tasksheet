@@ -114,7 +114,6 @@ const TeamsTasksheetPage = () => {
 
   return (
     <>
-      <Typography variant="h4" sx={{ mt: 2, mb: 2, display: 'inline-block' }}>Teams Tasksheet</Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2, mb: 2 }}>
         <Typography variant="h6" sx={{ mr: 1 }}>Week:</Typography>
         <Select
